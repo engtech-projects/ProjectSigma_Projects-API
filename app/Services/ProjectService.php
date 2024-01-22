@@ -56,7 +56,7 @@ class ProjectService
             DB::rollBack();
             return new Exception($e->getMessage(), $e->getCode());
         }
-        return "Project deleted.";
+        return $project;
     }
 
 }
