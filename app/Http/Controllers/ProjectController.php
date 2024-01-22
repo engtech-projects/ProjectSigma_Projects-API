@@ -87,9 +87,6 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
         $project = $this->projectService->deleteProject($project);
-        return $this->sendSuccessResponse([
-            'data' => new ProjectResource($project),
-            "message" => "Project Deleted."
-        ]);
+        return $this->sendSuccessResponse(["message" => $project]);
     }
 }
