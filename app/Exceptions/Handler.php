@@ -32,25 +32,20 @@ class Handler extends ExceptionHandler
             if ($request->wantsJson()) {
                 return $this->handleApiExceptions($request, $e);
             }
+            return abort(500, $e->getMessage());
         });
     }
 
-    public function handleApiExceptions(Request $request, Throwable $e)
+    public function handleApiExceptions(Request $request, Exception $e)
     {
-        $message = $e->getMessage();
-        $code = 500;
+        $response = null;
+        if ($e instanceof ResourceNotFoundException) {
+            $response = new JsonResponse(['message' => $e->getMessage()], 404);
+        }
         if ($e instanceof NotFoundHttpException) {
-            $message = $this->handleResourceNotFoundMessage($request);
+            $response = new JsonResponse(['message' => $e->getMessage()], 404);
         }
-        return new JsonResponse(['message' => $message], $code);
-    }
-    public function handleResourceNotFoundMessage(Request $request)
-    {
-        $message = null;
-        if ($request->is('api/projects/*')) {
-            $message = 'Something went wrong. Project not found.';
-        }
-        return $message;
+        return $response;
     }
 
 }

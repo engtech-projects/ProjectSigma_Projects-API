@@ -6,6 +6,7 @@ use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
+use App\Models\User;
 use App\Services\ProjectService;
 use Illuminate\Support\Facades\DB;
 
@@ -23,7 +24,6 @@ class ProjectController extends Controller
 
     public function index()
     {
-        $hh = "asd";
         $projects = $this->projectService->getProjects();
         return response()->json(new ProjectResource($projects));
     }
@@ -55,6 +55,9 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
+/*         $user = new User();
+        $user = $user->find(2);
+        return response()->json($user); */
         return $this->sendSuccessResponse([
             'data' => new ProjectResource($project),
             "message" => "Project Fetched."
