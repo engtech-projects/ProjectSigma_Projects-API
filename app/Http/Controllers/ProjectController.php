@@ -23,6 +23,7 @@ class ProjectController extends Controller
 
     public function index()
     {
+        $hh = "asd";
         $projects = $this->projectService->getProjects();
         return response()->json(new ProjectResource($projects));
     }
