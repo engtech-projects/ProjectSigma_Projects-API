@@ -2,8 +2,13 @@
 
 namespace App\Exceptions;
 
+use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
+use App\Exceptions\ResourceNotFoundException;
 
 class Handler extends ExceptionHandler
 {
@@ -23,8 +28,29 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        $this->reportable(function (Throwable $e) {
-            //
+        $this->renderable(function (Exception $e, Request $request) {
+            if ($request->wantsJson()) {
+                return $this->handleApiExceptions($request, $e);
+            }
         });
     }
+
+    public function handleApiExceptions(Request $request, Throwable $e)
+    {
+        $message = $e->getMessage();
+        $code = 500;
+        if ($e instanceof NotFoundHttpException) {
+            $message = $this->handleResourceNotFoundMessage($request);
+        }
+        return new JsonResponse(['message' => $message], $code);
+    }
+    public function handleResourceNotFoundMessage(Request $request)
+    {
+        $message = null;
+        if ($request->is('api/projects/*')) {
+            $message = 'Something went wrong. Project not found.';
+        }
+        return $message;
+    }
+
 }
