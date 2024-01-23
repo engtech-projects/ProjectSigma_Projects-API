@@ -16,6 +16,9 @@ class ProjectService
 
     public function getProjects()
     {
+        $projects = $this->project->ongoing()->get();
+        return $projects;
+
         $projects = $this->project->paginate();
         return $projects;
     }

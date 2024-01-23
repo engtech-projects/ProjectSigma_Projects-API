@@ -22,9 +22,10 @@ class StoreProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'contract_id' => 'required|integer',
+            'contract_id' => 'required|string',
             'contract_name' => 'required|string',
             'contract_location' => 'required|string',
+            'status' => 'required|in:ongoing,completed'
         ];
     }
 }
