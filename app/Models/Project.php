@@ -10,6 +10,8 @@ class Project extends Model
 {
     use HasFactory;
 
+    const STATUS_COMPLETED = ProjectStatus::COMPLETED;
+    const STATUS_ONGOING = ProjectStatus::ONGOING;
 
     protected $fillable = [
         'contract_id',

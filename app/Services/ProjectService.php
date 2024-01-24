@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\ProjectStatus;
 use App\Models\Project;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +27,10 @@ class ProjectService
         return $this->project->paginate();
     }
     public function getProjectByStatus($status) {
+
+        if($status === ProjectStatus::COMPLETED->value) {
+            return $this->project->where('status',ProjectStatus::COMPLETED)->paginate();
+        }
         return $this->project->byProjectStatus($status)->get();
     }
     public function createProject(array $data)

@@ -23,7 +23,7 @@ class ProjectController extends Controller
 
     public function index()
     {
-        $projects = $this->projectService->getProjects($this->request->get('status'));
+        $projects = $this->projectService->getProjects($this->request->get('completion_status'));
         throw_if(empty($projects->toArray()),new NoRecordFoundException());
         return new JsonResponse($projects);
     }
