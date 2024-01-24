@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ProjectStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Project extends Model
 {
@@ -24,9 +25,12 @@ class Project extends Model
 
     #PROJECT MODEL RELATIONS
 
-    public function projectRelation()
+    public function projectRelation() : BelongsTo
     {
-        return $this->belongsTo(ProjectRelation::class);
+        return $this->belongsTo(ProjectRelation::class,'id','project_id')
+        ->withDefault(function(ProjectRelation $projectRelation,Project $project) {
+            $projectRelation->id = $project->id;
+        });
     }
 
 

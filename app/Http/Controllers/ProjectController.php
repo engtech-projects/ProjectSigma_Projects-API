@@ -25,6 +25,9 @@ class ProjectController extends Controller
 
     public function index() : ResourceCollection
     {
+        $projects = Project::with('projectRelation')->get();
+        return ProjectResource::collection($projects);
+
         $projects = $this->projectService->getProjects($this->request->get('completion_status'));
         throw_if(empty($projects->toArray()),new NoRecordFoundException());
         return ProjectResource::collection($projects);
