@@ -10,8 +10,6 @@ class Project extends Model
 {
     use HasFactory;
 
-    const STATUS_COMPLETED = ProjectStatus::COMPLETED;
-    const STATUS_ONGOING = ProjectStatus::ONGOING;
 
     protected $fillable = [
         'contract_id',
@@ -24,6 +22,11 @@ class Project extends Model
         'status' => ProjectStatus::class
     ];
 
+    #PROJECT MODEL RELATIONS
+
+
+
+    #PROJECT MODEL SCOPES
     public function scopeByProjectStatus($query,$status)
     {
         return $query->where('status', $status);
