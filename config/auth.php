@@ -41,8 +41,8 @@ return [
             'provider' => 'users',
         ],
         'api' => [
-            'driver' => 'sanctum',
-            'provider' => 'users',
+            'driver' => 'hrms-auth',
+            'provider' => 'hrms_users',
         ],
     ],
 
