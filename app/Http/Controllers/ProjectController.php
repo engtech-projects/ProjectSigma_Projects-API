@@ -3,69 +3,57 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\NoRecordFoundException;
-use App\Exceptions\ResourceNotFoundException;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
-use App\Models\User;
 use App\Services\ProjectService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+
 
 class ProjectController extends Controller
 {
     protected $projectService;
-
-    public function __construct(ProjectService $projectService) {
+    protected $request;
+    public function __construct(ProjectService $projectService,Request $request) {
         $this->projectService = $projectService;
+        $this->request = $request;
     }
 
-    public function index(Request $request)
+    public function index()
     {
-        $projects = $this->projectService->getProjects($request->get('status'));
+        $projects = $this->projectService->getProjects($this->request->get('status'));
         throw_if(empty($projects->toArray()),new NoRecordFoundException());
-        return response()->json(new ProjectResource($projects));
+        return new JsonResponse($projects);
     }
 
 
-    public function store(StoreProjectRequest $request)
+    public function store(StoreProjectRequest $request): ProjectResource
     {
         $attributes = $request->validated();
         $project = $this->projectService->createProject($attributes);
-
-
-        return $this->sendSuccessResponse([
-            'data' => new ProjectResource($project),
-            "message" => "Project Created."
-        ]);
+        return new ProjectResource($project);
     }
 
-    public function show(Project $project)
+    public function show(Project $project): ProjectResource
     {
-
-        return $this->sendSuccessResponse([
-            'data' => new ProjectResource($project),
-            "message" => "Project Fetched."
-        ]);
+        return new ProjectResource($project);
     }
 
 
 
-    public function update(UpdateProjectRequest $request, Project $project)
+    public function update(UpdateProjectRequest $request, Project $project) : ProjectResource
     {
         $attributes = $request->validated();
         $project = $this->projectService->updateProject($attributes,$project);
-        return $this->sendSuccessResponse([
-            'data' => new ProjectResource($project),
-            "message" => "Project Updated."
-        ]);
+        return new ProjectResource($project);
     }
 
 
-    public function destroy(Project $project)
+    public function destroy(Project $project) : JsonResponse
     {
         $project = $this->projectService->deleteProject($project);
-        return $this->sendSuccessResponse(["message" => $project]);
+        return new JsonResponse(['message' => 'Project deleted.'],200);
     }
 }
