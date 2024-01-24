@@ -24,10 +24,14 @@ class Project extends Model
 
     #PROJECT MODEL RELATIONS
 
+    public function projectRelation()
+    {
+        return $this->belongsTo(ProjectRelation::class);
+    }
 
 
     #PROJECT MODEL SCOPES
-    public function scopeByProjectStatus($query,$status)
+    public function scopeByProjectStatus($query, $status)
     {
         return $query->where('status', $status);
     }

@@ -15,25 +15,33 @@ class ProjectService
         $this->project = $project;
     }
 
-    public function getProjects($status)
+    public function getProjects(string $status = null)
     {
-        if(empty($status)) {
-            return $this->getProjectsPaginated();
+        switch ($status) {
+            case null:
+                return $this->getProjectsPaginated($status);
+            case ProjectStatus::COMPLETED->value:
+                return $this->getProjectsPaginated($status);
+            case ProjectStatus::ONGOING->value:
+                return $this->getProjectByStatus($status);
+            default;
         }
-        return $this->getProjectByStatus($status);
+
     }
 
-    public function getProjectsPaginated() {
+    public function getProjectsPaginated(string $status = null)
+    {
+        if ($status === ProjectStatus::COMPLETED->value) {
+            return $this->project->byProjectStatus($status)->paginate();
+        }
         return $this->project->paginate();
-    }
-    public function getProjectByStatus($status) {
 
-        if($status === ProjectStatus::COMPLETED->value) {
-            return $this->project->where('status',ProjectStatus::COMPLETED)->paginate();
-        }
+    }
+    public function getProjectByStatus($status)
+    {
         return $this->project->byProjectStatus($status)->get();
     }
-    public function createProject(array $data)
+    public function createProject(array $data): Project
     {
         DB::beginTransaction();
         try {
@@ -46,7 +54,7 @@ class ProjectService
         return $project;
     }
 
-    public function updateProject(array $data, Project $project)
+    public function updateProject(array $data, Project $project): Project
     {
         DB::beginTransaction();
         try {
@@ -55,12 +63,12 @@ class ProjectService
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            return new Exception($e->getMessage(), $e->getCode());
+            throw new Exception($e->getMessage(), $e->getCode());
         }
         return $project;
     }
 
-    public function deleteProject(Project $project)
+    public function deleteProject(Project $project): string
     {
         DB::beginTransaction();
         try {
@@ -68,7 +76,7 @@ class ProjectService
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            return new Exception($e->getMessage(), $e->getCode());
+            throw new Exception($e->getMessage(), $e->getCode());
         }
         return "Project deleted.";
     }
