@@ -23,7 +23,7 @@ class StoreProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'contract_id' => 'required|string',
+            'contract_id' => 'required|string|unique:projects,contract_id',
             'contract_name' => 'required|string',
             'contract_location' => 'required|string',
             'status' => [new Enum(ProjectStatus::class)],

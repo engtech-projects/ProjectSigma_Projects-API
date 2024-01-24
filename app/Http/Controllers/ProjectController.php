@@ -10,6 +10,8 @@ use App\Http\Requests\UpdateProjectRequest;
 use App\Services\ProjectService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Collection;
 
 
 class ProjectController extends Controller
@@ -21,19 +23,22 @@ class ProjectController extends Controller
         $this->request = $request;
     }
 
-    public function index()
+    public function index() : ResourceCollection
     {
         $projects = $this->projectService->getProjects($this->request->get('completion_status'));
         throw_if(empty($projects->toArray()),new NoRecordFoundException());
-        return new JsonResponse($projects);
+        return ProjectResource::collection($projects);
     }
 
 
-    public function store(StoreProjectRequest $request): ProjectResource
+    public function store(StoreProjectRequest $request): JsonResponse
     {
         $attributes = $request->validated();
         $project = $this->projectService->createProject($attributes);
-        return new ProjectResource($project);
+        return new JsonResponse([
+            'data' => new ProjectResource($project),
+            'message' => "Project created."
+        ],JsonResponse::HTTP_CREATED);
     }
 
     public function show(Project $project): ProjectResource
