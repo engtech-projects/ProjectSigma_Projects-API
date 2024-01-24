@@ -45,6 +45,9 @@ class Handler extends ExceptionHandler
         if ($e instanceof NotFoundHttpException) {
             $response = new JsonResponse(['message' => $e->getMessage()], 404);
         }
+        if ($e instanceof NoRecordFoundException) {
+            $response = new JsonResponse(['message' => $e->getMessage()], 422);
+        }
         return $response;
     }
 

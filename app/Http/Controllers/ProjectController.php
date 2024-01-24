@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\NoRecordFoundException;
+use App\Exceptions\ResourceNotFoundException;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\User;
 use App\Services\ProjectService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ProjectController extends Controller
@@ -18,31 +21,19 @@ class ProjectController extends Controller
         $this->projectService = $projectService;
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-
-    public function index()
+    public function index(Request $request)
     {
-        $projects = $this->projectService->getProjects();
+        $projects = $this->projectService->getProjects($request->get('status'));
+        throw_if(empty($projects->toArray()),new NoRecordFoundException());
         return response()->json(new ProjectResource($projects));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreProjectRequest $request)
     {
         $attributes = $request->validated();
         $project = $this->projectService->createProject($attributes);
+
 
         return $this->sendSuccessResponse([
             'data' => new ProjectResource($project),
@@ -50,31 +41,17 @@ class ProjectController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Project $project)
     {
-/*         $user = new User();
-        $user = $user->find(2);
-        return response()->json($user); */
+
         return $this->sendSuccessResponse([
             'data' => new ProjectResource($project),
             "message" => "Project Fetched."
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Project $project)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
+
     public function update(UpdateProjectRequest $request, Project $project)
     {
         $attributes = $request->validated();
@@ -85,9 +62,7 @@ class ProjectController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+
     public function destroy(Project $project)
     {
         $project = $this->projectService->deleteProject($project);

@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-use App\Enums\ProjectStatusEnum;
+use App\Enums\ProjectStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
     use HasFactory;
+
 
     protected $fillable = [
         'contract_id',
@@ -18,13 +19,12 @@ class Project extends Model
     ];
 
     protected $casts = [
-        'status' => ProjectStatusEnum::class
+        'status' => ProjectStatus::class
     ];
 
-    public function scopeOngoing($query)
+    public function scopeByProjectStatus($query,$status)
     {
-        return $query->where('status', ProjectStatusEnum::Ongoing);
-
+        return $query->where('status', $status);
     }
 
 }

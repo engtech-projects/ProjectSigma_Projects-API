@@ -14,13 +14,19 @@ class ProjectService
         $this->project = $project;
     }
 
-    public function getProjects()
+    public function getProjects($status)
     {
-        $projects = $this->project->ongoing()->get();
-        return $projects;
+        if(empty($status)) {
+            return $this->getProjectsPaginated();
+        }
+        return $this->getProjectByStatus($status);
+    }
 
-        $projects = $this->project->paginate();
-        return $projects;
+    public function getProjectsPaginated() {
+        return $this->project->paginate();
+    }
+    public function getProjectByStatus($status) {
+        return $this->project->byProjectStatus($status)->get();
     }
     public function createProject(array $data)
     {
@@ -30,7 +36,7 @@ class ProjectService
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            return new Exception($e->getMessage(), $e->getCode());
+            throw new Exception($e->getMessage());
         }
         return $project;
     }

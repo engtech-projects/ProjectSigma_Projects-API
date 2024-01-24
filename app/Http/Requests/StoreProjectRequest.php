@@ -2,13 +2,14 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ProjectStatus;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class StoreProjectRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
+
+
     public function authorize(): bool
     {
         return true;
@@ -25,7 +26,7 @@ class StoreProjectRequest extends FormRequest
             'contract_id' => 'required|string',
             'contract_name' => 'required|string',
             'contract_location' => 'required|string',
-            'status' => 'required|in:ongoing,completed'
+            'status' => [new Enum(ProjectStatus::class)],
         ];
     }
 }
