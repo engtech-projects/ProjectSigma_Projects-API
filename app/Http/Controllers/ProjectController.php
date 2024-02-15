@@ -34,10 +34,10 @@ class ProjectController extends Controller
     }
 
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreProjectRequest $request): JsonResponse
     {
         /*  $attributes = $request->validated(); */
-        $this->projectService->createProject($request->input());
+        $this->projectService->createProject($request->validated());
 
         return new JsonResponse([
             'message' => "Project created."
