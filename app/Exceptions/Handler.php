@@ -34,6 +34,8 @@ class Handler extends ExceptionHandler
             }
             return abort(500, $e->getMessage());
         });
+
+
     }
 
     public function handleApiExceptions(Request $request, Exception $e)
@@ -47,6 +49,9 @@ class Handler extends ExceptionHandler
         }
         if ($e instanceof NoRecordFoundException) {
             $response = new JsonResponse(['message' => $e->getMessage()], 422);
+        }
+        if ($e instanceof DBTransactionException) {
+            $response = new JsonResponse(['message' => $e->getMessage()]);
         }
         return $response;
     }

@@ -34,13 +34,12 @@ class ProjectController extends Controller
     }
 
 
-    public function store(): JsonResponse
+    public function store(Request $request): JsonResponse
     {
-        //$attributes = $request->validated();
-        $project = $this->projectService->createProject($this->request->input());
+        /*  $attributes = $request->validated(); */
+        $this->projectService->createProject($request->input());
 
         return new JsonResponse([
-            'data' => new ProjectResource($project),
             'message' => "Project created."
         ], JsonResponse::HTTP_CREATED);
     }
@@ -52,18 +51,20 @@ class ProjectController extends Controller
 
 
 
-    public function update(UpdateProjectRequest $request, Project $project): ProjectResource
+    public function update(UpdateProjectRequest $request, Project $project): JsonResponse
     {
         $attributes = $request->validated();
-        $project = $this->projectService->updateProject($attributes, $project);
+        $this->projectService->updateProject($attributes, $project);
 
-        return new ProjectResource($project);
+        return new JsonResponse([
+            'message' => "Project updated."
+        ]);
     }
 
 
     public function destroy(Project $project): JsonResponse
     {
-        $project = $this->projectService->deleteProject($project);
+        $this->projectService->deleteProject($project);
 
         return new JsonResponse(['message' => 'Project deleted.']);
     }

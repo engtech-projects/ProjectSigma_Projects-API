@@ -3,9 +3,11 @@
 namespace App\Services;
 
 use App\Enums\ProjectStatus;
+use App\Exceptions\DBTransactionException;
 use App\Models\Project;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class ProjectService
 {
@@ -41,35 +43,31 @@ class ProjectService
     {
         return $this->project->byProjectStatus($status)->get();
     }
-    public function createProject(array $data): Project
+    public function createProject(array $data)
     {
         try {
-            $project = $this->project->create($data);
+            return $this->project->create($data);
         } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            throw new DBTransactionException("Transaction failed.", 500, $e);
         }
-        return $project;
     }
 
-    public function updateProject(array $data, Project $project): Project
+    public function updateProject(array $data, Project $project)
     {
         try {
-            $project = $project->fill($data);
-            $project->save();
+            return $project->fill($data)->save();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage(), $e->getCode());
+            throw new DBTransactionException("Transaction failed.", 500, $e);
         }
-        return $project;
     }
 
-    public function deleteProject(Project $project): string
+    public function deleteProject(Project $project)
     {
         try {
-            $project->delete();
+            return $project->delete();
         } catch (Exception $e) {
-            throw new Exception($e->getMessage(), $e->getCode());
+            throw new DBTransactionException("Transaction failed.", 500, $e);
         }
-        return "Project deleted.";
     }
 
 }
