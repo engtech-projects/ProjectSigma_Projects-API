@@ -43,12 +43,11 @@ class ProjectService
     }
     public function createProject(array $data): Project
     {
-        $project = $this->project->create($data);
-        /* try {
+        try {
             $project = $this->project->create($data);
         } catch (Exception $e) {
             throw new Exception($e->getMessage());
-        } */
+        }
         return $project;
     }
 
