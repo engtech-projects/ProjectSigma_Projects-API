@@ -43,26 +43,21 @@ class ProjectService
     }
     public function createProject(array $data): Project
     {
-        DB::beginTransaction();
-        try {
+        $project = $this->project->create($data);
+        /* try {
             $project = $this->project->create($data);
-            DB::commit();
         } catch (Exception $e) {
-            DB::rollBack();
             throw new Exception($e->getMessage());
-        }
+        } */
         return $project;
     }
 
     public function updateProject(array $data, Project $project): Project
     {
-        DB::beginTransaction();
         try {
             $project = $project->fill($data);
             $project->save();
-            DB::commit();
         } catch (Exception $e) {
-            DB::rollBack();
             throw new Exception($e->getMessage(), $e->getCode());
         }
         return $project;
@@ -70,12 +65,9 @@ class ProjectService
 
     public function deleteProject(Project $project): string
     {
-        DB::beginTransaction();
         try {
             $project->delete();
-            DB::commit();
         } catch (Exception $e) {
-            DB::rollBack();
             throw new Exception($e->getMessage(), $e->getCode());
         }
         return "Project deleted.";
