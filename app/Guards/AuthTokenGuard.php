@@ -25,13 +25,13 @@ class AuthTokenGuard implements Guard
 
     public function user()
     {
+
         if ($this->user !== null) {
             return $this->user;
         }
         $token = $this->request->bearerToken();
-        $response = Http::withToken($token)
-            ->acceptJson()
-            ->get($this->hrmsApiUrl . 'api/session');
+
+        $response = Http::acceptJson()->throw()->withToken($token)->get('https://projectsigma-hrmsapi-staging.engtechglobalsolutions.com/api/session');
         if (!$response->successful()) {
             return null;
         }
@@ -42,12 +42,10 @@ class AuthTokenGuard implements Guard
             $this->user->name = $response->json()['name'];
             $this->user->email = $response->json()['email'];
             $this->user->type = $response->json()['type'];
-
         }
         return $this->user;
     }
     public function validate(array $credentials = [])
     {
-
     }
 }
