@@ -26,12 +26,11 @@ class ProjectController extends Controller
 
     public function index(Request $request)
     {
-        return ProjectResource::collection(Project::all());
 
-/*         $projects = $this->projectService->getProjects($request->get('completion_status'));
+        $projects = $this->projectService->getProjects($request->get('completion_status'));
         throw_if(empty($projects->toArray()), new NoRecordFoundException());
 
-        return ProjectResource::collection($projects); */
+        return ProjectResource::collection($projects);
     }
 
 
