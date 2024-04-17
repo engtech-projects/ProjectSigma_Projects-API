@@ -8,6 +8,7 @@ use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum;
 
 class AuthTokenGuard implements Guard
@@ -31,7 +32,9 @@ class AuthTokenGuard implements Guard
         }
         $token = $this->request->bearerToken();
 
-        $response = Http::acceptJson()->throw()->withToken($token)->get('https://projectsigma-hrmsapi-staging.engtechglobalsolutions.com/api/session');
+        $response = Http::acceptJson()->throw()->withToken($token)->get($this->hrmsApiUrl . 'api/session');
+
+        Log::info($response);
         if (!$response->successful()) {
             return null;
         }

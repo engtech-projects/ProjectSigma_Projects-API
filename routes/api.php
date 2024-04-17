@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:api')->group(function () {
-    Route::apiResource('/projects',ProjectController::class);
+    Route::resource('/projects',ProjectController::class);
 });
 
 /* Route::middleware('auth:api')->group(function () {
