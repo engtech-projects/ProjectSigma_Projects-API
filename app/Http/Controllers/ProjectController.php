@@ -18,27 +18,30 @@ class ProjectController extends Controller
 {
     protected $projectService;
     protected $request;
-    public function __construct(ProjectService $projectService,Request $request) {
+    public function __construct(ProjectService $projectService, Request $request)
+    {
         $this->projectService = $projectService;
         $this->request = $request;
     }
 
-    public function index() : ResourceCollection
+    public function index(Request $request)
     {
-        $projects = $this->projectService->getProjects($this->request->get('completion_status'));
-        throw_if(empty($projects->toArray()),new NoRecordFoundException());
+
+        $projects = $this->projectService->getProjects($request->get('completion_status'));
+        throw_if(empty($projects->toArray()), new NoRecordFoundException());
+
         return ProjectResource::collection($projects);
     }
 
 
     public function store(StoreProjectRequest $request): JsonResponse
     {
-        $attributes = $request->validated();
-        $project = $this->projectService->createProject($attributes);
+        /*  $attributes = $request->validated(); */
+        $this->projectService->createProject($request->validated());
+
         return new JsonResponse([
-            'data' => new ProjectResource($project),
             'message' => "Project created."
-        ],JsonResponse::HTTP_CREATED);
+        ], JsonResponse::HTTP_CREATED);
     }
 
     public function show(Project $project): ProjectResource
@@ -48,17 +51,21 @@ class ProjectController extends Controller
 
 
 
-    public function update(UpdateProjectRequest $request, Project $project) : ProjectResource
+    public function update(UpdateProjectRequest $request, Project $project): JsonResponse
     {
         $attributes = $request->validated();
-        $project = $this->projectService->updateProject($attributes,$project);
-        return new ProjectResource($project);
+        $this->projectService->updateProject($attributes, $project);
+
+        return new JsonResponse([
+            'message' => "Project updated."
+        ]);
     }
 
 
-    public function destroy(Project $project) : JsonResponse
+    public function destroy(Project $project): JsonResponse
     {
-        $project = $this->projectService->deleteProject($project);
-        return new JsonResponse(['message' => 'Project deleted.'],200);
+        $this->projectService->deleteProject($project);
+
+        return new JsonResponse(['message' => 'Project deleted.']);
     }
 }

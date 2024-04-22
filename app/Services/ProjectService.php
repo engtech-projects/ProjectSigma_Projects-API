@@ -3,9 +3,11 @@
 namespace App\Services;
 
 use App\Enums\ProjectStatus;
+use App\Exceptions\DBTransactionException;
 use App\Models\Project;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class ProjectService
 {
@@ -15,62 +17,57 @@ class ProjectService
         $this->project = $project;
     }
 
-    public function getProjects($status)
+    public function getProjects(string $status = null)
     {
-        if(empty($status)) {
-            return $this->getProjectsPaginated();
+        switch ($status) {
+            case null:
+                return $this->getProjectsPaginated($status);
+            case ProjectStatus::COMPLETED->value:
+                return $this->getProjectsPaginated($status);
+            case ProjectStatus::ONGOING->value:
+                return $this->getProjectByStatus($status);
+            default;
         }
-        return $this->getProjectByStatus($status);
+
     }
 
-    public function getProjectsPaginated() {
+    public function getProjectsPaginated(string $status = null)
+    {
+        if ($status === ProjectStatus::COMPLETED->value) {
+            return $this->project->byProjectStatus($status)->paginate();
+        }
         return $this->project->paginate();
-    }
-    public function getProjectByStatus($status) {
 
-        if($status === ProjectStatus::COMPLETED->value) {
-            return $this->project->where('status',ProjectStatus::COMPLETED)->paginate();
-        }
+    }
+    public function getProjectByStatus($status)
+    {
         return $this->project->byProjectStatus($status)->get();
     }
     public function createProject(array $data)
     {
-        DB::beginTransaction();
         try {
-            $project = $this->project->create($data);
-            DB::commit();
+            return $this->project->create($data);
         } catch (Exception $e) {
-            DB::rollBack();
-            throw new Exception($e->getMessage());
+            throw new DBTransactionException("Transaction failed.", 500, $e);
         }
-        return $project;
     }
 
     public function updateProject(array $data, Project $project)
     {
-        DB::beginTransaction();
         try {
-            $project = $project->fill($data);
-            $project->save();
-            DB::commit();
+            return $project->fill($data)->save();
         } catch (Exception $e) {
-            DB::rollBack();
-            return new Exception($e->getMessage(), $e->getCode());
+            throw new DBTransactionException("Transaction failed.", 500, $e);
         }
-        return $project;
     }
 
     public function deleteProject(Project $project)
     {
-        DB::beginTransaction();
         try {
-            $project->delete();
-            DB::commit();
+            return $project->delete();
         } catch (Exception $e) {
-            DB::rollBack();
-            return new Exception($e->getMessage(), $e->getCode());
+            throw new DBTransactionException("Transaction failed.", 500, $e);
         }
-        return "Project deleted.";
     }
 
 }

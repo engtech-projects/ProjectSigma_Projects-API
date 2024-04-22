@@ -27,6 +27,16 @@ class StoreProjectRequest extends FormRequest
             'contract_name' => 'required|string',
             'contract_location' => 'required|string',
             'status' => [new Enum(ProjectStatus::class)],
+            'project_code' => 'required|string|unique:projects,project_code',
+            'project_identifier' => 'required|string',
+            'contract_amount' => 'required',
+            'contract_duration' => 'required|string',
+            'implementing_office' => 'required|string',
+            'nature_of_work' => 'required|string',
+            'date_of_noa' => 'required|string|date',
+            'date_of_contract' => 'required|date',
+            'date_of_ntp' => 'required|date',
+            'license' => 'required|string',
         ];
     }
 }
