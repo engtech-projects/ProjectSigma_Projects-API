@@ -1,0 +1,30 @@
+# Deploying to staging server
+name: EVENPAR - Deploy ProjectSigma_Projects-API to FTP SERVER
+
+on:
+  workflow_run:
+    workflows: EVENPAR - ProjectSigma_Projects-API Build and Push to CI-Pipeline Branch
+    types:
+      - completed
+  workflow_dispatch:
+env:
+  APP_NAME: "ProjectSigma_Projects-API"
+
+concurrency:
+  group: "EVENPAR - deployftp ProjectSigma_Projects-API"
+  cancel-in-progress: true
+
+jobs:
+  deploy-laravel-main:
+    runs-on:
+      labels: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ci-pipe-evenpar
+      - name: Upload ftp
+        uses : SamKirkland/FTP-Deploy-Action@4.3.2
+        with:
+          server: ${{ vars.EVENPAR_FTP_SERVER }}
+          username: ${{ secrets.EVENPAR_FTP_USERNAME }}
+          password: ${{ secrets.EVENPAR_FTP_PASSWORD }}
