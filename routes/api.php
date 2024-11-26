@@ -1,10 +1,19 @@
 <?php
 
-use App\Http\Controllers\ProjectController;
-use App\Models\Project;
+use App\Enums\ProjectStatus;
+use App\Enums\ProjectStage;
+
+use App\Http\Controllers\Api\V1\Project\ {
+    ProjectController,
+	ProjectDuplicateController,
+	ProjectInternalController
+};
+
+use App\Http\Controllers\Api\V1\Phase\PhaseController;
+use App\Http\Controllers\Api\V1\Task\TaskController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -17,7 +26,19 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:api')->group(function () {
-    Route::resource('/projects',ProjectController::class);
+    Route::resource('/projects', ProjectController::class);
+
+	Route::get('/project-status', function () {
+		return response()->json(ProjectStatus::cases(), 200);
+	});
+
+	Route::get('/project-stage', function () {
+		return response()->json(ProjectStage::cases(), 200);
+	});
+
+	Route::resource('/phases', PhaseController::class);
+	Route::resource('/tasks', TaskController::class);
+
 });
 
 /* Route::middleware('auth:api')->group(function () {

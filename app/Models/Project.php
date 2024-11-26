@@ -3,44 +3,81 @@
 namespace App\Models;
 
 use App\Enums\ProjectStatus;
+use App\Enums\ProjectStage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Builder;
 
 class Project extends Model
 {
     use HasFactory, SoftDeletes;
 
+	protected $table = "projects";
 
     protected $fillable = [
-        'contract_id',
-        'contract_location',
-        'contract_name',
-        'status',
-        'project_code',
-        'project_identifier',
-        'contract_amount',
-        'contract_duration',
-        'implementing_office',
-        'nature_of_work',
-        'date_of_noa',
-        'date_of_contract',
-        'date_of_ntp',
-        'license',
+		'parent_project_id',
+		'contract_id',
+		'code',
+		'name',
+		'location',
+		'nature_of_work',
+        'amount',
+        'contract_date',
+        'duration',
+        'noa_date',
+        'ntp_date',
+		'license',
+		'stage',
+		'status',
+		'is_original',
+		'version',
     ];
 
-    protected $casts = [
-        'status' => ProjectStatus::class,
-        'date_of_noa' => 'date:Y-m-d'
-    ];
-
-    #PROJECT MODEL RELATIONS
-
-    #PROJECT MODEL SCOPES
-    public function scopeByProjectStatus($query, $status)
+	/**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
     {
-        return $query->where('status', $status);
+        return [
+			'status' => ProjectStatus::class,
+			'stage' => ProjectStage::class,
+			'contract_date' => 'datetime:Y-m-d',
+			'noa_date' => 'datetime:Y-m-d',
+			'ntp_date' => 'datetime:Y-m-d',
+			'amount' => 'decimal:2',
+			'is_original' => 'boolean',
+        ];
+    }
+
+	public function phases() : HasMany
+	{
+		return $this->hasMany(Phase::class);
+	}
+
+	public function attachments() : HasMany
+	{
+		return $this->hasMany(Attachment::class);
+	}
+
+	# PROJECT SCOPES
+	/**
+     * Scope a query to only include original project.
+     */
+    public function scopeOriginal(Builder $query): void
+    {
+        $query->where('is_original', true);
+    }
+
+	/**
+     * Scope a query to only include original project.
+     */
+    public function scopeRevised(Builder $query): void
+    {
+        $query->where('is_original', false);
     }
 
 }

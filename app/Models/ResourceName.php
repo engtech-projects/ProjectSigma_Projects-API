@@ -5,13 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProjectRelation extends Model
+class ResourceName extends Model
 {
     use HasFactory;
 
+	protected $table = "resource_names";
 
-    public function projects()
-    {
-        return $this->hasMany(Project::class);
-    }
+	protected $fillable = [
+		'name',
+		'category',
+		'description',
+	];
 }
