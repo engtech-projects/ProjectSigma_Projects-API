@@ -6,15 +6,8 @@ use Exception;
 
 class ResourceNotFoundException extends Exception
 {
-
-    protected $code;
-    public function __construct($message = "Resource not found.", $code = 0, Exception $previous = null)
+    public function __construct(string $message = "Resource not found", int $statusCode = 404)
     {
-        $this->code = $code;
-        parent::__construct($message, $code, $previous);
-    }
-    public function getStatusCode(): int
-    {
-        return $this->code;
+        parent::__construct($message, $statusCode);
     }
 }

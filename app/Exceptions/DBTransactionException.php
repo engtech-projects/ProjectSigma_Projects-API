@@ -6,14 +6,27 @@ use Exception;
 
 class DBTransactionException extends Exception
 {
-    protected $code;
-    public function __construct(?string $message = "Transaction failed. Please try again.", ?int $code = 0, Exception $previous = null)
+    /**
+     * The status code to return.
+     *
+     * @var int
+     */
+    protected $statusCode;
+
+    /**
+     * Constructor to initialize the exception with a message and status code.
+     */
+    public function __construct(string $message = "Database transaction failed", int $statusCode = 500)
     {
-        $this->code = $code;
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message);
+        $this->statusCode = $statusCode;
     }
+
+    /**
+     * Get the status code for the exception.
+     */
     public function getStatusCode(): int
     {
-        return $this->code;
+        return $this->statusCode;
     }
 }

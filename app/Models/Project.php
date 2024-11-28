@@ -53,6 +53,23 @@ class Project extends Model
         ];
     }
 
+    // Update the project status
+    public function updateStatus(ProjectStatus $status): void
+    {
+        $this->update(['status' => $status]);
+    }
+    // Archive the project
+    public function archive(): void
+    {
+        $this->updateStatus(ProjectStatus::ARCHIVED);
+    }
+
+    // Archive the project
+    public function complete(): void
+    {
+        $this->updateStatus(ProjectStatus::COMPLETED);
+    }
+
 	public function phases() : HasMany
 	{
 		return $this->hasMany(Phase::class);
@@ -61,6 +78,11 @@ class Project extends Model
 	public function attachments() : HasMany
 	{
 		return $this->hasMany(Attachment::class);
+	}
+
+    public function isOriginal()  : bool
+	{
+		return $this->is_original == true;
 	}
 
 	# PROJECT SCOPES

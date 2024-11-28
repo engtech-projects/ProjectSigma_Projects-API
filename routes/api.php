@@ -5,12 +5,16 @@ use App\Enums\ProjectStage;
 
 use App\Http\Controllers\Api\V1\Project\ {
     ProjectController,
-	ProjectDuplicateController,
-	ProjectInternalController
+    ProjectStatusController,
+    ProjectAttachmentController,
+    ReplicateProject,
 };
 
 use App\Http\Controllers\Api\V1\Phase\PhaseController;
 use App\Http\Controllers\Api\V1\Task\TaskController;
+use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
+
+use App\Models\ResourceName;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,9 +30,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:api')->group(function () {
-    Route::resource('/projects', ProjectController::class);
 
-	Route::get('/project-status', function () {
+    Route::get('/user', function () {
+		return response()->json(Auth::user(), 200);
+	});
+
+    Route::get('/project-status', function () {
 		return response()->json(ProjectStatus::cases(), 200);
 	});
 
@@ -36,8 +43,24 @@ Route::middleware('auth:api')->group(function () {
 		return response()->json(ProjectStage::cases(), 200);
 	});
 
+    Route::get('/resource-names', function () {
+        return response()->json(ResourceName::all(), 200);
+    });
+
+    Route::resource('/projects', ProjectController::class);
+    // project status updates
+    Route::post('/projects/{project}/archive', [ProjectStatusController::class, 'archive']);
+    Route::post('/projects/{project}/complete', [ProjectStatusController::class, 'complete']);
+    Route::patch('/projects/{project}/status', [ProjectStatusController::class, 'updateStatus']);
+    // duplicate/clone project
+    // Route::post('/projects/{project}/clone', [ProjectDuplicateController::class, 'clone']);
+    Route::post('/projects/{project}/replicate', ReplicateProject::class);
+
+    Route::post('/attachments/{project}', [ProjectAttachmentController::class, 'store']);
+    Route::delete('/attachments/{attachment}', [ProjectAttachmentController::class, 'destroy']);
 	Route::resource('/phases', PhaseController::class);
 	Route::resource('/tasks', TaskController::class);
+    Route::resource('/resource-items', ResourceItemController::class);
 
 });
 

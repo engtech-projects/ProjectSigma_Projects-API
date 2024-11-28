@@ -4,6 +4,7 @@ namespace App\Http\Resources\Task;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\ResourceItem\ResourceItemResource;
 
 class TaskResource extends JsonResource
 {
@@ -22,6 +23,8 @@ class TaskResource extends JsonResource
 			'unit' => $this->unit,
 			'unit_price' => $this->unit_price,
 			'amount' => $this->amount,
+            'resources' => ResourceItemResource::collection($this->resources),
+            
 		];
     }
 }

@@ -2,13 +2,20 @@
 
 namespace App\Exceptions;
 
-use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
 use Throwable;
+use Exception;
+use Illuminate\Http\Request;
+use App\Exceptions\AuthenticationException;
+use App\Exceptions\AuthorizationException;
+use App\Exceptions\BadRequestException;
+use App\Exceptions\ConflictException;
 use App\Exceptions\ResourceNotFoundException;
+use App\Exceptions\ValidationException;
+use App\Exceptions\DBTransactionException;
+use App\Exceptions\ThrottleRequestsException;
+use App\Exceptions\FileUploadException;
 
 class Handler extends ExceptionHandler
 {
@@ -28,32 +35,21 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        $this->renderable(function (Exception $e, Request $request) {
+        $this->renderable(function (Exception $exception, Request $request) {
+
             if ($request->wantsJson()) {
-                return $this->handleApiExceptions($request, $e);
+
+                if ($exception instanceof ResourceNotFoundException) {
+                    return response()->json(['message' => $exception->getMessage()], $exception->getStatusCode());
+                }
+
             }
-            return abort(500, $e->getMessage());
+            // Default fallback for uncaught exceptions
+            return response()->json([
+                'message' => $exception->getMessage(),
+            ], $exception->getStatusCode());
+           
         });
 
-
     }
-
-    public function handleApiExceptions(Request $request, Exception $e)
-    {
-        $response = null;
-        if ($e instanceof ResourceNotFoundException) {
-            $response = new JsonResponse(['message' => $e->getMessage()], 404);
-        }
-        if ($e instanceof NotFoundHttpException) {
-            $response = new JsonResponse(['message' => $e->getMessage()], 404);
-        }
-        if ($e instanceof NoRecordFoundException) {
-            $response = new JsonResponse(['message' => $e->getMessage()], 422);
-        }
-        if ($e instanceof DBTransactionException) {
-            $response = new JsonResponse(['message' => $e->getMessage()]);
-        }
-        return $response;
-    }
-
 }

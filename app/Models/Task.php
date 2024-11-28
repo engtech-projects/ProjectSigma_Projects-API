@@ -30,6 +30,6 @@ class Task extends Model
 
 	public function resources() : HasMany
 	{
-		return $this->hasMany(Resource::class);
+		return $this->hasMany(ResourceItem::class);
 	}
 }

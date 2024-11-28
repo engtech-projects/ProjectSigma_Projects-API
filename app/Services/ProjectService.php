@@ -6,6 +6,7 @@ use App\Enums\ProjectStatus;
 use App\Exceptions\DBTransactionException;
 use App\Models\Project;
 use App\Models\Phase;
+use App\Models\Task;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -89,18 +90,29 @@ class ProjectService
 		}
 	}
 
-	public function addResources(Project $project, array $attr)
+	public function addResources(Task $task, array $attr)
 	{
-		// try {
+		try {
 		
-		// 	DB::transaction(function () use ($project, $attr) {
-		// 		$project->phases()->createMany($attr);
-		// 	});
+			DB::transaction(function () use ($task, $attr) {
+                foreach ($attr as $item) {
+					$task->resources()->updateOrCreate(
+						['id' => $item['id'] ?? null], // Match id
+						$item // Data to update or create
+					);
+				}
+				
+			});
 	
-		// 	return $project->phases();
-		// } catch (\Throwable $e) {
-		// 	// Return response
-		// 	return ['error' => $e->getMessage()];
-		// }
+			return $task->resources()->get();
+		} catch (\Throwable $e) {
+			// Return response
+			return ['error' => $e->getMessage()];
+		}
 	}
+
+    public function generateBillofQuantities()
+    {
+        
+    }
 }

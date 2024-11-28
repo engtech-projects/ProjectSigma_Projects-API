@@ -33,9 +33,9 @@ class ProjectController extends Controller
     }
 
 	/**
-     * Show the form for creating a new resource.
+     * 
      */
-    public function create()
+    public function publish(Request $request, Project $project)
     {
         //
     }
@@ -67,7 +67,8 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-		return response()->json($project, 200);
+
+		return response()->json(new ProjectResource($project), 200);
     }
 
     /**
@@ -101,9 +102,9 @@ class ProjectController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * 
      */
-    public function destroy(Project $project)
+    public function archive(Project $project)
     {
         
     }
