@@ -22,7 +22,7 @@ class ReplicateProject extends Controller
         $replica = $project->replicate();
 
         return response()->json([
-            'message' => 'Project cloned successfully.',
+            'message' => 'Awarded Project can be viewed in ******.',
             'replica' => $replica,
         ]);
 
