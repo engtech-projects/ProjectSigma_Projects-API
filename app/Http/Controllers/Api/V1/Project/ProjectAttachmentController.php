@@ -7,20 +7,18 @@ use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\Attachment;
 use App\Traits\Upload;
+use App\Http\Requests\Attachment\StoreAttachmentRequest;
 
 class ProjectAttachmentController extends Controller
 {
     use Upload;
 
-    public function store(Request $request, Project $project)
+    public function store(StoreAttachmentRequest $request, Project $project)
     {
-        $validated = $request->validate([
-            'attachments' => ['required', 'min:1', 'array'],
-            'attachments.*' => ['required', 'file', 'max:10240', 'mimes:pdf,jpg,png,docx,doc,csv,xlsx,xls,ppt'],
-        ]);
-
+        $validated = $request->validated();
+        
         foreach ($request->file('attachments') as $attachment) {
-
+           
             $path = $this->uploadFile($attachment, "projects/{$project->id}");
 
             $project->attachments()->create([
@@ -40,7 +38,4 @@ class ProjectAttachmentController extends Controller
 
         return response()->json('deleted', 200);
     }
-
-    // public function download() {}
-
 }

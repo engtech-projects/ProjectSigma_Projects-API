@@ -5,6 +5,7 @@ namespace App\Http\Resources\Project;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\Phase\PhaseResource;
+use App\Http\Resources\Attachment\AttachmentResource;
 
 class ProjectResource extends JsonResource
 {
@@ -32,6 +33,7 @@ class ProjectResource extends JsonResource
 			'stage' => $this->stage,
 			'is_original' => $this->is_original,
 			'version' => $this->version,
+            'attachments' => AttachmentResource::collection($this->attachments),
 			'phases' => PhaseResource::collection($this->phases),
 		];
     }

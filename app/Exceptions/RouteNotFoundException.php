@@ -4,12 +4,12 @@ namespace App\Exceptions;
 
 use Exception;
 
-class ValidationException extends Exception
+class RouteNotFoundException extends Exception
 {
     protected $message;
     protected $statusCode;
 
-    public function __construct($message = "Validation failed", int $statusCode = 422)
+    public function __construct($message = 'The requested route does not exist.', $statusCode = 404)
     {
         parent::__construct($message);
         $this->statusCode = $statusCode;
@@ -24,4 +24,5 @@ class ValidationException extends Exception
             'error' => $this->getMessage(),
         ], $this->statusCode);
     }
+
 }

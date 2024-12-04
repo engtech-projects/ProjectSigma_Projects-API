@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 Route::middleware('auth:api')->group(function () {
 
     Route::get('/user', function () {
@@ -56,8 +57,9 @@ Route::middleware('auth:api')->group(function () {
     // Route::post('/projects/{project}/clone', [ProjectDuplicateController::class, 'clone']);
     Route::post('/projects/{project}/replicate', ReplicateProject::class);
 
-    Route::post('/attachments/{project}', [ProjectAttachmentController::class, 'store']);
-    Route::delete('/attachments/{attachment}', [ProjectAttachmentController::class, 'destroy']);
+    Route::post('/projects/{project}/attachments', [ProjectAttachmentController::class, 'store']);
+    Route::delete('/attachments/{attachment}/remove', [ProjectAttachmentController::class, 'destroy']);
+
 	Route::resource('/phases', PhaseController::class);
 	Route::resource('/tasks', TaskController::class);
     Route::resource('/resource-items', ResourceItemController::class);

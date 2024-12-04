@@ -33,6 +33,8 @@ class Project extends Model
 		'status',
 		'is_original',
 		'version',
+        'project_identifier',
+        'implementing_office',
     ];
 
 	/**
