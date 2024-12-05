@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Enums\RevisionStatus;
 
 return new class extends Migration
 {
@@ -11,12 +12,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('attachments', function (Blueprint $table) {
+        Schema::create('revisions', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->unsignedBigInteger('project_id');
-			$table->string('name');
-			$table->string('path');
-			$table->string('mime_type');
+            $table->uuid('project_uuid');
+            $table->json('data');
+            $table->text('comments')->nullable();
+            $table->string('status')->index()->default(RevisionStatus::DRAFT)->index();
             $table->timestamps();
 
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
@@ -28,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('attachments');
+        Schema::dropIfExists('revisions');
     }
 };

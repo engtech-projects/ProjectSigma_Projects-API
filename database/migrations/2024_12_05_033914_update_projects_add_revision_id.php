@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('phases', function (Blueprint $table) {
-			$table->id();
-			$table->foreignId('project_id')->constrained('projects')->onDelete('cascade');
-			$table->string('name');
-			$table->string('description');
-			$table->decimal('total_cost', 15, 2)->nullable();
-            $table->timestamps();
+        Schema::table('projects', function (Blueprint $table) {
+            $table->uuid('current_revision_id')->nullable()->index();
         });
     }
 
@@ -26,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('phases');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('current_revision_id');
+        });//
     }
 };

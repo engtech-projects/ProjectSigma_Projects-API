@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\Project\ {
     ProjectStatusController,
     ProjectAttachmentController,
     ReplicateProject,
+    RevisionController,
 };
 
 use App\Http\Controllers\Api\V1\Phase\PhaseController;
@@ -63,6 +64,12 @@ Route::middleware('auth:api')->group(function () {
 	Route::resource('/phases', PhaseController::class);
 	Route::resource('/tasks', TaskController::class);
     Route::resource('/resource-items', ResourceItemController::class);
+
+    Route::get('/revisions', [RevisionController::class, 'index']);
+    Route::get('/revisions/{revision}', [RevisionController::class, 'show']);
+    Route::post('/revisions/{project}/request', [RevisionController::class, 'revise']);
+    Route::post('/revisions/{revision}/approve', [RevisionController::class, 'approve']);
+    Route::post('/revisions/{revision}/reject', [RevisionController::class, 'reject']);
 
 });
 

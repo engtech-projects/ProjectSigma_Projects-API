@@ -11,14 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('attachments', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('project_id');
-			$table->string('name');
-			$table->string('path');
-			$table->string('mime_type');
-            $table->timestamps();
-
+        Schema::table('resources', function (Blueprint $table) {
+            $table->uuid('uuid')->unique()->after('id');
+            $table->unsignedBigInteger('project_id')->after('uuid');
+            
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
         });
     }
@@ -28,6 +24,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('attachments');
+        Schema::table('resources', function (Blueprint $table) {
+            $table->dropForeign('project_id');
+            $table->dropColumn('project_id');
+            $table->dropColumn('uuid');
+        });
     }
 };

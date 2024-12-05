@@ -7,8 +7,10 @@ use App\Enums\ProjectStage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 class Project extends Model
 {
@@ -35,6 +37,7 @@ class Project extends Model
 		'version',
         'project_identifier',
         'implementing_office',
+        'current_revision_id',
     ];
 
 	/**
@@ -53,6 +56,17 @@ class Project extends Model
 			'amount' => 'decimal:2',
 			'is_original' => 'boolean',
         ];
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = (string) Str::uuid();
+            }
+        });
     }
 
     // Update the project status
@@ -77,14 +91,39 @@ class Project extends Model
 		return $this->hasMany(Phase::class);
 	}
 
+    public function tasks() : HasMany
+	{
+		return $this->hasMany(Task::class);
+	}
+
+    public function resources() : HasMany
+	{
+		return $this->hasMany(ResourceItem::class);
+	}
+
 	public function attachments() : HasMany
 	{
 		return $this->hasMany(Attachment::class);
 	}
 
+    public function revisions() : HasMany
+    {
+        return $this->hasMany(Revision::class);
+    }
+
+    public function parent() : BelongsTo
+    {
+        return $this->belongsTo(Project::class, 'parent_project_id');
+    }
+
     public function isOriginal()  : bool
 	{
 		return $this->is_original == true;
+	}
+
+    public function isApproved()  : bool
+	{
+		return $this->status == ProjectStatus::APPROVED->label();
 	}
 
 	# PROJECT SCOPES
@@ -96,12 +135,28 @@ class Project extends Model
         $query->where('is_original', true);
     }
 
+    /**
+     * Scope a query to only include original project.
+     */
+    public function scopeInternal(Builder $query): void
+    {
+        $query->where(['is_original' => false, 'stage' => ProjectStage::AWARDED]);
+    }
+
 	/**
      * Scope a query to only include original project.
      */
-    public function scopeRevised(Builder $query): void
+    public function scopeActive(Builder $query): void
     {
-        $query->where('is_original', false);
+        $query->where(['status' => ProjectStatus::ONGOING]);
+    }
+
+    /**
+     * Scope a query to only include original project.
+     */
+    public function scopeArchived(Builder $query): void
+    {
+        $query->onlyTrashed();
     }
 
 }

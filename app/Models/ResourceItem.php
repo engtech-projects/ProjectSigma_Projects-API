@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Str;
 
 class ResourceItem extends Model
 {
@@ -14,6 +15,7 @@ class ResourceItem extends Model
     protected $table = "resources";
 
 	protected $fillable = [
+        'project_id',
 		'task_id',
 		'name_id',
 		'description',
@@ -24,9 +26,25 @@ class ResourceItem extends Model
 		'total_cost',
 	];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = (string) Str::uuid();
+            }
+        });
+    }
+
 	public function task() : BelongsTo
 	{
 		return $this->belongsTo(Task::class);
+	}
+
+    public function project() : BelongsTo
+	{
+		return $this->belongsTo(Project::class);
 	}
 
     public function resourceName() : HasOne

@@ -41,15 +41,15 @@ class Handler extends ExceptionHandler
     {
         $this->renderable(function (Exception $exception, Request $request) {
 
-            if ($request->wantsJson()) {
+            // if ($request->wantsJson()) {
 
-                if ($exception instanceof ModelNotFoundException) {
-                    throw new ResourceNotFoundException();
-                }
+                // if ($exception instanceof ModelNotFoundException) {
+                //     throw new ResourceNotFoundException();
+                // }
 
-                if ($exception instanceof NotFoundHttpException) {
-                    throw new RouteNotFoundException();
-                }
+                // if ($exception instanceof NotFoundHttpException) {
+                //     throw new RouteNotFoundException();
+                // }
 
                 // if ($exception instanceof ValidationException) {
                 //     throw new ValidationException();
@@ -60,7 +60,7 @@ class Handler extends ExceptionHandler
                 //     // return $exception->render($request);
                 // }
             
-            }
+            // }
             
             // return parent::render($request, $exception);
             // Default fallback for uncaught exceptions

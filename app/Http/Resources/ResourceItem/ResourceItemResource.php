@@ -15,6 +15,8 @@ class ResourceItemResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
+            'project_id' => $this->project_id,
             'task_id' => $this->task_id,
             'resource' => $this->resourceName,
             'description' => $this->description,

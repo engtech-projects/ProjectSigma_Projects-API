@@ -20,8 +20,8 @@ return new class extends Migration
 			$table->string('code')->nullable()->unique();
 			$table->string('name');
             $table->tinyText('location');
-			$table->decimal('amount', 10, 2);
-			$table->integer('duration');
+			$table->decimal('amount', 15, 2);
+			$table->string('duration')->nullable();
 			$table->string('nature_of_work')->nullable();
 			$table->date('contract_date')->nullable();
 			$table->date('ntp_date')->nullable();

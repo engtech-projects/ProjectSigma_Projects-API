@@ -16,10 +16,10 @@ return new class extends Migration
 			$table->foreignId('phase_id')->constrained('phases')->onDelete('cascade');
 			$table->string('name');
 			$table->text('description');
-			$table->decimal('quantity', 10, 2);
+			$table->decimal('quantity', 15, 2);
 			$table->string('unit');
-			$table->decimal('unit_price', 10, 2);
-			$table->decimal('amount', 10, 2);
+			$table->decimal('unit_price', 15, 2);
+			$table->decimal('amount', 15, 2);
             $table->timestamps();
         });
     }

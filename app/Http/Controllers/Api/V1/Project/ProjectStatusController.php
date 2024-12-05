@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Http\Requests\Project\UpdateProjectStatusRequest;
+use App\Enums\ProjectStatus;
+use App\Enums\ProjectStage;
 
 class ProjectStatusController extends Controller
 {

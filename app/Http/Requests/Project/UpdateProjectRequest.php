@@ -31,7 +31,7 @@ class UpdateProjectRequest extends FormRequest
 			'location' => ['required', 'string'],
 			'amount' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
 			'contract_date' => ['nullable','date', 'date_format:Y-m-d'],
-			'duration' => ['required', 'integer'],
+			'duration' => ['required', 'string'],
 			'noa_date' => ['nullable','date', 'date_format:Y-m-d'],
 			'ntp_date' => ['nullable','date', 'date_format:Y-m-d'],
 			'license'=> ['nullable', 'string'],

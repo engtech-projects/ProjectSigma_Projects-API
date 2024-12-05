@@ -22,6 +22,7 @@ class StoreResourceItemRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'project_id' => ['required', 'exists:projects,id'],
             'task_id' => ['required', 'exists:tasks,id'],
             'items' => ['required', 'min:1', 'array'],
             'items.*.id' => ['nullable', 'exists:resources,id'],

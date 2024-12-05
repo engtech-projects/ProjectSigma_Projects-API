@@ -17,7 +17,10 @@ class ProjectResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-			'parent_project_id' => $this->project_id,
+            'id' => $this->id,
+			'parent_project_id' => $this->parent_project_id,
+            'project_identifier' => $this->project_identifier,
+            'current_revision_id' => $this->current_revision_id,
 			'contract_id' => $this->contract_id,
 			'code' => $this->code,
 			'name' => $this->name,
@@ -30,11 +33,13 @@ class ProjectResource extends JsonResource
 			'license' => $this->license,
 			'status' => $this->status,
 			'nature_of_work' => $this->nature_of_work,
+            'implementing_office' => $this->implementing_office,
 			'stage' => $this->stage,
 			'is_original' => $this->is_original,
 			'version' => $this->version,
             'attachments' => AttachmentResource::collection($this->attachments),
 			'phases' => PhaseResource::collection($this->phases),
+            'revisions' => $this->revisions,
 		];
     }
 }

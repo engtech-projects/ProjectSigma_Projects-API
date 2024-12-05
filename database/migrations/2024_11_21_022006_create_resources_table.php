@@ -13,7 +13,7 @@ return new class extends Migration
     {
 		Schema::create('resource_names', function (Blueprint $table) {
             $table->id();
-			$table->string('name');
+			$table->string('name')->unique();
 			$table->enum('category', ['inventory', 'service']);
 			$table->text('description');
             $table->timestamps();

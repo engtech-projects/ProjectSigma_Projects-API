@@ -13,24 +13,22 @@ class ResourceNameSeeder extends Seeder
      */
     public function run(): void
     {
-
-		ResourceName::create([
+		ResourceName::updateOrCreate([
 			'name' => 'Materials',
 			'category' => 'inventory',
 			'description' => 'Construction Materials',
 		]);
 
-		ResourceName::create([
+		ResourceName::updateOrCreate([
 			'name' => 'Labor',
 			'category' => 'service',
 			'description' => 'Labor Expense',
 		]);
 
-		ResourceName::create([
+		ResourceName::updateOrCreate([
 			'name' => 'Equipment',
 			'category' => 'service',
 			'description' => 'Equipment Rental',
 		]);
-		
     }
 }

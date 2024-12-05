@@ -11,6 +11,8 @@ use Illuminate\Http\Response;
 use App\Services\ProjectService;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectResource;
+use App\Enums\ProjectStatus;
+use App\Enums\ProjectStage;
 
 class ProjectController extends Controller
 {
@@ -27,17 +29,33 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
+		// $projects = Project::original()->latest()->paginate(10);
+		// return response()->json(new ProjectCollection($projects), 200);
 
-		$projects = Project::original()->latest()->paginate(10);
+        $stageMethods = [
+            ProjectStage::AWARDED->label() => 'internal',
+        ];
+        
+        $statusMethods = [
+            ProjectStatus::ONGOING->label() => 'active',
+            ProjectStatus::ARCHIVED->label() => 'archived',
+        ];
+
+        $query = Project::query();
+
+        if (isset($stageMethods[$request->stage])) {
+            $method = $stageMethods[$request->stage];
+            $query->$method();
+        }
+
+        if (isset($statusMethods[$request->status])) {
+            $method = $statusMethods[$request->status];
+            $query->$method();
+        }
+
+        $projects = $query->latest()->get();
+
 		return response()->json(new ProjectCollection($projects), 200);
-    }
-
-	/**
-     * 
-     */
-    public function publish(Request $request, Project $project)
-    {
-        //
     }
 
     /**

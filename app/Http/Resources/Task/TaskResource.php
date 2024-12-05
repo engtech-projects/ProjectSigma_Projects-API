@@ -16,6 +16,8 @@ class TaskResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
+            'project_id' => $this->project_id,
 			'phase_id' => $this->phase_id,
 			'name' => $this->name,
 			'description' => $this->description,
@@ -23,8 +25,7 @@ class TaskResource extends JsonResource
 			'unit' => $this->unit,
 			'unit_price' => $this->unit_price,
 			'amount' => $this->amount,
-            'resources' => ResourceItemResource::collection($this->resources),
-            
+            'resources' => ResourceItemResource::collection($this->resources),  
 		];
     }
 }
