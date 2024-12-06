@@ -9,10 +9,12 @@ use App\Http\Requests\Project\StoreProjectRequest;
 use App\Http\Requests\Project\UpdateProjectRequest;
 use Illuminate\Http\Response;
 use App\Services\ProjectService;
+use App\Services\ProjectFilter;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectResource;
 use App\Enums\ProjectStatus;
 use App\Enums\ProjectStage;
+use Illuminate\Validation\Rule;
 
 class ProjectController extends Controller
 {
@@ -27,35 +29,12 @@ class ProjectController extends Controller
 	/**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request, ProjectFilter $projectFilter)
     {
-		// $projects = Project::original()->latest()->paginate(10);
-		// return response()->json(new ProjectCollection($projects), 200);
-
-        $stageMethods = [
-            ProjectStage::AWARDED->label() => 'internal',
-        ];
-        
-        $statusMethods = [
-            ProjectStatus::ONGOING->label() => 'active',
-            ProjectStatus::ARCHIVED->label() => 'archived',
-        ];
-
         $query = Project::query();
-
-        if (isset($stageMethods[$request->stage])) {
-            $method = $stageMethods[$request->stage];
-            $query->$method();
-        }
-
-        if (isset($statusMethods[$request->status])) {
-            $method = $statusMethods[$request->status];
-            $query->$method();
-        }
-
-        $projects = $query->latest()->get();
-
-		return response()->json(new ProjectCollection($projects), 200);
+        $projects = $projectFilter->apply($query, $request);
+        
+        return response()->json(new ProjectCollection($projects), 200);
     }
 
     /**
@@ -85,7 +64,6 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-
 		return response()->json(new ProjectResource($project), 200);
     }
 

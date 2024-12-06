@@ -14,8 +14,9 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(
             [
-                ResourceNameSeeder::class,
+                // ResourceNameSeeder::class,
                 ProjectSeeder::class,
+                AdminSeeder::class,
             ]
         );
         // \App\Models\User::factory(10)->create();

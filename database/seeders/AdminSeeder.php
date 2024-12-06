@@ -7,6 +7,9 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permissions;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+
 
 class AdminSeeder extends Seeder
 {
@@ -15,14 +18,14 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        $role = Role::create(['name' => 'Super Admin']);
-
-        $user = User::factory()->create([
+        $user = User::updateOrCreate([
+                    'id' => 1,
+                    'user_id' => 1,
+                    'password' => Hash::make('password'),
+                    'remember_token' => Str::random(10),
                     'name' => 'admin',
-                    'email' => 'tomhotboy26@hotmail.orgY',
-                    'is_admin' => true,
+                    'email' => 'admin@gmail.com',
+                    'is_admin' => true
                 ]);
-
-        $user->assignRole($role);
     }
 }

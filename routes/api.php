@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\V1\Project\ {
 use App\Http\Controllers\Api\V1\Phase\PhaseController;
 use App\Http\Controllers\Api\V1\Task\TaskController;
 use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
+use App\Http\Controllers\Api\V1\Command\ApiSyncController;
 
 use App\Models\ResourceName;
 
@@ -71,6 +72,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/revisions/{revision}/approve', [RevisionController::class, 'approve']);
     Route::post('/revisions/{revision}/reject', [RevisionController::class, 'reject']);
 
+    Route::get('/sync/api-data', [ApiSyncController::class, 'sync']);
 });
 
 /* Route::middleware('auth:api')->group(function () {

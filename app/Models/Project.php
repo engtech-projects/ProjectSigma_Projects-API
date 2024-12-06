@@ -130,33 +130,33 @@ class Project extends Model
 	/**
      * Scope a query to only include original project.
      */
-    public function scopeOriginal(Builder $query): void
+    public function scopeOriginal(Builder $query)
     {
-        $query->where('is_original', true);
+        return $query->where('is_original', true);
     }
 
     /**
      * Scope a query to only include original project.
      */
-    public function scopeInternal(Builder $query): void
+    public function scopeInternal(Builder $query)
     {
-        $query->where(['is_original' => false, 'stage' => ProjectStage::AWARDED]);
+        return $query->where(['is_original' => false, 'stage' => ProjectStage::AWARDED]);
     }
 
 	/**
      * Scope a query to only include original project.
      */
-    public function scopeActive(Builder $query): void
+    public function scopeActive(Builder $query)
     {
-        $query->where(['status' => ProjectStatus::ONGOING]);
+        return $query->where(['status' => ProjectStatus::ONGOING]);
     }
 
     /**
      * Scope a query to only include original project.
      */
-    public function scopeArchived(Builder $query): void
+    public function scopeArchived(Builder $query)
     {
-        $query->onlyTrashed();
+        return $query->onlyTrashed();
     }
 
 }

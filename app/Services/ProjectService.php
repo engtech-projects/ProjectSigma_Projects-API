@@ -44,7 +44,7 @@ class ProjectService
 			return $project;
 		} catch (\Throwable $e) {
 			// Log the exception for debugging purposes
-			Log::error('Project Update Error: ' . $e->getMessage(), ['exception' => $e]);
+			// Log::error('Project Update Error: ' . $e->getMessage(), ['exception' => $e]);
 			// Return response
 			return ['error' => $e->getMessage()];
 		}
