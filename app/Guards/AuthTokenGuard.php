@@ -32,7 +32,7 @@ class AuthTokenGuard implements Guard
         }
         $token = $this->request->bearerToken();
 
-        $response = Http::acceptJson()->throw()->withToken($token)->get($this->hrmsApiUrl . 'api/session');
+        $response = Http::acceptJson()->throw()->withToken($token)->get($this->hrmsApiUrl . '/api/session');
 
         Log::info($response);
         if (!$response->successful()) {

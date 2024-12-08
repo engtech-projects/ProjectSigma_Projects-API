@@ -2,13 +2,24 @@
 
 namespace App\Exceptions;
 
-use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Http\JsonResponse;
+
+use Throwable;
+use Exception;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Throwable;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+// Custom
+use App\Exceptions\AuthenticationException;
+use App\Exceptions\AuthorizationException;
+use App\Exceptions\BadRequestException;
+use App\Exceptions\ConflictException;
 use App\Exceptions\ResourceNotFoundException;
+use App\Exceptions\ValidationException;
+use App\Exceptions\DBTransactionException;
+use App\Exceptions\ThrottleRequestsException;
+use App\Exceptions\FileUploadException;
+use \App\Exceptions\RouteNotFoundException;
 
 class Handler extends ExceptionHandler
 {
@@ -28,32 +39,34 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        $this->renderable(function (Exception $e, Request $request) {
-            if ($request->wantsJson()) {
-                return $this->handleApiExceptions($request, $e);
-            }
-            return abort(500, $e->getMessage());
+        $this->renderable(function (Exception $exception, Request $request) {
+
+            // if ($request->wantsJson()) {
+
+                // if ($exception instanceof ModelNotFoundException) {
+                //     throw new ResourceNotFoundException();
+                // }
+
+                // if ($exception instanceof NotFoundHttpException) {
+                //     throw new RouteNotFoundException();
+                // }
+
+                // if ($exception instanceof ValidationException) {
+                //     throw new ValidationException();
+                // }
+
+                // if ($exception instanceof RouteNotFoundException) {
+                //     return response()->json(['message' => $exception->getMessage()], $exception->getStatusCode());
+                //     // return $exception->render($request);
+                // }
+            
+            // }
+            
+            // return parent::render($request, $exception);
+            // Default fallback for uncaught exceptions
+            return response()->json([
+                'error' => $exception->getMessage(),
+            ], 422);
         });
-
-
     }
-
-    public function handleApiExceptions(Request $request, Exception $e)
-    {
-        $response = null;
-        if ($e instanceof ResourceNotFoundException) {
-            $response = new JsonResponse(['message' => $e->getMessage()], 404);
-        }
-        if ($e instanceof NotFoundHttpException) {
-            $response = new JsonResponse(['message' => $e->getMessage()], 404);
-        }
-        if ($e instanceof NoRecordFoundException) {
-            $response = new JsonResponse(['message' => $e->getMessage()], 422);
-        }
-        if ($e instanceof DBTransactionException) {
-            $response = new JsonResponse(['message' => $e->getMessage()]);
-        }
-        return $response;
-    }
-
 }

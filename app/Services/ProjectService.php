@@ -5,6 +5,9 @@ namespace App\Services;
 use App\Enums\ProjectStatus;
 use App\Exceptions\DBTransactionException;
 use App\Models\Project;
+use App\Models\Phase;
+use App\Models\Task;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -12,62 +15,104 @@ use Throwable;
 class ProjectService
 {
     protected $project;
+
     public function __construct(Project $project)
     {
         $this->project = $project;
     }
 
-    public function getProjects(string $status = null)
-    {
-        switch ($status) {
-            case null:
-                return $this->getProjectsPaginated($status);
-            case ProjectStatus::COMPLETED->value:
-                return $this->getProjectsPaginated($status);
-            case ProjectStatus::ONGOING->value:
-                return $this->getProjectByStatus($status);
-            default;
-        }
+	public function create(array $attr)
+	{
+		try {
+			return DB::transaction(function () use ($attr) {
+				return Project::create($attr);
+			});
+		} catch (\Throwable $e) {
+			// Return response
+			return ['error' => $e->getMessage()];
+		}
+	}
 
-    }
+	public function update(Project $project, array $attr)
+	{
+		try {
+		
+			DB::transaction(function () use ($project, $attr) {
+				$project->fill($attr)->save();
+			});
+	
+			return $project;
+		} catch (\Throwable $e) {
+			// Log the exception for debugging purposes
+			// Log::error('Project Update Error: ' . $e->getMessage(), ['exception' => $e]);
+			// Return response
+			return ['error' => $e->getMessage()];
+		}
+	}
 
-    public function getProjectsPaginated(string $status = null)
-    {
-        if ($status === ProjectStatus::COMPLETED->value) {
-            return $this->project->byProjectStatus($status)->paginate();
-        }
-        return $this->project->paginate();
+	public function addPhases(Project $project, array $attr)
+	{
+		try {
+		
+			DB::transaction(function () use ($project, $attr) {
+				foreach ($attr as $phase) {
+					$project->phases()->updateOrCreate(
+						['id' => $phase['id'] ?? null], // Match id
+						$phase // Data to update or create
+					);
+				}
+			});
+			
+			return $project->phases()->get();
+		} catch (\Throwable $e) {
+			// Return response
+			return ['error' => $e->getMessage()];
+		}
+	}
 
-    }
-    public function getProjectByStatus($status)
-    {
-        return $this->project->byProjectStatus($status)->get();
-    }
-    public function createProject(array $data)
-    {
-        try {
-            return $this->project->create($data);
-        } catch (Exception $e) {
-            throw new DBTransactionException("Transaction failed.", 500, $e);
-        }
-    }
+	public function addTasks(Phase $phase, array $attr)
+	{
+		try {
+		
+			DB::transaction(function () use ($phase, $attr) {
+				foreach ($attr as $task) {
+					$phase->tasks()->updateOrCreate(
+						['id' => $task['id'] ?? null], // Match id
+						$task // Data to update or create
+					);
+				}
+			});
+	
+			return $phase->tasks()->get();
+		} catch (\Throwable $e) {
+			// Return response
+			return ['error' => $e->getMessage()];
+		}
+	}
 
-    public function updateProject(array $data, Project $project)
-    {
-        try {
-            return $project->fill($data)->save();
-        } catch (Exception $e) {
-            throw new DBTransactionException("Transaction failed.", 500, $e);
-        }
-    }
+	public function addResources(Task $task, array $attr)
+	{
+		try {
+		
+			DB::transaction(function () use ($task, $attr) {
+                foreach ($attr as $item) {
+					$task->resources()->updateOrCreate(
+						['id' => $item['id'] ?? null], // Match id
+						$item // Data to update or create
+					);
+				}
+				
+			});
+	
+			return $task->resources()->get();
+		} catch (\Throwable $e) {
+			// Return response
+			return ['error' => $e->getMessage()];
+		}
+	}
 
-    public function deleteProject(Project $project)
+    public function generateBillofQuantities()
     {
-        try {
-            return $project->delete();
-        } catch (Exception $e) {
-            throw new DBTransactionException("Transaction failed.", 500, $e);
-        }
+        
     }
-
 }

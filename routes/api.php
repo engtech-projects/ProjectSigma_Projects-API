@@ -1,10 +1,25 @@
 <?php
 
-use App\Http\Controllers\ProjectController;
-use App\Models\Project;
+use App\Enums\ProjectStatus;
+use App\Enums\ProjectStage;
+
+use App\Http\Controllers\Api\V1\Project\ {
+    ProjectController,
+    ProjectStatusController,
+    ProjectAttachmentController,
+    ReplicateProject,
+    RevisionController,
+};
+
+use App\Http\Controllers\Api\V1\Phase\PhaseController;
+use App\Http\Controllers\Api\V1\Task\TaskController;
+use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
+use App\Http\Controllers\Api\V1\Command\ApiSyncController;
+
+use App\Models\ResourceName;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -16,8 +31,48 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 Route::middleware('auth:api')->group(function () {
-    Route::resource('/projects',ProjectController::class);
+
+    Route::get('/user', function () {
+		return response()->json(Auth::user(), 200);
+	});
+
+    Route::get('/project-status', function () {
+		return response()->json(ProjectStatus::cases(), 200);
+	});
+
+	Route::get('/project-stage', function () {
+		return response()->json(ProjectStage::cases(), 200);
+	});
+
+    Route::get('/resource-names', function () {
+        return response()->json(ResourceName::all(), 200);
+    });
+
+    Route::resource('/projects', ProjectController::class);
+    // project status updates
+    Route::post('/projects/{project}/archive', [ProjectStatusController::class, 'archive']);
+    Route::post('/projects/{project}/complete', [ProjectStatusController::class, 'complete']);
+    Route::patch('/projects/{project}/status', [ProjectStatusController::class, 'updateStatus']);
+    // duplicate/clone project
+    // Route::post('/projects/{project}/clone', [ProjectDuplicateController::class, 'clone']);
+    Route::post('/projects/{project}/replicate', ReplicateProject::class);
+
+    Route::post('/projects/{project}/attachments', [ProjectAttachmentController::class, 'store']);
+    Route::delete('/attachments/{attachment}/remove', [ProjectAttachmentController::class, 'destroy']);
+
+	Route::resource('/phases', PhaseController::class);
+	Route::resource('/tasks', TaskController::class);
+    Route::resource('/resource-items', ResourceItemController::class);
+
+    Route::get('/revisions', [RevisionController::class, 'index']);
+    Route::get('/revisions/{revision}', [RevisionController::class, 'show']);
+    Route::post('/revisions/{project}/request', [RevisionController::class, 'revise']);
+    Route::post('/revisions/{revision}/approve', [RevisionController::class, 'approve']);
+    Route::post('/revisions/{revision}/reject', [RevisionController::class, 'reject']);
+
+    Route::get('/sync/api-data', [ApiSyncController::class, 'sync']);
 });
 
 /* Route::middleware('auth:api')->group(function () {

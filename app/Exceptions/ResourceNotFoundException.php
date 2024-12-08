@@ -6,15 +6,21 @@ use Exception;
 
 class ResourceNotFoundException extends Exception
 {
-
-    protected $code;
-    public function __construct($message = "Resource not found.", $code = 0, Exception $previous = null)
+    protected $message;
+    protected $statusCode;
+    
+    public function __construct(string $message = "Resource not found", int $statusCode = 404)
     {
-        $this->code = $code;
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message, $statusCode);
     }
-    public function getStatusCode(): int
+
+    /**
+     * Render the exception into an HTTP response.
+     */
+    public function render($request)
     {
-        return $this->code;
+        return response()->json([
+            'error' => $this->getMessage(),
+        ], $this->statusCode);
     }
 }
