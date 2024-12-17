@@ -50,6 +50,27 @@ class ProjectService
 		}
 	}
 
+    public function assignTeam(Project $project, array $attr)
+    {
+        try {
+		
+			DB::transaction(function () use ($project, $attr) {
+				foreach ($attr as $personnel) {
+                    $personnel['project_id'] = $project->id;
+					$project->team()->updateOrCreate(
+						['id' => $personnel['id'] ?? null], // Match id
+						$personnel // Data to update or create
+					);
+				}
+			});
+			
+			return $project->team()->get();
+		} catch (\Throwable $e) {
+			// Return response
+			return ['error' => $e->getMessage()];
+		}
+    }
+
 	public function addPhases(Project $project, array $attr)
 	{
 		try {
@@ -76,6 +97,7 @@ class ProjectService
 		
 			DB::transaction(function () use ($phase, $attr) {
 				foreach ($attr as $task) {
+                    $task['project_id'] = $phase->project_id;
 					$phase->tasks()->updateOrCreate(
 						['id' => $task['id'] ?? null], // Match id
 						$task // Data to update or create
@@ -96,6 +118,7 @@ class ProjectService
 		
 			DB::transaction(function () use ($task, $attr) {
                 foreach ($attr as $item) {
+                    $item['project_id'] = $task->project_id;
 					$task->resources()->updateOrCreate(
 						['id' => $item['id'] ?? null], // Match id
 						$item // Data to update or create
@@ -110,9 +133,4 @@ class ProjectService
 			return ['error' => $e->getMessage()];
 		}
 	}
-
-    public function generateBillofQuantities()
-    {
-        
-    }
 }

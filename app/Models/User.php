@@ -9,14 +9,18 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 
 // use Spatie\Permission\Models\Role;
 // use Spatie\Permission\Models\Permission;
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
 
+    protected $table = 'users';
+    protected $guard_name = 'api';
     /**
      * The attributes that are mass assignable.
      *
@@ -59,5 +63,10 @@ class User extends Authenticatable
                 $model->uuid = (string) Str::uuid();
             }
         });
+    }
+
+    public function employee() : BelongsTo
+    {
+        return $this->belongsTo(Employee::class);
     }
 }

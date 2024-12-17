@@ -12,15 +12,30 @@ use App\Http\Resources\Task\TaskResource;
 use App\Http\Requests\Task\StoreTaskRequest;
 use App\Http\Requests\Task\UpdateTaskRequest;
 use App\Services\ProjectService;
+use App\Http\Resources\Phase\PhaseCollection;
+use App\Http\Resources\Phase\PhaseResource;
 
 class TaskController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        
+        if( $request->has('project_id') )
+        {
+            $project = Project::find($request->project_id);
+            return response()->json($project->load('tasks'), 200);
+        }
+
+        if( $request->has('phase_id') )
+        {
+            $phase = Phase::find($request->phase_id);
+
+            return response()->json($phase->load('tasks'), 200);
+        }
+
     }
 
     /**
@@ -38,7 +53,6 @@ class TaskController extends Controller
     {
         $validated = $request->validated();
 
-		// return $validated;
 		$phase = Phase::find($validated['phase_id']);
 		
 		$result = $projectService->addTasks($phase, $validated['tasks']);
@@ -52,7 +66,7 @@ class TaskController extends Controller
 
 		return response()->json([
 			'message' => 'Project tasks added successfully.',
-			'data' => $result
+			'data' => new TaskCollection($result),
 		], 201);
     }
 

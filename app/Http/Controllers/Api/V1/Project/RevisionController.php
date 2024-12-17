@@ -19,10 +19,12 @@ class RevisionController extends Controller
 		// return response()->json(new ProjectCollection($projects), 200);
     }
 
-
     public function revise(Request $request, Project $project)
-    {
-        $revision = Revision::create([
+    {        
+        # project should be a replica and open status
+        if( !$project->isOriginal() && $project->isOpen() )
+        {
+            $revision = Revision::create([
                                 'project_id' => $project->id,
                                 'project_uuid' => $project->uuid,
                                 'data' => $project->toJson(),
@@ -30,7 +32,10 @@ class RevisionController extends Controller
                                 'status' => RevisionStatus::DRAFT,
                             ]);
 
-        return response()->json($revision, 200);
+            return response()->json($revision, 200);
+        }
+
+      
     }
 
     public function show(Revision $revision)

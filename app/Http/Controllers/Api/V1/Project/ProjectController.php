@@ -9,12 +9,14 @@ use App\Http\Requests\Project\StoreProjectRequest;
 use App\Http\Requests\Project\UpdateProjectRequest;
 use Illuminate\Http\Response;
 use App\Services\ProjectService;
-use App\Services\ProjectFilter;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectResource;
 use App\Enums\ProjectStatus;
 use App\Enums\ProjectStage;
-use Illuminate\Validation\Rule;
+// use Illuminate\Support\Facades\Gate;
+use Auth;
+use App\Models\HrmsUser;
+use App\Models\User;
 
 class ProjectController extends Controller
 {
@@ -29,11 +31,54 @@ class ProjectController extends Controller
 	/**
      * Display a listing of the resource.
      */
-    public function index(Request $request, ProjectFilter $projectFilter)
+    public function index(Request $request)
     {
-        $query = Project::query();
-        $projects = $projectFilter->apply($query, $request);
-        
+        $this->authorize('viewAny', Project::class);
+     
+        $filters = $request->only(['search', 'status', 'sort']);
+
+        $projects = Project::query()
+                ->revised()
+                ->filter($filters)
+                ->retrieve(
+                    $request->paginate, 
+                    $request->per_page
+                );
+
+        return response()->json(new ProjectCollection($projects), 200);
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function original(Request $request)
+    {
+        $this->authorize('viewOriginal', Project::class);
+
+        $filters = $request->only(['search', 'status', 'sort']);
+
+        $projects = Project::query()
+                ->original()
+                ->filter($filters)
+                ->retrieve(true, $request->per_page);
+
+        return response()->json(new ProjectCollection($projects), 200);
+    }
+
+     /**
+     * Display a listing of the resource.
+     */
+    public function revised(Request $request)
+    {
+        $this->authorize('viewRevised', Project::class);
+
+        $filters = $request->only(['search', 'status', 'sort']);
+
+        $projects = Project::query()
+                ->revised()
+                ->filter($filters)
+                ->retrieve(true, $request->per_page);
+
         return response()->json(new ProjectCollection($projects), 200);
     }
 
@@ -42,6 +87,8 @@ class ProjectController extends Controller
      */
     public function store(StoreProjectRequest $request)
     {	
+        $this->authorize('create', Project::class);
+
 		$validated = $request->validated();
 
 		$result = $this->projectService->create($validated);
@@ -64,15 +111,8 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
+        $this->authorize('view', $project);
 		return response()->json(new ProjectResource($project), 200);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
     }
 
     /**
@@ -101,6 +141,14 @@ class ProjectController extends Controller
      * 
      */
     public function archive(Project $project)
+    {
+        
+    }
+
+    /**
+     * 
+     */
+    public function destroy(Project $project)
     {
         
     }

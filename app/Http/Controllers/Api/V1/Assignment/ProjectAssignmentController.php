@@ -1,0 +1,91 @@
+<?php
+
+namespace App\Http\Controllers\Api\V1\Assignment;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\Project;
+use App\Models\ProjectAssignment;
+use App\Http\Requests\ProjectAssignment\StoreProjectAssignmentRequest;
+use App\Http\Requests\ProjectAssignment\UpdateProjectAssignmentRequest;
+use Illuminate\Http\Response;
+use App\Services\ProjectService;
+use App\Http\Resources\ProjectAssignment\ProjectAssignmentCollection;
+use App\Http\Resources\ProjectAssignment\ProjectAssignmentResource;
+
+class ProjectAssignmentController extends Controller
+{
+    protected $projectService;
+
+	public function __construct(ProjectService $projectService)
+    {
+		$this->projectService = $projectService;
+    }
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request, Project $project)
+    {
+        // $this->authorize('viewAny', Project::class);
+        $team = ProjectAssignment::where('project_id', $project->id)->get();
+        return response()->json(new ProjectAssignmentCollection($team), 200);
+        
+        // $filters = $request->only(['search', 'status', 'sort']);
+
+        // $projects = Project::query()
+        //         ->revised()
+        //         ->filter($filters)
+        //         ->retrieve(
+        //             $request->paginate, 
+        //             $request->per_page
+        //         );
+
+        // return response()->json(new ProjectCollection($projects), 200);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreProjectAssignmentRequest $request)
+    {
+        $validated = $request->validated();
+        $project = Project::find($request->project_id);
+        $projectTeam = $this->projectService->assignTeam(
+                                            $project, 
+                                            $request->project_assignments
+                                        );
+        // return response()->json($request->all(), 201);
+        return response()->json($projectTeam, 201);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Project $project, ProjectAssignment $projectAssignment)
+    {
+        // $this->authorize('view', $project);
+		return response()->json(new ProjectAssignmentResource($projectAssignment), 200);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateProjectRequest $request, Project $project)
+    {
+        // $validated = $request->validated();
+
+		// $result = $this->projectService->update($project, $validated);
+
+		// if (isset($result['error'])) {
+		// 	return response()->json([
+		// 		'message' => 'Failed to update the project.',
+		// 		'error' => $result['error']
+		// 	], 500);
+		// }
+
+		// return response()->json([
+		// 	'message' => 'Project has been updated.',
+		// 	'data' => $result
+		// ], 200);
+    }
+}

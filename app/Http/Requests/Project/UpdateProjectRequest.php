@@ -24,9 +24,8 @@ class UpdateProjectRequest extends FormRequest
     public function rules(): array
     {
 		return [
-			'parent_project_id' => ['nullable', 'exists:projects,id'],
 			'contract_id' => ['required', 'string'],
-			'code' => ['nullable', 'string', 'unique:projects,code'],
+			'code' => ['nullable', 'string'],
 			'name' => ['required', 'string'],
 			'location' => ['required', 'string'],
 			'amount' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],

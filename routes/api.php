@@ -14,12 +14,31 @@ use App\Http\Controllers\Api\V1\Project\ {
 use App\Http\Controllers\Api\V1\Phase\PhaseController;
 use App\Http\Controllers\Api\V1\Task\TaskController;
 use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
-use App\Http\Controllers\Api\V1\Command\ApiSyncController;
+use App\Http\Controllers\Api\V1\Command\ {
+    ApiSyncController,
+    SyncEmployees,
+    SyncUsers,
+    SyncItemProfiles
+};
+
+use App\Http\Controllers\Api\V1\Accessibility\ {
+    RoleController,
+    PermissionController
+};
+
+use App\Http\Controllers\Api\V1\Logs\LogController;
+use App\Http\Controllers\Api\V1\Employee\{
+    GetAllEmployees,
+    ShowEmployee
+};
+
+use App\Http\Controllers\Api\V1\Assignment\ProjectAssignmentController;
 
 use App\Models\ResourceName;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Resources\User\UserResource;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -30,12 +49,24 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
+Route::middleware("secret_api")->group(function () {
+    // SIGMA SERVICES ROUTES
+    Route::prefix('sigma')->group(function () {
+        // Route::resource('sync-departments', DepartmentsController::class)->names("syncDepartmentsresource");
+        // Route::resource('sync-projects', ProjectsController::class)->names("syncProjectsresource");
+        Route::get('sync/users', SyncUsers::class);
+        Route::get('sync/employees', SyncEmployees::class);
+        // Route::resource('sync-employees', EmployeeController::class)->names("syncEmployeeresource");
+        // Route::get('suppliers', [RequestSupplierController::class, 'get']);
+        Route::get('sync/item-profiles', SyncItemProfiles::class);
+        // Route::get('uoms', [UOMController::class, 'get']);
+    });
+});
 
 Route::middleware('auth:api')->group(function () {
 
     Route::get('/user', function () {
-		return response()->json(Auth::user(), 200);
+		return response()->json(new UserResource(Auth::user()), 200);
 	});
 
     Route::get('/project-status', function () {
@@ -51,12 +82,13 @@ Route::middleware('auth:api')->group(function () {
     });
 
     Route::resource('/projects', ProjectController::class);
+    Route::get('/original/projects', [ProjectController::class, 'original']);
+    Route::get('/revised/projects', [ProjectController::class, 'revised']);
     // project status updates
     Route::post('/projects/{project}/archive', [ProjectStatusController::class, 'archive']);
     Route::post('/projects/{project}/complete', [ProjectStatusController::class, 'complete']);
     Route::patch('/projects/{project}/status', [ProjectStatusController::class, 'updateStatus']);
     // duplicate/clone project
-    // Route::post('/projects/{project}/clone', [ProjectDuplicateController::class, 'clone']);
     Route::post('/projects/{project}/replicate', ReplicateProject::class);
 
     Route::post('/projects/{project}/attachments', [ProjectAttachmentController::class, 'store']);
@@ -72,12 +104,19 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/revisions/{revision}/approve', [RevisionController::class, 'approve']);
     Route::post('/revisions/{revision}/reject', [RevisionController::class, 'reject']);
 
-    Route::get('/sync/api-data', [ApiSyncController::class, 'sync']);
-});
+    // Route::get('/sync/api-data', [ApiSyncController::class, 'sync']);
 
-/* Route::middleware('auth:api')->group(function () {
-    Route::group(['prefix'=> 'projects'], function () {
-        return response()->json(auth()->user());
-    });
+    Route::resource('/roles', RoleController::class);
+    Route::resource('/permissions', PermissionController::class);
+
+    Route::resource('/logs', LogController::class);
+
+    Route::get('/employees', GetAllEmployees::class);
+    Route::get('/employee/{employee}', ShowEmployee::class);
+
+
+    Route::get('/project-assignments/{project}/team', [ProjectAssignmentController::class, 'index']);
+    Route::get('/project-assignments/{project_assignment}', [ProjectAssignmentController::class, 'show']);
+    Route::post('/project-assignments', [ProjectAssignmentController::class, 'store']);
+    
 });
- */

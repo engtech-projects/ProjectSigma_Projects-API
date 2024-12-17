@@ -11,12 +11,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
+use App\Traits\Filterable;
+use Illuminate\Support\Facades\DB;
 
 class Project extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity, Filterable;
 
 	protected $table = "projects";
+
+     // Define which attributes should be logged
+    public function getActivitylogOptions(): LogOptions
+    {
+         return LogOptions::defaults()
+            ->logAll() // List of attributes to log
+            ->setDescriptionForEvent(fn (string $eventName) => "Project has been {$eventName}");
+    }
 
     protected $fillable = [
 		'parent_project_id',
@@ -106,6 +118,11 @@ class Project extends Model
 		return $this->hasMany(Attachment::class);
 	}
 
+    public function team() : HasMany
+	{
+		return $this->hasMany(ProjectAssignment::class);
+	}
+
     public function revisions() : HasMany
     {
         return $this->hasMany(Revision::class);
@@ -126,33 +143,70 @@ class Project extends Model
 		return $this->status == ProjectStatus::APPROVED->label();
 	}
 
+    public function isOpen()  : bool
+	{
+		return $this->status == ProjectStatus::OPEN->label();
+	}
+
 	# PROJECT SCOPES
 	/**
-     * Scope a query to only include original project.
+     * Scope a query to only include original/proposal project.
      */
     public function scopeOriginal(Builder $query)
     {
-        return $query->where('is_original', true);
+        return $query->where(['is_original' => true]);
     }
 
     /**
-     * Scope a query to only include original project.
+     * Scope a query to only include internal/revised projects
      */
-    public function scopeInternal(Builder $query)
+    public function scopeRevised(Builder $query)
     {
-        return $query->where(['is_original' => false, 'stage' => ProjectStage::AWARDED]);
+        return $query->where(['is_original' => false]);
     }
 
-	/**
-     * Scope a query to only include original project.
+    /**
+     * Scope a query to only include ongoing projects
      */
-    public function scopeActive(Builder $query)
+    public function scopeOngoing(Builder $query)
     {
         return $query->where(['status' => ProjectStatus::ONGOING]);
     }
 
     /**
-     * Scope a query to only include original project.
+     * Scope a query to only include ongoing projects
+     */
+    public function scopeOpen(Builder $query)
+    {
+        return $query->where(['status' => ProjectStatus::OPEN]);
+    }
+
+    /**
+     * Scope a query to only include ongoing projects
+     */
+    public function scopeSort(Builder $query, $val = 'desc')
+    {
+        if( $val == 'desc' )
+        {
+            return $query->latest();
+        }
+
+        return $query->oldest();
+    }
+
+    /**
+     * Scope a query to only include ongoing projects
+     */
+    public function scopeSearch(Builder $query, $keyword)
+    {
+       return $query->where(function ($query) use ($keyword) {
+            $query->where(DB::raw('LOWER(code)'), 'LIKE', "%" . strtolower($keyword) . "%")
+                ->orWhere(DB::raw('LOWER(name)'), 'LIKE', "%" . strtolower($keyword) . "%");
+       });
+    }
+
+    /**
+     * Scope a query to only include archived projects.
      */
     public function scopeArchived(Builder $query)
     {

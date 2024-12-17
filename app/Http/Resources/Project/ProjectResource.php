@@ -5,8 +5,10 @@ namespace App\Http\Resources\Project;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\Phase\PhaseResource;
+use App\Http\Resources\Task\TaskResource;
 use App\Http\Resources\Attachment\AttachmentResource;
 use App\Http\Resources\Revision\RevisionResource;
+use App\Http\Resources\ProjectAssignment\ProjectAssignmentResource;
 
 class ProjectResource extends JsonResource
 {
@@ -40,7 +42,9 @@ class ProjectResource extends JsonResource
 			'version' => $this->version,
             'attachments' => AttachmentResource::make($this->whenLoaded('attachments')),
 			'phases' => PhaseResource::make($this->whenLoaded('phases')),
+            'tasks' => TaskResource::make($this->whenLoaded('tasks')),
             'revisions' => RevisionResource::make($this->whenLoaded('revisions')),
+            'team' => ProjectAssignmentResource::collection($this->whenLoaded('team')),
 		];
     }
 }

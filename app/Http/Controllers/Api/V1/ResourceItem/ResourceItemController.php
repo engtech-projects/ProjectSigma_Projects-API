@@ -60,7 +60,9 @@ class ResourceItemController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return response()->json([
+			'data' => $id,
+		], 201);
     }
 
     /**
@@ -74,9 +76,17 @@ class ResourceItemController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateResourceItemRequest $request, ResourceItem $resourceItem)
     {
-        //
+        $validated = $request->validated();
+
+        $resourceItem->fill($validated)->save();
+
+        return response()->json([
+			'message' => 'Updated.',
+			'data' => $resourceItem,
+		], 201);
+
     }
 
     /**

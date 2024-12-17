@@ -25,7 +25,6 @@ class StoreProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-			'parent_project_id' => ['nullable', 'exists:projects,id'],
 			'contract_id' => ['required', 'string'],
 			'code' => ['nullable', 'string', 'unique:projects,code'],
 			'name' => ['required', 'string'],

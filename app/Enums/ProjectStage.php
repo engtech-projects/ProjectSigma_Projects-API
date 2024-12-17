@@ -3,7 +3,7 @@
 namespace App\Enums;
 
 enum ProjectStage:string
-{
+{   
 	case PROPOSAL = 'proposal';
     case AWARDED = 'awarded';
 

@@ -3,6 +3,7 @@
 namespace App\Guards;
 
 use App\Models\HrmsUser;
+use App\Models\User;
 use Illuminate\Auth\GuardHelpers;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Client\Response;
@@ -10,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class AuthTokenGuard implements Guard
 {
@@ -30,6 +33,7 @@ class AuthTokenGuard implements Guard
         if ($this->user !== null) {
             return $this->user;
         }
+
         $token = $this->request->bearerToken();
 
         $response = Http::acceptJson()->throw()->withToken($token)->get($this->hrmsApiUrl . '/api/session');
@@ -40,11 +44,15 @@ class AuthTokenGuard implements Guard
         }
 
         if ($response->json()) {
-            $this->user = new HrmsUser();
-            $this->user->id = $response->json()['id'];
-            $this->user->name = $response->json()['name'];
-            $this->user->email = $response->json()['email'];
-            $this->user->type = $response->json()['type'];
+
+            $user_id = $response->json()['id'];
+            
+           $this->user = User::where('user_id', $user_id)->first();
+            // $this->user = new HrmsUser();
+            // $this->user->id = $response->json()['id'];
+            // $this->user->name = $response->json()['name'];
+            // $this->user->email = $response->json()['email'];
+
         }
         return $this->user;
     }

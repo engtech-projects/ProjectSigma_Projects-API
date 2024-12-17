@@ -14,6 +14,10 @@ return [
     |
     */
 
+    'sigma' => [
+        'secret_key' => env('SIGMA_SECRET_KEY'),
+    ],
+
     'mailgun' => [
         'domain' => env('MAILGUN_DOMAIN'),
         'secret' => env('MAILGUN_SECRET'),
@@ -27,7 +31,8 @@ return [
 
     'url' => [
         'hrms_app_url' => env('HRMS_APP_URL'),
-        'hrms_api_url' => env('HRMS_API_URL')
+        'hrms_api_url' => env('HRMS_API_URL'),
+        'inventory_api_url' => env('INVENTORY_API_URL'),
     ],
 
     'ses' => [
