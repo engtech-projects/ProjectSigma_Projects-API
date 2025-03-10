@@ -10,14 +10,13 @@ use Illuminate\Support\Facades\DB;
 use Throwable;
 use Illuminate\Support\Facades\Http;
 
-class SyncItemProfiles extends Controller
+class SyncSuppliers extends Controller
 {
     /**
      * Handle the incoming request.
      */
     public function __invoke(Request $request)
     {
-      
         $apiUrl = config('services.url.inventory_api_url');
         $apiKey = config('services.sigma.secret_key');
         $token = $request->bearerToken();
@@ -26,7 +25,7 @@ class SyncItemProfiles extends Controller
             // switch token and apiKey
             $response = Http::withToken($apiKey)
                 ->acceptJson()
-                ->get($apiUrl.'/api/sigma/item-profiles');
+                ->get($apiUrl.'/api/sigma/suppliers');
 
             if( $response->ok() ) {
                 return $response->json()['data'];
@@ -49,6 +48,5 @@ class SyncItemProfiles extends Controller
 		} catch (\Throwable $e) {
 			return ['error' => $e->getMessage()];
 		}
-
     }
 }

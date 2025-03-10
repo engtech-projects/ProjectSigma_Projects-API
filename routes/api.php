@@ -18,7 +18,9 @@ use App\Http\Controllers\Api\V1\Command\ {
     ApiSyncController,
     SyncEmployees,
     SyncUsers,
-    SyncItemProfiles
+    SyncItemProfiles,
+    SyncSuppliers,
+    SyncUnits,
 };
 
 use App\Http\Controllers\Api\V1\Accessibility\ {
@@ -59,6 +61,8 @@ Route::middleware("secret_api")->group(function () {
         // Route::resource('sync-employees', EmployeeController::class)->names("syncEmployeeresource");
         // Route::get('suppliers', [RequestSupplierController::class, 'get']);
         Route::get('sync/item-profiles', SyncItemProfiles::class);
+        Route::get('sync/suppliers', SyncSuppliers::class);
+        Route::get('sync/units', SyncUnits::class);
         // Route::get('uoms', [UOMController::class, 'get']);
     });
 });
