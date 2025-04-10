@@ -14,5 +14,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-	return response()->json(['version' => app()->version()]);
+    return response()->json(['version' => app()->version()]);
 });

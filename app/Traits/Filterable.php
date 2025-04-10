@@ -11,8 +11,7 @@ trait Filterable
     /**
      * Apply filters to the query based on the provided request.
      *
-     * @param Builder $query
-     * @param Request|array $filters
+     * @param  Request|array  $filters
      * @return Builder
      */
     public function scopeFilter(Builder $query, $filters)
@@ -24,13 +23,13 @@ trait Filterable
         foreach ($filters as $key => $value) {
 
             $scopeMethod = Str::title(Str::lower($key));
-            $scope = 'scope' . $scopeMethod;
+            $scope = 'scope'.$scopeMethod;
             $withParams = false;
-    
+
             if (Str::lower($key) === 'status' && is_string($value)) {
-                
+
                 $scopeMethod = Str::title(Str::lower($value));
-                $scope = 'scope' . $scopeMethod;
+                $scope = 'scope'.$scopeMethod;
 
             } else {
                 $withParams = true;
@@ -38,16 +37,13 @@ trait Filterable
 
             if (method_exists($this, $scope)) {
 
-                if( $withParams )
-                {
+                if ($withParams) {
                     $query->{$scopeMethod}($value);
-                }else {
+                } else {
                     $query->{$scopeMethod}();
                 }
-                
+
             }
-
-
 
         }
 

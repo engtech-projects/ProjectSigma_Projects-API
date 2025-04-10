@@ -9,11 +9,11 @@ class ResourceName extends Model
 {
     use HasFactory;
 
-	protected $table = "resource_names";
+    protected $table = 'resource_names';
 
-	protected $fillable = [
-		'name',
-		'category',
-		'description',
-	];
+    protected $fillable = [
+        'name',
+        'category',
+        'description',
+    ];
 }

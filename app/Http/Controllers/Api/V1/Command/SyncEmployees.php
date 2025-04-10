@@ -3,14 +3,10 @@
 namespace App\Http\Controllers\Api\V1\Command;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Employee;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Carbon\Carbon;
-use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Throwable;
 use Illuminate\Support\Facades\Http;
 
 class SyncEmployees extends Controller
@@ -30,10 +26,10 @@ class SyncEmployees extends Controller
                 ->acceptJson()
                 ->get($apiUrl.'/api/employee/list');
 
-            if( $response->ok() ) {
-               
+            if ($response->ok()) {
+
                 $employees = $response->json()['data'] ?? [];
-                
+
                 DB::transaction(function () use ($employees) {
 
                     foreach ($employees as $employee) {
@@ -51,10 +47,10 @@ class SyncEmployees extends Controller
                     }
                 });
             }
-		
-		} catch (\Throwable $e) {
-			return ['error' => $e->getMessage()];
-		}
+
+        } catch (\Throwable $e) {
+            return ['error' => $e->getMessage()];
+        }
 
     }
 }

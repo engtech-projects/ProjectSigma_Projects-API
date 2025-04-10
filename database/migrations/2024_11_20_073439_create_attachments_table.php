@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('attachments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('project_id');
-			$table->string('name');
-			$table->string('path');
-			$table->string('mime_type');
+            $table->string('name');
+            $table->string('path');
+            $table->string('mime_type');
             $table->timestamps();
 
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');

@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\Api\V1\Command;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Throwable;
 use Illuminate\Support\Facades\Http;
 
 class SyncItemProfiles extends Controller
@@ -17,7 +15,7 @@ class SyncItemProfiles extends Controller
      */
     public function __invoke(Request $request)
     {
-      
+
         $apiUrl = config('services.url.inventory_api_url');
         $apiKey = config('services.sigma.secret_key');
         $token = $request->bearerToken();
@@ -28,10 +26,10 @@ class SyncItemProfiles extends Controller
                 ->acceptJson()
                 ->get($apiUrl.'/api/sigma/item-profiles');
 
-            if( $response->ok() ) {
+            if ($response->ok()) {
                 return $response->json()['data'];
                 $itemProfiles = $response->json()['data'] ?? [];
-                
+
                 // DB::transaction(function () use ($itemProfiles) {
 
                 //     foreach ($itemProfiles as $item) {
@@ -45,10 +43,10 @@ class SyncItemProfiles extends Controller
                 //     }
                 // });
             }
-		
-		} catch (\Throwable $e) {
-			return ['error' => $e->getMessage()];
-		}
+
+        } catch (\Throwable $e) {
+            return ['error' => $e->getMessage()];
+        }
 
     }
 }

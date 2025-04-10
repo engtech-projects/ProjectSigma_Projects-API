@@ -3,11 +3,9 @@
 namespace App\Http\Controllers\Api\V1\Command;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Throwable;
 use Illuminate\Support\Facades\Http;
 
 class SyncSuppliers extends Controller
@@ -27,10 +25,10 @@ class SyncSuppliers extends Controller
                 ->acceptJson()
                 ->get($apiUrl.'/api/sigma/suppliers');
 
-            if( $response->ok() ) {
+            if ($response->ok()) {
                 return $response->json()['data'];
                 $itemProfiles = $response->json()['data'] ?? [];
-                
+
                 // DB::transaction(function () use ($itemProfiles) {
 
                 //     foreach ($itemProfiles as $item) {
@@ -44,9 +42,9 @@ class SyncSuppliers extends Controller
                 //     }
                 // });
             }
-		
-		} catch (\Throwable $e) {
-			return ['error' => $e->getMessage()];
-		}
+
+        } catch (\Throwable $e) {
+            return ['error' => $e->getMessage()];
+        }
     }
 }

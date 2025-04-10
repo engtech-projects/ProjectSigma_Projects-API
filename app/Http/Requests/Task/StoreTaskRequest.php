@@ -23,15 +23,15 @@ class StoreTaskRequest extends FormRequest
     {
         return [
             'project_id' => ['required', 'exists:projects,id'],
-			'phase_id' => ['required', 'exists:phases,id'],
-			'tasks' => ['required', 'min:1', 'array'],
-			'tasks.*.id' => ['nullable', 'exists:tasks,id'],
-			'tasks.*.name' => ['required', 'string'],
-			'tasks.*.description' => ['required', 'string'],
-			'tasks.*.quantity' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
-			'tasks.*.unit' => ['required', 'string'],
-			'tasks.*.unit_price' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
-			'tasks.*.amount' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
+            'phase_id' => ['required', 'exists:phases,id'],
+            'tasks' => ['required', 'min:1', 'array'],
+            'tasks.*.id' => ['nullable', 'exists:tasks,id'],
+            'tasks.*.name' => ['required', 'string'],
+            'tasks.*.description' => ['required', 'string'],
+            'tasks.*.quantity' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
+            'tasks.*.unit' => ['required', 'string'],
+            'tasks.*.unit_price' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
+            'tasks.*.amount' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
         ];
     }
 }

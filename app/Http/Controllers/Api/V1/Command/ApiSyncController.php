@@ -3,19 +3,14 @@
 namespace App\Http\Controllers\Api\V1\Command;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Http\Client\Response;
-use Illuminate\Support\Facades\Http;
-use App\Models\User;
 use App\Models\Employee;
 use App\Models\ItemProfile;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
+use App\Models\User;
 use Carbon\Carbon;
-use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Throwable;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 
 class ApiSyncController extends Controller
 {
@@ -24,7 +19,7 @@ class ApiSyncController extends Controller
     public function sync(Request $request)
     {
         $this->token = $request->bearerToken();
-        
+
         // if( $request->has('users') )
         // {
         //     $this->users();
@@ -32,12 +27,13 @@ class ApiSyncController extends Controller
 
         // if( $request->has('employees') )
         // {
-            return $this->employees();
+        return $this->employees();
         // }
 
     }
 
-    public function users() {
+    public function users()
+    {
 
         try {
 
@@ -45,7 +41,7 @@ class ApiSyncController extends Controller
                 ->acceptJson()
                 ->get(config('services.url.hrms_api_url').'/api/employee/users-list');
 
-            if( $response->ok() ) {
+            if ($response->ok()) {
 
                 $users = $response->json()['data'] ?? [];
 
@@ -68,13 +64,14 @@ class ApiSyncController extends Controller
                     }
                 });
             }
-		
-		} catch (\Throwable $e) {
-			return ['error' => $e->getMessage()];
-		}
+
+        } catch (\Throwable $e) {
+            return ['error' => $e->getMessage()];
+        }
     }
 
-    public function employees() {
+    public function employees()
+    {
 
         try {
 
@@ -82,10 +79,10 @@ class ApiSyncController extends Controller
                 ->acceptJson()
                 ->get(config('services.url.hrms_api_url').'/api/employee/list');
 
-            if( $response->ok() ) {
+            if ($response->ok()) {
 
                 $employees = $response->json()['data'] ?? [];
-                
+
                 DB::transaction(function () use ($employees) {
 
                     foreach ($employees as $employee) {
@@ -103,14 +100,14 @@ class ApiSyncController extends Controller
                     }
                 });
             }
-		
-		} catch (\Throwable $e) {
-			return ['error' => $e->getMessage()];
-		}
+
+        } catch (\Throwable $e) {
+            return ['error' => $e->getMessage()];
+        }
     }
 
     public function departments() {}
-    
+
     public function itemProfiles()
     {
         try {
@@ -119,11 +116,11 @@ class ApiSyncController extends Controller
                 ->acceptJson()
                 ->get(config('services.url.hrms_api_url').'/api/employee/list');
 
-            if( $response->ok() ) {
+            if ($response->ok()) {
 
                 $items = $response->json()['data'] ?? [];
-                
-                DB::transaction(function () use ($employees) {
+
+                DB::transaction(function () {
 
                     // foreach ($items as $item) {
                     //     ItemProfile::updateOrCreate(
@@ -140,11 +137,9 @@ class ApiSyncController extends Controller
                     // }
                 });
             }
-		
-		} catch (\Throwable $e) {
-			return ['error' => $e->getMessage()];
-		}
+
+        } catch (\Throwable $e) {
+            return ['error' => $e->getMessage()];
+        }
     }
-
-
 }

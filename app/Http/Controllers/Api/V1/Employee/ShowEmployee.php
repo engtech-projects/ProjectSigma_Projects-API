@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api\V1\Employee;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Employee;
 use App\Http\Resources\Employee\EmployeeResource;
+use App\Models\Employee;
+use Illuminate\Http\Request;
 
 class ShowEmployee extends Controller
 {

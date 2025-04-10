@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('tasks', function (Blueprint $table) {
             $table->uuid('uuid')->unique()->after('id');
             $table->unsignedBigInteger('project_id')->after('uuid');
-            
+
             $table->foreign('project_id')->references('id')->on('projects')->onDelete('cascade');
         });
     }

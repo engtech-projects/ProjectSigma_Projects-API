@@ -1,15 +1,13 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class HrmsUser extends Model implements AuthenticatableContract
 {
-
     use HasFactory;
 
     public function getAuthIdentifierName()
@@ -21,23 +19,23 @@ class HrmsUser extends Model implements AuthenticatableContract
             'type' => 'user',
         ];
     }
+
     public function getAuthIdentifier()
     {
         return $this->getAttributeFromArray('user_id');
     }
+
     public function getAuthPassword()
     {
         return null;
     }
+
     public function getRememberToken()
     {
         return null;
     }
-    public function setRememberToken($value)
-    {
-    }
-    public function getRememberTokenName()
-    {
-    }
 
+    public function setRememberToken($value) {}
+
+    public function getRememberTokenName() {}
 }

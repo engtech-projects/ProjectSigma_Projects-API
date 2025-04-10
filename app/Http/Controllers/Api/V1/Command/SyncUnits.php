@@ -4,10 +4,6 @@ namespace App\Http\Controllers\Api\V1\Command;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
-use Exception;
-use Illuminate\Support\Facades\DB;
-use Throwable;
 use Illuminate\Support\Facades\Http;
 
 class SyncUnits extends Controller
@@ -26,13 +22,14 @@ class SyncUnits extends Controller
             $response = Http::withToken($apiKey)
                 ->acceptJson()
                 ->get($apiUrl.'/api/sigma/uoms');
+
             return $response;
-            if( $response->ok() ) {
+            if ($response->ok()) {
                 $units = $response->json()['data'] ?? [];
             }
-		
-		} catch (\Throwable $e) {
-			return ['error' => $e->getMessage()];
-		}
+
+        } catch (\Throwable $e) {
+            return ['error' => $e->getMessage()];
+        }
     }
 }

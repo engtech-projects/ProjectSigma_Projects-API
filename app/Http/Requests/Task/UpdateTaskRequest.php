@@ -23,13 +23,13 @@ class UpdateTaskRequest extends FormRequest
     {
         return [
             'project_id' => ['required', 'exists:projects,id'],
-			'phase_id' => ['required', 'exists:phases,id'],
-			'name' => ['required', 'string'],
-			'description' => ['required', 'string'],
-			'quantity' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
-			'unit' => ['required', 'string'],
-			'unit_price' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
-			'amount' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
+            'phase_id' => ['required', 'exists:phases,id'],
+            'name' => ['required', 'string'],
+            'description' => ['required', 'string'],
+            'quantity' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
+            'unit' => ['required', 'string'],
+            'unit_price' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
+            'amount' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
         ];
-	}
+    }
 }

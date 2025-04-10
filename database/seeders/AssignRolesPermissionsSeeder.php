@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class AssignRolesPermissionsSeeder extends Seeder
 {
@@ -14,7 +13,7 @@ class AssignRolesPermissionsSeeder extends Seeder
      */
     public function run(): void
     {
-       
+
         $this->rolesPermissions();
 
         // $role->
@@ -24,7 +23,7 @@ class AssignRolesPermissionsSeeder extends Seeder
         // $role->syncPermissions($permissions);
 
         // $role = Role::findByName('Marketing');
-        
+
     }
 
     public function rolesPermissions()
@@ -35,27 +34,26 @@ class AssignRolesPermissionsSeeder extends Seeder
         $rolePermissions = [
             'Super Admin' => [
                 $permissions['projects'],
-                $permissions['active-projects']
+                $permissions['active-projects'],
             ],
             'Marketing' => [
-                $permissions['projects']
+                $permissions['projects'],
             ],
             'TSS' => [
-                $permissions['active-projects']
+                $permissions['active-projects'],
             ],
             'Project Manager' => [
-                $permissions['active-projects']
+                $permissions['active-projects'],
             ],
             'Project Engineer' => [
-                $permissions['active-projects']
+                $permissions['active-projects'],
             ],
         ];
 
         foreach ($rolePermissions as $roleName => $groupPermissions) {
             $role = Role::findByName($roleName);
 
-            if( $role && isset($rolePermissions[$roleName]) )
-            {   
+            if ($role && isset($rolePermissions[$roleName])) {
                 $role->syncPermissions($groupPermissions);
             }
         }
@@ -109,7 +107,7 @@ class AssignRolesPermissionsSeeder extends Seeder
                     'name' => $permission,
                     'guard_name' => 'api',
                 ]);
-                
+
             }
         }
 

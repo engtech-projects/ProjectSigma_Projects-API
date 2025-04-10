@@ -14,14 +14,14 @@ class SecretApiKey
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
-    {   
+    {
         $clientApiKey = $request->header('x-api-key');
-        
+
         $apiKey = config('services.sigma.secret_key');
-        
+
         $isAllowed = ($clientApiKey === $apiKey);
 
-        if ( !$isAllowed ) {
+        if (! $isAllowed) {
 
             return response()->json([
                 'success' => false,

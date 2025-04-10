@@ -3,47 +3,41 @@
 namespace App\Http\Controllers\Api\V1\Project;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Project;
 use App\Http\Requests\Project\StoreProjectRequest;
 use App\Http\Requests\Project\UpdateProjectRequest;
-use Illuminate\Http\Response;
-use App\Services\ProjectService;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectResource;
-use App\Enums\ProjectStatus;
-use App\Enums\ProjectStage;
+use App\Models\Project;
+use App\Services\ProjectService;
+use Illuminate\Http\Request;
+
 // use Illuminate\Support\Facades\Gate;
-use Auth;
-use App\Models\HrmsUser;
-use App\Models\User;
 
 class ProjectController extends Controller
 {
+    protected $projectService;
 
-	protected $projectService;
-
-	public function __construct(ProjectService $projectService)
+    public function __construct(ProjectService $projectService)
     {
-		$this->projectService = $projectService;
+        $this->projectService = $projectService;
     }
 
-	/**
+    /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
         $this->authorize('viewAny', Project::class);
-     
+
         $filters = $request->only(['search', 'status', 'sort']);
 
         $projects = Project::query()
-                ->revised()
-                ->filter($filters)
-                ->retrieve(
-                    $request->paginate, 
-                    $request->per_page
-                );
+            ->revised()
+            ->filter($filters)
+            ->retrieve(
+                $request->paginate,
+                $request->per_page
+            );
 
         return response()->json(new ProjectCollection($projects), 200);
     }
@@ -58,14 +52,14 @@ class ProjectController extends Controller
         $filters = $request->only(['search', 'status', 'sort']);
 
         $projects = Project::query()
-                ->original()
-                ->filter($filters)
-                ->retrieve(true, $request->per_page);
+            ->original()
+            ->filter($filters)
+            ->retrieve(true, $request->per_page);
 
         return response()->json(new ProjectCollection($projects), 200);
     }
 
-     /**
+    /**
      * Display a listing of the resource.
      */
     public function revised(Request $request)
@@ -75,9 +69,9 @@ class ProjectController extends Controller
         $filters = $request->only(['search', 'status', 'sort']);
 
         $projects = Project::query()
-                ->revised()
-                ->filter($filters)
-                ->retrieve(true, $request->per_page);
+            ->revised()
+            ->filter($filters)
+            ->retrieve(true, $request->per_page);
 
         return response()->json(new ProjectCollection($projects), 200);
     }
@@ -86,24 +80,24 @@ class ProjectController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(StoreProjectRequest $request)
-    {	
+    {
         $this->authorize('create', Project::class);
 
-		$validated = $request->validated();
+        $validated = $request->validated();
 
-		$result = $this->projectService->create($validated);
+        $result = $this->projectService->create($validated);
 
-		if (isset($result['error'])) {
-			return response()->json([
-				'message' => 'Failed to create the project.',
-				'error' => $result['error']
-			], 500);
-		}
+        if (isset($result['error'])) {
+            return response()->json([
+                'message' => 'Failed to create the project.',
+                'error' => $result['error'],
+            ], 500);
+        }
 
-		return response()->json([
-			'message' => 'Project created successfully.',
-			'data' => $result
-		], 201);
+        return response()->json([
+            'message' => 'Project created successfully.',
+            'data' => $result,
+        ], 201);
     }
 
     /**
@@ -112,7 +106,8 @@ class ProjectController extends Controller
     public function show(Project $project)
     {
         $this->authorize('view', $project);
-		return response()->json(new ProjectResource($project), 200);
+
+        return response()->json(new ProjectResource($project), 200);
     }
 
     /**
@@ -122,35 +117,22 @@ class ProjectController extends Controller
     {
         $validated = $request->validated();
 
-		$result = $this->projectService->update($project, $validated);
+        $result = $this->projectService->update($project, $validated);
 
-		if (isset($result['error'])) {
-			return response()->json([
-				'message' => 'Failed to update the project.',
-				'error' => $result['error']
-			], 500);
-		}
+        if (isset($result['error'])) {
+            return response()->json([
+                'message' => 'Failed to update the project.',
+                'error' => $result['error'],
+            ], 500);
+        }
 
-		return response()->json([
-			'message' => 'Project has been updated.',
-			'data' => $result
-		], 200);
+        return response()->json([
+            'message' => 'Project has been updated.',
+            'data' => $result,
+        ], 200);
     }
 
-    /**
-     * 
-     */
-    public function archive(Project $project)
-    {
-        
-    }
+    public function archive(Project $project) {}
 
-    /**
-     * 
-     */
-    public function destroy(Project $project)
-    {
-        
-    }
-
+    public function destroy(Project $project) {}
 }

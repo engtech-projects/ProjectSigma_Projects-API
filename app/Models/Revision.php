@@ -2,17 +2,17 @@
 
 namespace App\Models;
 
+use App\Enums\RevisionStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
-use App\Enums\RevisionStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class Revision extends Model
 {
     use HasFactory;
 
-    protected $table = "revisions";
+    protected $table = 'revisions';
 
     protected $fillable = [
         'project_id',
@@ -41,11 +41,11 @@ class Revision extends Model
     protected function casts(): array
     {
         return [
-			'status' => RevisionStatus::class,
+            'status' => RevisionStatus::class,
         ];
     }
 
-    public function project() : BelongsTo
+    public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }

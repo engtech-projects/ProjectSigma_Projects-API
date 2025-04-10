@@ -3,17 +3,12 @@
 namespace App\Http\Controllers\Api\V1\Task;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\Task\StoreTaskRequest;
+use App\Http\Resources\Task\TaskCollection;
 use App\Models\Phase;
 use App\Models\Project;
-use App\Models\Task;
-use App\Http\Resources\Task\TaskCollection;
-use App\Http\Resources\Task\TaskResource;
-use App\Http\Requests\Task\StoreTaskRequest;
-use App\Http\Requests\Task\UpdateTaskRequest;
 use App\Services\ProjectService;
-use App\Http\Resources\Phase\PhaseCollection;
-use App\Http\Resources\Phase\PhaseResource;
+use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
@@ -22,15 +17,14 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-        
-        if( $request->has('project_id') )
-        {
+
+        if ($request->has('project_id')) {
             $project = Project::find($request->project_id);
+
             return response()->json($project->load('tasks'), 200);
         }
 
-        if( $request->has('phase_id') )
-        {
+        if ($request->has('phase_id')) {
             $phase = Phase::find($request->phase_id);
 
             return response()->json($phase->load('tasks'), 200);
@@ -53,21 +47,21 @@ class TaskController extends Controller
     {
         $validated = $request->validated();
 
-		$phase = Phase::find($validated['phase_id']);
-		
-		$result = $projectService->addTasks($phase, $validated['tasks']);
+        $phase = Phase::find($validated['phase_id']);
 
-		if (isset($result['error'])) {
-			return response()->json([
-				'message' => 'Failed to add Project tasks.',
-				'error' => $result['error']
-			], 500);
-		}
+        $result = $projectService->addTasks($phase, $validated['tasks']);
 
-		return response()->json([
-			'message' => 'Project tasks added successfully.',
-			'data' => new TaskCollection($result),
-		], 201);
+        if (isset($result['error'])) {
+            return response()->json([
+                'message' => 'Failed to add Project tasks.',
+                'error' => $result['error'],
+            ], 500);
+        }
+
+        return response()->json([
+            'message' => 'Project tasks added successfully.',
+            'data' => new TaskCollection($result),
+        ], 201);
     }
 
     /**

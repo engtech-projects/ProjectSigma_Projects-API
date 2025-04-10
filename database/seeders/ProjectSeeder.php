@@ -2,16 +2,13 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-use App\Models\Project;
-use Illuminate\Support\Facades\DB;
-use League\Csv\Reader;
-use Carbon\Carbon;
-use Illuminate\Support\Str;
-use App\Enums\ProjectStatus;
 use App\Enums\ProjectStage;
-
+use App\Enums\ProjectStatus;
+use App\Models\Project;
+use Carbon\Carbon;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
+use League\Csv\Reader;
 
 class ProjectSeeder extends Seeder
 {
@@ -21,7 +18,7 @@ class ProjectSeeder extends Seeder
     public function run(): void
     {
         // Path to the CSV file
-         $file = database_path('seeders/projects.csv');
+        $file = database_path('seeders/projects.csv');
         // Open the CSV file
         $csv = Reader::createFromPath($file, 'r');
         $csv->setHeaderOffset(0); // Use the first row as the header
@@ -58,6 +55,4 @@ class ProjectSeeder extends Seeder
             );
         }
     }
-
-
 }

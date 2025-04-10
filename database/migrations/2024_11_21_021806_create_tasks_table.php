@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-		Schema::create('tasks', function (Blueprint $table) {
+        Schema::create('tasks', function (Blueprint $table) {
             $table->id();
-			$table->foreignId('phase_id')->constrained('phases')->onDelete('cascade');
-			$table->string('name');
-			$table->text('description');
-			$table->decimal('quantity', 15, 2);
-			$table->string('unit');
-			$table->decimal('unit_price', 15, 2);
-			$table->decimal('amount', 15, 2);
+            $table->foreignId('phase_id')->constrained('phases')->onDelete('cascade');
+            $table->string('name');
+            $table->text('description');
+            $table->decimal('quantity', 15, 2);
+            $table->string('unit');
+            $table->decimal('unit_price', 15, 2);
+            $table->decimal('amount', 15, 2);
             $table->timestamps();
         });
     }

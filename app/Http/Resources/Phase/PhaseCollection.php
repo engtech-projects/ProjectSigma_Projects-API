@@ -16,8 +16,8 @@ class PhaseCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-		return $this->collection->transform(function ($phase){
-			return new PhaseResource($phase);
-		})->toArray();
+        return $this->collection->transform(function ($phase) {
+            return new PhaseResource($phase);
+        })->toArray();
     }
 }

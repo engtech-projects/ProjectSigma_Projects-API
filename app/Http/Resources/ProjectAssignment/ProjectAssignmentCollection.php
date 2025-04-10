@@ -4,7 +4,6 @@ namespace App\Http\Resources\ProjectAssignment;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use App\Http\Resources\ProjectAssignment\ProjectAssignmentResource;
 
 class ProjectAssignmentCollection extends ResourceCollection
 {
@@ -17,8 +16,8 @@ class ProjectAssignmentCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-		return $this->collection->transform(function ($projectAssignment){
-			return new ProjectAssignmentResource($projectAssignment);
-		})->toArray();
+        return $this->collection->transform(function ($projectAssignment) {
+            return new ProjectAssignmentResource($projectAssignment);
+        })->toArray();
     }
 }

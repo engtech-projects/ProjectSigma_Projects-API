@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Project;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class ProjectPolicy
 {
@@ -14,7 +13,7 @@ class ProjectPolicy
     public function viewAny(User $user): bool
     {
         // Allow super admin to view all projects
-        if ( $user->hasRole('Super Admin') ) {
+        if ($user->hasRole('Super Admin')) {
             return true;
         }
 
@@ -28,33 +27,33 @@ class ProjectPolicy
     {
 
         // Allow super admin to view all projects
-        if ( $user->hasRole('Super Admin') ) {
+        if ($user->hasRole('Super Admin')) {
             return true;
         }
 
-        if ( $user->hasRole('Marketing') ) {
+        if ($user->hasRole('Marketing')) {
             return true;
         }
 
         // Allow super admin to view all projects
-        if ( $user->hasRole('TSS') ) {
+        if ($user->hasRole('TSS')) {
             return true;
         }
 
         return false;
     }
 
-     /**
+    /**
      * Determine whether the user can view any models.
      */
     public function viewRevised(User $user): bool
     {
         // Allow super admin to view all projects
-        if ( $user->hasRole('Super Admin') ) {
+        if ($user->hasRole('Super Admin')) {
             return true;
         }
 
-        if ( $user->hasRole('TSS') ) {
+        if ($user->hasRole('TSS')) {
             return true;
         }
 
@@ -67,17 +66,17 @@ class ProjectPolicy
     public function view(User $user, Project $project): bool
     {
         // Allow super admin to view all projects
-        if ( $user->hasRole('Super Admin') ) {
+        if ($user->hasRole('Super Admin')) {
             return true;
         }
 
         // Allow super admin to view all projects
-        if ( $user->hasRole('Marketing') && $project->is_original ) {
+        if ($user->hasRole('Marketing') && $project->is_original) {
             return true;
         }
 
         // Allow super admin to view all projects
-        if ( $user->hasRole('TSS') ) {
+        if ($user->hasRole('TSS')) {
             return true;
         }
     }
@@ -88,11 +87,11 @@ class ProjectPolicy
     public function create(User $user): bool
     {
         // Allow super admin to view all projects
-        if ( $user->hasRole('Super Admin') ) {
+        if ($user->hasRole('Super Admin')) {
             return true;
         }
 
-        if ( $user->hasRole('Marketing') ) {
+        if ($user->hasRole('Marketing')) {
             return true;
         }
     }
@@ -102,11 +101,11 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project): bool
     {
-         if ( $user->hasRole('Super Admin') ) {
+        if ($user->hasRole('Super Admin')) {
             return true;
         }
 
-        if ( $user->hasRole('Marketing') && $project->is_original ) {
+        if ($user->hasRole('Marketing') && $project->is_original) {
             return true;
         }
     }

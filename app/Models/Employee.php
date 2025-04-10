@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Employee extends Model
@@ -21,7 +21,7 @@ class Employee extends Model
         'family_name',
     ];
 
-    public function employee() : HasOne
+    public function employee(): HasOne
     {
         return $this->hasOne(User::class);
     }
@@ -34,22 +34,24 @@ class Employee extends Model
     /**
      * Get the formatted full name of the employee.
      *
-     * @param string $format The format of the name (default: 'first_last').
-     *                       Options: 'first_last', 'last_first', 'initials'
+     * @param  string  $format  The format of the name (default: 'first_last').
+     *                          Options: 'first_last', 'last_first', 'initials'
      * @return string
      */
     public function getFormattedFullname($format = 'first_last')
     {
         switch ($format) {
             case 'last_first':
-                $middleInitial = $this->middle_name ? strtoupper(substr($this->middle_name, 0, 1)) . '.' : '';
+                $middleInitial = $this->middle_name ? strtoupper(substr($this->middle_name, 0, 1)).'.' : '';
+
                 return implode(' ', array_filter([
                     $this->family_name,
                     $this->first_name,
                     $middleInitial,
                 ]));
             case 'initials':
-                $middleInitial = $this->middle_name ? strtoupper(substr($this->middle_name, 0, 1)) . '.' : '';
+                $middleInitial = $this->middle_name ? strtoupper(substr($this->middle_name, 0, 1)).'.' : '';
+
                 return implode(' ', array_filter([
                     $this->first_name,
                     $middleInitial,
@@ -57,7 +59,8 @@ class Employee extends Model
                 ]));
             case 'first_last':
             default:
-                $middleInitial = $this->middle_name ? strtoupper(substr($this->middle_name, 0, 1)) . '.' : '';
+                $middleInitial = $this->middle_name ? strtoupper(substr($this->middle_name, 0, 1)).'.' : '';
+
                 return implode(' ', array_filter([
                     $this->first_name,
                     $middleInitial,
@@ -65,5 +68,4 @@ class Employee extends Model
                 ]));
         }
     }
-
 }

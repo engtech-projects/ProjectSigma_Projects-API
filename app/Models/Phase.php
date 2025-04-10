@@ -12,14 +12,14 @@ class Phase extends Model
 {
     use HasFactory;
 
-	protected $table = "phases";
+    protected $table = 'phases';
 
-	protected $fillable = [
-		'project_id',
-		'name',
-		'description',
-		'total_cost',
-	];
+    protected $fillable = [
+        'project_id',
+        'name',
+        'description',
+        'total_cost',
+    ];
 
     protected static function boot()
     {
@@ -32,14 +32,13 @@ class Phase extends Model
         });
     }
 
-	public function project() : BelongsTo
-	{
-		return $this->belongsTo(Project::class);
-	}
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
 
-	public function tasks() : HasMany
-	{
-		return $this->hasMany(Task::class);
-	}
-
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
 }

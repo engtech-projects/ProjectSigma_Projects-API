@@ -7,6 +7,7 @@ use Exception;
 class RouteNotFoundException extends Exception
 {
     protected $message;
+
     protected $statusCode;
 
     public function __construct($message = 'The requested route does not exist.', $statusCode = 404)
@@ -24,5 +25,4 @@ class RouteNotFoundException extends Exception
             'error' => $this->getMessage(),
         ], $this->statusCode);
     }
-
 }

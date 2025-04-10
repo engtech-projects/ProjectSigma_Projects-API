@@ -30,12 +30,12 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required']
+            'name' => ['required'],
         ]);
 
         $role = Role::create([
             'name' => $validated['name'],
-            'guard_name' => 'api'
+            'guard_name' => 'api',
         ]);
 
         return response()->json($role, 200);

@@ -2,17 +2,13 @@
 
 namespace App\Http\Controllers\Api\V1\Project;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Enums\ProjectStatus;
 use App\Enums\ProjectStage;
-use App\Models\Project;
-use App\Models\Phase;
-use App\Models\Task;
-use App\Models\ResourceItem;
+use App\Enums\ProjectStatus;
+use App\Http\Controllers\Controller;
 use App\Http\Resources\Project\ProjectResource;
+use App\Models\Project;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
 
 class ReplicateProject extends Controller
 {
@@ -21,13 +17,12 @@ class ReplicateProject extends Controller
      */
     public function __invoke(Request $request, Project $project)
     {
-        if( $project->isOriginal() && $project->isApproved() )
-        {
+        if ($project->isOriginal() && $project->isApproved()) {
             $replica = $project->replicate();
             $replica->uuid = (string) Str::uuid();
-            $replica->name = $project->name . '(Revised)';
+            $replica->name = $project->name.'(Revised)';
             $replica->code = $this->generateUniqueCode($project->contract_id);
-            $replica->version = (int)$project->version + 1;
+            $replica->version = (int) $project->version + 1;
             $replica->status = ProjectStatus::OPEN;
             $replica->stage = ProjectStage::AWARDED;
             $replica->is_original = false;
@@ -52,6 +47,7 @@ class ReplicateProject extends Controller
                 'replica' => new ProjectResource($replica),
             ]);
         }
+
         // $replica->toJson()
         return response()->json([
             'error' => 'Cannot replicate.',
@@ -63,7 +59,7 @@ class ReplicateProject extends Controller
         do {
             // Generate 4 random uppercase characters
             $randomString = Str::upper(Str::random(4));
-            $newCode = $baseCode . $randomString;
+            $newCode = $baseCode.$randomString;
 
             // Check if the code already exists in the database
             $exists = Project::where('code', $newCode)->exists();

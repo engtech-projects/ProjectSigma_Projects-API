@@ -11,14 +11,14 @@ class Attachment extends Model
 {
     use HasFactory;
 
-	protected $table = "attachments";
+    protected $table = 'attachments';
 
-	protected $fillable = [
-		'project_id',
-		'name',
-		'path',
-		'mime_type',
-	];
+    protected $fillable = [
+        'project_id',
+        'name',
+        'path',
+        'mime_type',
+    ];
 
     protected static function boot()
     {
@@ -31,9 +31,8 @@ class Attachment extends Model
         });
     }
 
-	public function project() : BelongsTo
-	{
-		return $this->belongsTo(Project::class);
-	}
-
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
 }

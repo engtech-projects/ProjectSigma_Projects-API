@@ -1,46 +1,31 @@
 <?php
 
-use App\Enums\ProjectStatus;
 use App\Enums\ProjectStage;
-
-use App\Http\Controllers\Api\V1\Project\ {
-    ProjectController,
-    ProjectStatusController,
-    ProjectAttachmentController,
-    ReplicateProject,
-    RevisionController,
-};
-
-use App\Http\Controllers\Api\V1\Phase\PhaseController;
-use App\Http\Controllers\Api\V1\Task\TaskController;
-use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
-use App\Http\Controllers\Api\V1\Command\ {
-    ApiSyncController,
-    SyncEmployees,
-    SyncUsers,
-    SyncItemProfiles,
-    SyncSuppliers,
-    SyncUnits,
-};
-
-use App\Http\Controllers\Api\V1\Accessibility\ {
-    RoleController,
-    PermissionController
-};
-
-use App\Http\Controllers\Api\V1\Logs\LogController;
-use App\Http\Controllers\Api\V1\Employee\{
-    GetAllEmployees,
-    ShowEmployee
-};
-
+use App\Enums\ProjectStatus;
+use App\Http\Controllers\Api\V1\Accessibility\PermissionController;
+use App\Http\Controllers\Api\V1\Accessibility\RoleController;
 use App\Http\Controllers\Api\V1\Assignment\ProjectAssignmentController;
-
-use App\Models\ResourceName;
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\Command\ApiSyncController;
+use App\Http\Controllers\Api\V1\Command\SyncEmployees;
+use App\Http\Controllers\Api\V1\Command\SyncItemProfiles;
+use App\Http\Controllers\Api\V1\Command\SyncSuppliers;
+use App\Http\Controllers\Api\V1\Command\SyncUnits;
+use App\Http\Controllers\Api\V1\Command\SyncUsers;
+use App\Http\Controllers\Api\V1\Employee\GetAllEmployees;
+use App\Http\Controllers\Api\V1\Employee\ShowEmployee;
+use App\Http\Controllers\Api\V1\Logs\LogController;
+use App\Http\Controllers\Api\V1\Phase\PhaseController;
+use App\Http\Controllers\Api\V1\Project\ProjectAttachmentController;
+use App\Http\Controllers\Api\V1\Project\ProjectController;
+use App\Http\Controllers\Api\V1\Project\ProjectStatusController;
+use App\Http\Controllers\Api\V1\Project\ReplicateProject;
+use App\Http\Controllers\Api\V1\Project\RevisionController;
+use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
+use App\Http\Controllers\Api\V1\Task\TaskController;
 use App\Http\Resources\User\UserResource;
+use App\Models\ResourceName;
+use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -51,7 +36,7 @@ use App\Http\Resources\User\UserResource;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::middleware("secret_api")->group(function () {
+Route::middleware('secret_api')->group(function () {
     // SIGMA SERVICES ROUTES
     Route::prefix('sigma')->group(function () {
         // Route::resource('sync-departments', DepartmentsController::class)->names("syncDepartmentsresource");
@@ -70,16 +55,16 @@ Route::middleware("secret_api")->group(function () {
 Route::middleware('auth:api')->group(function () {
 
     Route::get('/user', function () {
-		return response()->json(new UserResource(Auth::user()), 200);
-	});
+        return response()->json(new UserResource(Auth::user()), 200);
+    });
 
     Route::get('/project-status', function () {
-		return response()->json(ProjectStatus::cases(), 200);
-	});
+        return response()->json(ProjectStatus::cases(), 200);
+    });
 
-	Route::get('/project-stage', function () {
-		return response()->json(ProjectStage::cases(), 200);
-	});
+    Route::get('/project-stage', function () {
+        return response()->json(ProjectStage::cases(), 200);
+    });
 
     Route::get('/resource-names', function () {
         return response()->json(ResourceName::all(), 200);
@@ -98,8 +83,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/projects/{project}/attachments', [ProjectAttachmentController::class, 'store']);
     Route::delete('/attachments/{attachment}/remove', [ProjectAttachmentController::class, 'destroy']);
 
-	Route::resource('/phases', PhaseController::class);
-	Route::resource('/tasks', TaskController::class);
+    Route::resource('/phases', PhaseController::class);
+    Route::resource('/tasks', TaskController::class);
     Route::resource('/resource-items', ResourceItemController::class);
 
     Route::get('/revisions', [RevisionController::class, 'index']);
@@ -118,9 +103,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/employees', GetAllEmployees::class);
     Route::get('/employee/{employee}', ShowEmployee::class);
 
-
     Route::get('/project-assignments/{project}/team', [ProjectAssignmentController::class, 'index']);
     Route::get('/project-assignments/{project_assignment}', [ProjectAssignmentController::class, 'show']);
     Route::post('/project-assignments', [ProjectAssignmentController::class, 'store']);
-    
+
 });

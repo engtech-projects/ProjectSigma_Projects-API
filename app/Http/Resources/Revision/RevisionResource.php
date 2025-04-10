@@ -17,9 +17,9 @@ class RevisionResource extends JsonResource
         return [
             'id' => $this->id,
             'project_id' => $this->project_id,
-			'data' => $this->data,
-			'comments' => $this->comments,
-			'status' => $this->status,
+            'data' => $this->data,
+            'comments' => $this->comments,
+            'status' => $this->status,
             'project' => $this->project,
         ];
     }

@@ -24,8 +24,8 @@ class UpdateProjectAssignmentRequest extends FormRequest
         return [
             'project_id' => ['required', 'exists:projects, id'],
             'employee_id' => ['required', 'exists:employees, id'],
-            'start_date' => ['nullable','date', 'date_format:Y-m-d'],
-            'end_date' => ['nullable','date', 'date_format:Y-m-d'],
+            'start_date' => ['nullable', 'date', 'date_format:Y-m-d'],
+            'end_date' => ['nullable', 'date', 'date_format:Y-m-d'],
         ];
     }
 }

@@ -2,13 +2,10 @@
 
 namespace App\Providers;
 
-use App\Exceptions\ResourceNotFoundException;
 use App\Models\Project;
 use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -35,6 +32,7 @@ class RouteServiceProvider extends ServiceProvider
 
         Route::bind('project', function ($value) {
             $project = Project::find($value) ?? throw new NotFoundHttpException('Project not found.');
+
             return $project;
 
         });
@@ -49,10 +47,5 @@ class RouteServiceProvider extends ServiceProvider
 
         });
 
-
-
-
-
     }
-
 }

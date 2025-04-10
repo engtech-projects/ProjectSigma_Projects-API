@@ -12,19 +12,19 @@ class ResourceItem extends Model
 {
     use HasFactory;
 
-    protected $table = "resources";
+    protected $table = 'resources';
 
-	protected $fillable = [
+    protected $fillable = [
         'project_id',
-		'task_id',
-		'name_id',
-		'description',
-		'quantity',
-		'unit',
-		'unit_cost',
-		'resource_count',
-		'total_cost',
-	];
+        'task_id',
+        'name_id',
+        'description',
+        'quantity',
+        'unit',
+        'unit_cost',
+        'resource_count',
+        'total_cost',
+    ];
 
     protected static function boot()
     {
@@ -37,19 +37,18 @@ class ResourceItem extends Model
         });
     }
 
-	public function task() : BelongsTo
-	{
-		return $this->belongsTo(Task::class);
-	}
+    public function task(): BelongsTo
+    {
+        return $this->belongsTo(Task::class);
+    }
 
-    public function project() : BelongsTo
-	{
-		return $this->belongsTo(Project::class);
-	}
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
 
-    public function resourceName() : HasOne
-	{
-		return $this->hasOne(ResourceName::class, 'id', 'name_id');
-	}
-
+    public function resourceName(): HasOne
+    {
+        return $this->hasOne(ResourceName::class, 'id', 'name_id');
+    }
 }

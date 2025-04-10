@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::table('employees', function (Blueprint $table) {
             $table->unsignedBigInteger('employee_id');
-            $table->string("first_name");
-            $table->string("middle_name")->nullable();
-            $table->string("family_name");
+            $table->string('first_name');
+            $table->string('middle_name')->nullable();
+            $table->string('family_name');
             $table->softDeletes();
         });
     }
@@ -27,9 +27,9 @@ return new class extends Migration
     {
         Schema::table('employees', function (Blueprint $table) {
             $table->dropColumn('employee_id');
-            $table->dropColumn("first_name");
-            $table->dropColumn("middle_name");
-            $table->dropColumn("family_name");
+            $table->dropColumn('first_name');
+            $table->dropColumn('middle_name');
+            $table->dropColumn('family_name');
             $table->dropSoftDeletes();
         });
     }

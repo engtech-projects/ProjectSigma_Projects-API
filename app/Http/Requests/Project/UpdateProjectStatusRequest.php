@@ -2,9 +2,9 @@
 
 namespace App\Http\Requests\Project;
 
+use App\Enums\ProjectStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
-use App\Enums\ProjectStatus;
 
 class UpdateProjectStatusRequest extends FormRequest
 {

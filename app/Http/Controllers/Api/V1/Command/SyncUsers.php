@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Api\V1\Command;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
-use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Throwable;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 
 class SyncUsers extends Controller
@@ -29,10 +27,10 @@ class SyncUsers extends Controller
                 ->acceptJson()
                 ->get(config('services.url.hrms_api_url').'/api/employee/users-list');
 
-            if( $response->ok() ) {
-                
+            if ($response->ok()) {
+
                 $users = $response->json()['data'] ?? [];
-                
+
                 DB::transaction(function () use ($users) {
 
                     foreach ($users as $user) {
@@ -52,9 +50,9 @@ class SyncUsers extends Controller
                     }
                 });
             }
-		
-		} catch (\Throwable $e) {
-			return ['error' => $e->getMessage()];
-		}
+
+        } catch (\Throwable $e) {
+            return ['error' => $e->getMessage()];
+        }
     }
 }

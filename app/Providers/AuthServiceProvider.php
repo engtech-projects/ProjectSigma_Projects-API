@@ -2,11 +2,12 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Gate;
 use App\Guards\AuthTokenGuard;
-use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use App\Models\Project;
 use App\Policies\ProjectPolicy;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
+
 // use Spatie\Permission\Models\Permission;
 // use Auth;
 
@@ -35,6 +36,7 @@ class AuthServiceProvider extends ServiceProvider
                     $app['request']
                 );
                 $app->refresh('request', $guard, 'setRequest');
+
                 return $guard;
             }
         );

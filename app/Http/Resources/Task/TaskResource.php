@@ -2,9 +2,9 @@
 
 namespace App\Http\Resources\Task;
 
+use App\Http\Resources\ResourceItem\ResourceItemResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\ResourceItem\ResourceItemResource;
 
 class TaskResource extends JsonResource
 {
@@ -18,14 +18,14 @@ class TaskResource extends JsonResource
         return [
             'id' => $this->id,
             'project_id' => $this->project_id,
-			'phase_id' => $this->phase_id,
-			'name' => $this->name,
-			'description' => $this->description,
-			'quantity' => $this->quantity,
-			'unit' => $this->unit,
-			'unit_price' => $this->unit_price,
-			'amount' => $this->amount,
-            'resources' => ResourceItemResource::collection($this->resources),  
-		];
+            'phase_id' => $this->phase_id,
+            'name' => $this->name,
+            'description' => $this->description,
+            'quantity' => $this->quantity,
+            'unit' => $this->unit,
+            'unit_price' => $this->unit_price,
+            'amount' => $this->amount,
+            'resources' => ResourceItemResource::collection($this->resources),
+        ];
     }
 }

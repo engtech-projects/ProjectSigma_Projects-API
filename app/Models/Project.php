@@ -2,57 +2,57 @@
 
 namespace App\Models;
 
-use App\Enums\ProjectStatus;
 use App\Enums\ProjectStage;
+use App\Enums\ProjectStatus;
+use App\Traits\Filterable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
-use App\Traits\Filterable;
-use Illuminate\Support\Facades\DB;
 
 class Project extends Model
 {
-    use HasFactory, SoftDeletes, LogsActivity, Filterable;
+    use Filterable, HasFactory, LogsActivity, SoftDeletes;
 
-	protected $table = "projects";
+    protected $table = 'projects';
 
-     // Define which attributes should be logged
+    // Define which attributes should be logged
     public function getActivitylogOptions(): LogOptions
     {
-         return LogOptions::defaults()
+        return LogOptions::defaults()
             ->logAll() // List of attributes to log
             ->setDescriptionForEvent(fn (string $eventName) => "Project has been {$eventName}");
     }
 
     protected $fillable = [
-		'parent_project_id',
-		'contract_id',
-		'code',
-		'name',
-		'location',
-		'nature_of_work',
+        'parent_project_id',
+        'contract_id',
+        'code',
+        'name',
+        'location',
+        'nature_of_work',
         'amount',
         'contract_date',
         'duration',
         'noa_date',
         'ntp_date',
-		'license',
-		'stage',
-		'status',
-		'is_original',
-		'version',
+        'license',
+        'stage',
+        'status',
+        'is_original',
+        'version',
         'project_identifier',
         'implementing_office',
         'current_revision_id',
     ];
 
-	/**
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -60,13 +60,13 @@ class Project extends Model
     protected function casts(): array
     {
         return [
-			'status' => ProjectStatus::class,
-			'stage' => ProjectStage::class,
-			'contract_date' => 'datetime:Y-m-d',
-			'noa_date' => 'datetime:Y-m-d',
-			'ntp_date' => 'datetime:Y-m-d',
-			'amount' => 'decimal:2',
-			'is_original' => 'boolean',
+            'status' => ProjectStatus::class,
+            'stage' => ProjectStage::class,
+            'contract_date' => 'datetime:Y-m-d',
+            'noa_date' => 'datetime:Y-m-d',
+            'ntp_date' => 'datetime:Y-m-d',
+            'amount' => 'decimal:2',
+            'is_original' => 'boolean',
         ];
     }
 
@@ -86,6 +86,7 @@ class Project extends Model
     {
         $this->update(['status' => $status]);
     }
+
     // Archive the project
     public function archive(): void
     {
@@ -98,58 +99,58 @@ class Project extends Model
         $this->updateStatus(ProjectStatus::COMPLETED);
     }
 
-	public function phases() : HasMany
-	{
-		return $this->hasMany(Phase::class);
-	}
+    public function phases(): HasMany
+    {
+        return $this->hasMany(Phase::class);
+    }
 
-    public function tasks() : HasMany
-	{
-		return $this->hasMany(Task::class);
-	}
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
 
-    public function resources() : HasMany
-	{
-		return $this->hasMany(ResourceItem::class);
-	}
+    public function resources(): HasMany
+    {
+        return $this->hasMany(ResourceItem::class);
+    }
 
-	public function attachments() : HasMany
-	{
-		return $this->hasMany(Attachment::class);
-	}
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(Attachment::class);
+    }
 
-    public function team() : HasMany
-	{
-		return $this->hasMany(ProjectAssignment::class);
-	}
+    public function team(): HasMany
+    {
+        return $this->hasMany(ProjectAssignment::class);
+    }
 
-    public function revisions() : HasMany
+    public function revisions(): HasMany
     {
         return $this->hasMany(Revision::class);
     }
 
-    public function parent() : BelongsTo
+    public function parent(): BelongsTo
     {
         return $this->belongsTo(Project::class, 'parent_project_id');
     }
 
-    public function isOriginal()  : bool
-	{
-		return $this->is_original == true;
-	}
+    public function isOriginal(): bool
+    {
+        return $this->is_original == true;
+    }
 
-    public function isApproved()  : bool
-	{
-		return $this->status == ProjectStatus::APPROVED->label();
-	}
+    public function isApproved(): bool
+    {
+        return $this->status == ProjectStatus::APPROVED->label();
+    }
 
-    public function isOpen()  : bool
-	{
-		return $this->status == ProjectStatus::OPEN->label();
-	}
+    public function isOpen(): bool
+    {
+        return $this->status == ProjectStatus::OPEN->label();
+    }
 
-	# PROJECT SCOPES
-	/**
+    // PROJECT SCOPES
+    /**
      * Scope a query to only include original/proposal project.
      */
     public function scopeOriginal(Builder $query)
@@ -186,8 +187,7 @@ class Project extends Model
      */
     public function scopeSort(Builder $query, $val = 'desc')
     {
-        if( $val == 'desc' )
-        {
+        if ($val == 'desc') {
             return $query->latest();
         }
 
@@ -199,10 +199,10 @@ class Project extends Model
      */
     public function scopeSearch(Builder $query, $keyword)
     {
-       return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::raw('LOWER(code)'), 'LIKE', "%" . strtolower($keyword) . "%")
-                ->orWhere(DB::raw('LOWER(name)'), 'LIKE', "%" . strtolower($keyword) . "%");
-       });
+        return $query->where(function ($query) use ($keyword) {
+            $query->where(DB::raw('LOWER(code)'), 'LIKE', '%'.strtolower($keyword).'%')
+                ->orWhere(DB::raw('LOWER(name)'), 'LIKE', '%'.strtolower($keyword).'%');
+        });
     }
 
     /**
@@ -212,5 +212,4 @@ class Project extends Model
     {
         return $query->onlyTrashed();
     }
-
 }

@@ -4,14 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class ProjectAssignment extends Model
 {
     use HasFactory;
 
-    protected $table = "project_assignment";
+    protected $table = 'project_assignment';
 
     protected $fillable = [
         'employee_id',
@@ -28,11 +28,10 @@ class ProjectAssignment extends Model
     protected function casts(): array
     {
         return [
-			'start_date' => 'datetime:Y-m-d',
-			'end_date' => 'datetime:Y-m-d',
+            'start_date' => 'datetime:Y-m-d',
+            'end_date' => 'datetime:Y-m-d',
         ];
     }
-
 
     protected static function boot()
     {
@@ -45,12 +44,12 @@ class ProjectAssignment extends Model
         });
     }
 
-    public function employee() : BelongsTo
+    public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
     }
 
-    public function project() : BelongsTo
+    public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }

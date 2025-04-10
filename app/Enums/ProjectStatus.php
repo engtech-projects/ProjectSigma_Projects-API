@@ -2,21 +2,22 @@
 
 namespace App\Enums;
 
-enum ProjectStatus:string
+enum ProjectStatus: string
 {
-	case OPEN = 'open';
+    case OPEN = 'open';
     case SUBMITTED = 'submitted';
-	case APPROVED = 'approved';
+    case APPROVED = 'approved';
     case ONGOING = 'ongoing';
     case COMPLETED = 'completed';
     case ARCHIVED = 'archived';
     case ONHOLD = 'on-hold';
-	case CANCELLED = 'cancelled';
+    case CANCELLED = 'cancelled';
     case VOID = 'void';
     case DELETED = 'deleted';
 
-	public function label(): string {
-        return match($this) {
+    public function label(): string
+    {
+        return match ($this) {
             ProjectStatus::OPEN => 'open',
             ProjectStatus::SUBMITTED => 'submitted',
             ProjectStatus::APPROVED => 'approved',
