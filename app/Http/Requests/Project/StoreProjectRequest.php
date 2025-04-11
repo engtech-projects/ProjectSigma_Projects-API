@@ -35,10 +35,10 @@ class StoreProjectRequest extends FormRequest
             'noa_date' => ['nullable', 'date', 'date_format:Y-m-d'],
             'ntp_date' => ['nullable', 'date', 'date_format:Y-m-d'],
             'license' => ['nullable', 'string'],
+            'employee_id' => ['required', 'exists:employees,id'],
             'nature_of_work' => ['nullable', 'string'],
             'stage' => [Rule::enum(ProjectStage::class)],
             'status' => [Rule::enum(ProjectStatus::class)],
-
         ];
     }
 }

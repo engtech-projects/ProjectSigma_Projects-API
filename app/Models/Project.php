@@ -128,6 +128,10 @@ class Project extends Model
     {
         return $this->hasMany(Revision::class);
     }
+    public function projectDesignation():  HasMany
+    {
+        return $this->hasMany(ProjectDesignation::class);
+    }
 
     public function parent(): BelongsTo
     {
