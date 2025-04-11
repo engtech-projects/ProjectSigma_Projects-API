@@ -68,4 +68,9 @@ class Employee extends Model
                 ]));
         }
     }
+
+    public function projectDesignations(): HasMany
+    {
+        return $this->hasMany(ProjectDesignation::class);
+    }
 }
