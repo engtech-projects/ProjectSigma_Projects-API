@@ -8,7 +8,6 @@ use App\Http\Requests\Position\FilterPositionRequest;
 use App\Http\Requests\Position\StorePositionRequest;
 use App\Models\position;
 use App\Services\PositionService;
-use Illuminate\Http\Request;
 
 class PositionController extends Controller
 {
@@ -19,6 +18,17 @@ class PositionController extends Controller
     {
         $validatedData = $request->validated();
         $positions = PositionService::withPagination($validatedData);
+
+        return response()->json([
+            'message' => 'Positions retrieved successfully.',
+            'data' => $positions,
+        ], 200);
+    }
+
+    public function all()
+    {
+        $positions = PositionService::all();
+
         return response()->json([
             'message' => 'Positions retrieved successfully.',
             'data' => $positions,
@@ -32,6 +42,7 @@ class PositionController extends Controller
     {
         $validatedData = $request->validated();
         $position = PositionService::create($validatedData);
+
         return response()->json([
             'message' => 'Position created successfully.',
             'data' => $position,
@@ -44,6 +55,7 @@ class PositionController extends Controller
     public function show(position $position)
     {
         $position = PositionService::show($position);
+
         return response()->json([
             'message' => 'Position retrieved successfully.',
             'data' => $position,
@@ -57,6 +69,7 @@ class PositionController extends Controller
     {
         $validatedData = $request->validated();
         $position = PositionService::update($validatedData, $position);
+
         return response()->json([
             'message' => 'Position updated successfully.',
             'data' => $position,
@@ -69,6 +82,7 @@ class PositionController extends Controller
     public function destroy(position $position)
     {
         $position = PositionService::delete($position);
+
         return response()->json([
             'message' => 'Position deleted successfully.',
             'data' => $position,

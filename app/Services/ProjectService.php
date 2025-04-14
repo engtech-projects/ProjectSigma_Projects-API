@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Phase;
 use App\Models\Project;
 use App\Models\Task;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -26,6 +25,7 @@ class ProjectService
             $data->projectDesignation()->create([
                 'employee_id' => $attr['employee_id'],
             ]);
+
             return new JsonResponse([
                 'message' => 'Project created successfully.',
                 'data' => $data,
@@ -37,6 +37,7 @@ class ProjectService
     {
         return DB::transaction(function () use ($project, $attr) {
             $project->fill($attr)->save();
+
             return new JsonResponse([
                 'message' => 'Project updated successfully.',
                 'data' => $project,
@@ -82,13 +83,13 @@ class ProjectService
     public function addTasks(Phase $phase, array $attr)
     {
         DB::transaction(function () use ($phase, $attr) {
-                foreach ($attr as $task) {
-                    $task['project_id'] = $phase->project_id;
-                    $phase->tasks()->updateOrCreate(
-                        ['id' => $task['id'] ?? null], // Match id
-                        $task // Data to update or create
-                    );
-                }
+            foreach ($attr as $task) {
+                $task['project_id'] = $phase->project_id;
+                $phase->tasks()->updateOrCreate(
+                    ['id' => $task['id'] ?? null], // Match id
+                    $task // Data to update or create
+                );
+            }
         });
 
         return new JsonResponse([
