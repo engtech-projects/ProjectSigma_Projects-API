@@ -14,4 +14,9 @@ class Position extends Model
         'name',
         'description',
     ];
+
+    public function projectDesignations()
+    {
+        return $this->hasMany(ProjectDesignation::class);
+    }
 }

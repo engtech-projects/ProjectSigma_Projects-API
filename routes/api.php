@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\V1\Project\ReplicateProject;
 use App\Http\Controllers\Api\V1\Project\RevisionController;
 use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
 use App\Http\Controllers\Api\V1\Task\TaskController;
+use App\Http\Controllers\Api\V1\Position\PositionController;
 use App\Http\Resources\User\UserResource;
 use App\Models\ResourceName;
 use Illuminate\Support\Facades\Route;
@@ -107,4 +108,5 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/project-assignments/{project_assignment}', [ProjectAssignmentController::class, 'show']);
     Route::post('/project-assignments', [ProjectAssignmentController::class, 'store']);
 
+    Route::resource('/positions', PositionController::class);
 });
