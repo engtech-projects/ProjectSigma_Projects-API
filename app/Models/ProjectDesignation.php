@@ -24,4 +24,9 @@ class ProjectDesignation extends Model
     {
         return $this->belongsTo(Employee::class);
     }
+
+    public function position()
+    {
+        return $this->belongsTo(Position::class);
+    }
 }

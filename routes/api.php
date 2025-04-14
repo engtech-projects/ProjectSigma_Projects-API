@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\V1\Employee\GetAllEmployees;
 use App\Http\Controllers\Api\V1\Employee\ShowEmployee;
 use App\Http\Controllers\Api\V1\Logs\LogController;
 use App\Http\Controllers\Api\V1\Phase\PhaseController;
+use App\Http\Controllers\Api\V1\Position\PositionController;
 use App\Http\Controllers\Api\V1\Project\ProjectAttachmentController;
 use App\Http\Controllers\Api\V1\Project\ProjectController;
 use App\Http\Controllers\Api\V1\Project\ProjectStatusController;
@@ -107,4 +108,5 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/project-assignments/{project_assignment}', [ProjectAssignmentController::class, 'show']);
     Route::post('/project-assignments', [ProjectAssignmentController::class, 'store']);
 
+    Route::resource('/positions', PositionController::class);
 });
