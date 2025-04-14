@@ -46,17 +46,8 @@ class TaskController extends Controller
     public function store(StoreTaskRequest $request, ProjectService $projectService)
     {
         $validated = $request->validated();
-
         $phase = Phase::find($validated['phase_id']);
-
         $result = $projectService->addTasks($phase, $validated['tasks']);
-
-        if (isset($result['error'])) {
-            return response()->json([
-                'message' => 'Failed to add Project tasks.',
-                'error' => $result['error'],
-            ], 500);
-        }
 
         return response()->json([
             'message' => 'Project tasks added successfully.',

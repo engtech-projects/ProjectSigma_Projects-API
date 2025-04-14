@@ -9,13 +9,12 @@ class PositionService
 {
     public static function withPagination($request)
     {
-        $validatedData = $request->validated();
         $query = Position::query();
-        $query = $query->when(isset($validatedData['key']), function ($query) use ($validatedData) {
-            return $query->where('name', 'LIKE', "%{$validatedData['key']}%");
+        $query = $query->when(isset($request['key']), function ($query) use ($request) {
+            return $query->where('name', 'LIKE', "%{$request['key']}%");
         });
 
-        return $query->paginate($validatedData['per_page'] ?? 10);
+        return $query->paginate(config('services.pagination.limit'));
     }
 
     public static function all()

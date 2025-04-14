@@ -20,22 +20,4 @@ class HrmsUser extends Model implements AuthenticatableContract
         ];
     }
 
-    public function getAuthIdentifier()
-    {
-        return $this->getAttributeFromArray('user_id');
-    }
-
-    public function getAuthPassword()
-    {
-        return null;
-    }
-
-    public function getRememberToken()
-    {
-        return null;
-    }
-
-    public function setRememberToken($value) {}
-
-    public function getRememberTokenName() {}
 }
