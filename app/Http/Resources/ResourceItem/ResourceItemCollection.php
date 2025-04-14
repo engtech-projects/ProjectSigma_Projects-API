@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources\ResourceItem;
 
-use App\Http\Resources\ResourceItemResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 

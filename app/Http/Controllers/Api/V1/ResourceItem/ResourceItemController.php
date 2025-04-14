@@ -36,13 +36,6 @@ class ResourceItemController extends Controller
 
         $result = $projectService->addResources($task, $validated['items']);
 
-        if (isset($result['error'])) {
-            return response()->json([
-                'message' => 'Failed to allocate resources.',
-                'error' => $result['error'],
-            ], 500);
-        }
-
         return response()->json([
             'message' => 'task resource allocation added successfully.',
             'data' => $result,

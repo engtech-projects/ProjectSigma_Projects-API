@@ -35,17 +35,8 @@ class PhaseController extends Controller
     public function store(StorePhaseRequest $request, ProjectService $projectService)
     {
         $validated = $request->validated();
-
         $project = Project::find($validated['project_id']);
-
         $result = $projectService->addPhases($project, $validated['phases']);
-
-        if (isset($result['error'])) {
-            return response()->json([
-                'message' => 'Failed to add Project phases.',
-                'error' => $result['error'],
-            ], 500);
-        }
 
         return response()->json([
             'message' => 'Project phases added successfully.',
@@ -76,22 +67,12 @@ class PhaseController extends Controller
     {
 
         $validated = $request->validated();
+        $phase->update($validated);
 
-        try {
-            $phase->update($validated);
-
-            return response()->json([
-                'message' => 'Project phase has been updated',
-                'data' => $phase,
-            ], 200);
-
-        } catch (\Throwable $e) {
-
-            return response()->json([
-                'message' => 'Failed to update the project phase.',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+        return response()->json([
+            'message' => 'Project phase has been updated',
+            'data' => $phase,
+        ], 200);
     }
 
     /**

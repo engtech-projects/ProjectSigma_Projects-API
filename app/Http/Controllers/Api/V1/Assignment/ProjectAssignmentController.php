@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Assignment;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectAssignment\StoreProjectAssignmentRequest;
+use App\Http\Requests\ProjectAssignment\UpdateProjectAssignmentRequest;
 use App\Http\Resources\ProjectAssignment\ProjectAssignmentCollection;
 use App\Http\Resources\ProjectAssignment\ProjectAssignmentResource;
 use App\Models\Project;
@@ -26,22 +27,8 @@ class ProjectAssignmentController extends Controller
      */
     public function index(Request $request, Project $project)
     {
-        // $this->authorize('viewAny', Project::class);
         $team = ProjectAssignment::where('project_id', $project->id)->get();
-
         return response()->json(new ProjectAssignmentCollection($team), 200);
-
-        // $filters = $request->only(['search', 'status', 'sort']);
-
-        // $projects = Project::query()
-        //         ->revised()
-        //         ->filter($filters)
-        //         ->retrieve(
-        //             $request->paginate,
-        //             $request->per_page
-        //         );
-
-        // return response()->json(new ProjectCollection($projects), 200);
     }
 
     /**
@@ -72,22 +59,15 @@ class ProjectAssignmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProjectRequest $request, Project $project)
+    public function update(UpdateProjectAssignmentRequest $request)
     {
-        // $validated = $request->validated();
+        $validated = $request->validated();
+        $project = Project::find($request->project_id);
+        $projectTeam = $this->projectService->assignTeam(
+            $project,
+            $request->project_assignments
+        );
 
-        // $result = $this->projectService->update($project, $validated);
-
-        // if (isset($result['error'])) {
-        // 	return response()->json([
-        // 		'message' => 'Failed to update the project.',
-        // 		'error' => $result['error']
-        // 	], 500);
-        // }
-
-        // return response()->json([
-        // 	'message' => 'Project has been updated.',
-        // 	'data' => $result
-        // ], 200);
+        return response()->json($projectTeam, 200);
     }
 }
