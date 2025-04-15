@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Position\EditPositionRequest;
 use App\Http\Requests\Position\FilterPositionRequest;
 use App\Http\Requests\Position\StorePositionRequest;
-use App\Models\position;
+use App\Models\Position;
 use App\Services\PositionService;
 
 class PositionController extends Controller
@@ -52,7 +52,7 @@ class PositionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(position $position)
+    public function show(Position $position)
     {
         $position = PositionService::show($position);
 
@@ -65,7 +65,7 @@ class PositionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(EditPositionRequest $request, position $position)
+    public function update(EditPositionRequest $request, Position $position)
     {
         $validatedData = $request->validated();
         $position = PositionService::update($validatedData, $position);
@@ -79,7 +79,7 @@ class PositionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(position $position)
+    public function destroy(Position $position)
     {
         $position = PositionService::delete($position);
 
