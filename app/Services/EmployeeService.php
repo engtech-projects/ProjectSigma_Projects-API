@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Employee;
 use DB;
+
 class EmployeeService
 {
     protected $employee;
@@ -32,6 +33,7 @@ class EmployeeService
     {
         return DB::transaction(function () use ($attr) {
             $data = Employee::create($attr);
+
             return $data;
         });
     }
@@ -40,6 +42,7 @@ class EmployeeService
     {
         return DB::transaction(function () use ($employee, $attr) {
             $employee->fill($attr)->save();
+
             return $employee;
         });
     }
@@ -48,8 +51,8 @@ class EmployeeService
     {
         return DB::transaction(function () use ($employee) {
             $employee->delete();
+
             return $employee;
         });
     }
-
 }

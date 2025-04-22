@@ -20,5 +20,4 @@ class HrmsUser extends Model implements AuthenticatableContract
             'type' => 'user',
         ];
     }
-
 }

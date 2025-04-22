@@ -27,8 +27,6 @@ class ProjectController extends Controller
      */
     public function index(Request $request)
     {
-        $this->authorize('viewAny', Project::class);
-
         $filters = $request->only(['search', 'status', 'sort']);
 
         $projects = Project::query()
@@ -47,8 +45,6 @@ class ProjectController extends Controller
      */
     public function original(Request $request)
     {
-        $this->authorize('viewOriginal', Project::class);
-
         $filters = $request->only(['search', 'status', 'sort']);
 
         $projects = Project::query()
@@ -64,7 +60,6 @@ class ProjectController extends Controller
      */
     public function revised(Request $request)
     {
-        $this->authorize('viewRevised', Project::class);
 
         $filters = $request->only(['search', 'status', 'sort']);
 
@@ -77,12 +72,25 @@ class ProjectController extends Controller
     }
 
     /**
+     * Display a listing of the resource.
+     */
+    public function proposal(Request $request)
+    {
+        $filters = $request->only(['search', 'status', 'sort']);
+
+        $projects = Project::query()
+            ->proposal()
+            ->filter($filters)
+            ->retrieve(true, $request->per_page);
+
+        return response()->json(new ProjectCollection($projects), 200);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreProjectRequest $request)
     {
-        $this->authorize('create', Project::class);
-
         $validated = $request->validated();
 
         $result = $this->projectService->create($validated);
@@ -105,8 +113,6 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        $this->authorize('view', $project);
-
         return response()->json(new ProjectResource($project), 200);
     }
 

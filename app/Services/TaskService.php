@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Task;
 use DB;
+
 class TaskService
 {
     protected $task;
@@ -32,6 +33,7 @@ class TaskService
     {
         return DB::transaction(function () use ($attr) {
             $data = Task::create($attr);
+
             return $data;
         });
     }
@@ -40,6 +42,7 @@ class TaskService
     {
         return DB::transaction(function () use ($task, $attr) {
             $task->fill($attr)->save();
+
             return $task;
         });
     }
@@ -48,8 +51,8 @@ class TaskService
     {
         return DB::transaction(function () use ($task) {
             $task->delete();
+
             return $task;
         });
     }
-
 }

@@ -8,7 +8,6 @@ use App\Http\Requests\Phase\UpdatePhaseRequest;
 use App\Models\Phase;
 use App\Models\Project;
 use App\Services\ProjectService;
-use Illuminate\Http\Request;
 
 class PhaseController extends Controller
 {
@@ -17,8 +16,13 @@ class PhaseController extends Controller
      */
     public function index(Request $request)
     {
-        // $projects = Project::original()->latest()->paginated(10);
-        // return response()->json(new ProjectCollection($projects), 200);
+        $validated = $request->validated();
+        $phases = PhaseService::withProjects($validated);
+
+        return response()->json([
+            'message' => 'Phases retrieved successfully.',
+            'data' => $phases,
+        ], 200);
     }
 
     /**
