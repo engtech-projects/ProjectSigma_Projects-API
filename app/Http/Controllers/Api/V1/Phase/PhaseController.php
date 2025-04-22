@@ -43,7 +43,7 @@ class PhaseController extends Controller
     {
         $validated = $request->validated();
         $project = Project::find($validated['project_id']);
-        $result = $projectService->addPhases($project, $validated['phases']);
+        $result = PhaseService::create($validated);
 
         return response()->json([
             'message' => 'Project phases added successfully.',
