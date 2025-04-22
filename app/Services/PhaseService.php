@@ -43,7 +43,6 @@ class PhaseService
     {
         return DB::transaction(function () use ($request) {
             $data = Phase::create($request);
-
             return $data;
         });
     }
