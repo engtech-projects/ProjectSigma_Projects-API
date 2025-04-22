@@ -3,10 +3,7 @@
 namespace App\Providers;
 
 use App\Guards\AuthTokenGuard;
-use App\Models\Project;
-use App\Policies\ProjectPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Gate;
 
 // use Spatie\Permission\Models\Permission;
 // use Auth;
@@ -19,7 +16,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        Project::class => ProjectPolicy::class,
+        //
     ];
 
     /**
@@ -27,8 +24,6 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->registerPolicies();
-
         $this->app['auth']->extend(
             'hrms-auth',
             function ($app, $name, array $config) {
@@ -40,14 +35,5 @@ class AuthServiceProvider extends ServiceProvider
                 return $guard;
             }
         );
-
-        Gate::define('view-projects', function ($user) {
-            return $user->hasPermissionTo('view-projects');
-        });
-
-        Gate::define('view-active-projects', function ($user) {
-            return $user->hasPermissionTo('view-active-projects');
-        });
-
     }
 }

@@ -118,6 +118,7 @@ class ProjectService
                 'data' => $task->resources()->get(),
             ], 200);
         });
+
         return new JsonResponse([
             'message' => 'Resources added successfully.',
             'data' => [],

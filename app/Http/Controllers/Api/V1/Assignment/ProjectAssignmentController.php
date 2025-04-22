@@ -28,6 +28,7 @@ class ProjectAssignmentController extends Controller
     public function index(Request $request, Project $project)
     {
         $team = ProjectAssignment::where('project_id', $project->id)->get();
+
         return response()->json(new ProjectAssignmentCollection($team), 200);
     }
 
@@ -52,7 +53,6 @@ class ProjectAssignmentController extends Controller
      */
     public function show(Project $project, ProjectAssignment $projectAssignment)
     {
-        // $this->authorize('view', $project);
         return response()->json(new ProjectAssignmentResource($projectAssignment), 200);
     }
 

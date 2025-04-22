@@ -25,6 +25,7 @@ class Employee extends Model
     {
         return $this->hasOne(User::class);
     }
+
     public function projectDesignations(): HasMany
     {
         return $this->hasMany(ProjectDesignation::class);

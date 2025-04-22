@@ -23,6 +23,7 @@ class FilterPhaseRequest extends FormRequest
     {
         return [
             'key' => 'nullable|string',
+            'project_id' => 'nullable|exists:projects,id',
         ];
     }
 }
