@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api\V1\Phase;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FilterPhraseRequest;
 use App\Http\Requests\Phase\StorePhaseRequest;
 use App\Http\Requests\Phase\UpdatePhaseRequest;
+use App\Http\Resources\Phase\PhaseCollection;
 use App\Models\Phase;
 use App\Models\Project;
+use App\Services\PhaseService;
 use App\Services\ProjectService;
 
 class PhaseController extends Controller
@@ -14,14 +17,14 @@ class PhaseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(FilterPhraseRequest $request)
     {
-        $validated = $request->validated();
-        $phases = PhaseService::withProjects($validated);
-
+        // $validated = $request->validated();
+        // $phases = PhaseService::withProjects($validated);
+        $phases =  PhaseService::withPagination($request->validated());
         return response()->json([
             'message' => 'Phases retrieved successfully.',
-            'data' => $phases,
+            'data' => new PhaseCollection($phases),
         ], 200);
     }
 

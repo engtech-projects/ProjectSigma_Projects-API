@@ -13,8 +13,12 @@ class PhaseService
         $query = $query->when(isset($request['key']), function ($query) use ($request) {
             return $query->where('name', 'LIKE', "%{$request['key']}%");
         });
+        $query = $query->when(isset($request['project_id']), function ($query) use ($request) {
+            return $query->where('project_id', $request['project_id']);
+        });
+        $query->with('tasks');
 
-        return $query->paginate(config('services.pagination.limit'));
+        return $query->get();
     }
 
     public static function withProjects($request)
