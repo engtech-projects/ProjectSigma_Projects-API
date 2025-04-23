@@ -8,6 +8,7 @@ use App\Http\Requests\ResourceItem\UpdateResourceItemRequest;
 use App\Models\ResourceItem;
 use App\Models\Task;
 use App\Services\ProjectService;
+use App\Services\ResourceService;
 
 class ResourceItemController extends Controller
 {
@@ -27,14 +28,10 @@ class ResourceItemController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreResourceItemRequest $request, ProjectService $projectService)
+    public function store(StoreResourceItemRequest $request)
     {
         $validated = $request->validated();
-
-        // return $validated;
-        $task = Task::find($validated['task_id']);
-
-        $result = $projectService->addResources($task, $validated['items']);
+        $result = ResourceService::create($validated);
 
         return response()->json([
             'message' => 'task resource allocation added successfully.',
