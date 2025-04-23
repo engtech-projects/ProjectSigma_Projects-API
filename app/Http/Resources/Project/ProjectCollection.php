@@ -3,12 +3,10 @@
 namespace App\Http\Resources\Project;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProjectCollection extends ResourceCollection
+class ProjectCollection extends JsonResource
 {
-    public static $wrap = 'projects';
-
     /**
      * Transform the resource collection into an array.
      *
@@ -16,8 +14,9 @@ class ProjectCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-        return $this->collection->transform(function ($project) {
-            return new ProjectResource($project);
-        })->toArray();
+        return [
+            ...parent::toArray($request),
+            'code' => $this->code ?? "NOT PROVIDED / DRAFT OR PROPOSAL"
+        ];
     }
 }

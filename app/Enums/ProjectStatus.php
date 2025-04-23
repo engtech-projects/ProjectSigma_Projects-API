@@ -2,8 +2,11 @@
 
 namespace App\Enums;
 
+use App\Enums\Traits\EnumHelper;
+
 enum ProjectStatus: string
 {
+    use EnumHelper;
     case OPEN = 'open';
     case SUBMITTED = 'submitted';
     case APPROVED = 'approved';
@@ -14,6 +17,7 @@ enum ProjectStatus: string
     case CANCELLED = 'cancelled';
     case VOID = 'void';
     case DELETED = 'deleted';
+    case DRAFT = 'draft';
 
     public function label(): string
     {
