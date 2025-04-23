@@ -22,12 +22,9 @@ class StorePhaseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'project_id' => ['required', 'exists:projects,id'],
-            'phases' => ['required', 'min:1', 'array'],
-            'phases.*.id' => ['nullable', 'exists:phases,id'],
-            'phases.*.name' => ['required', 'string'],
-            'phases.*.description' => ['required', 'string'],
-            'phases.*.total_cost' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
+            'project_id' => 'required|exists:projects,id',
+            'name' => 'required|string',
+            'description' => 'required|string',
         ];
     }
 }
