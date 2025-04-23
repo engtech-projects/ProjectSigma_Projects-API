@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Project;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Project\FilterProjectRequest;
 use App\Http\Requests\Project\StoreProjectRequest;
 use App\Http\Requests\Project\UpdateProjectRequest;
 use App\Http\Resources\Project\ProjectCollection;
@@ -25,19 +26,12 @@ class ProjectController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(FilterProjectRequest $request)
     {
-        $filters = $request->only(['search', 'status', 'sort']);
+        $validatedData = $request->validated();
+        $projects = $this->projectService->withPagination($validatedData);
 
-        $projects = Project::query()
-            ->revised()
-            ->filter($filters)
-            ->retrieve(
-                $request->paginate,
-                $request->per_page
-            );
-
-        return response()->json(new ProjectCollection($projects), 200);
+        return response()->json($projects, 200);
     }
 
     /**
@@ -94,14 +88,6 @@ class ProjectController extends Controller
         $validated = $request->validated();
 
         $result = $this->projectService->create($validated);
-
-        if (isset($result['error'])) {
-            return response()->json([
-                'message' => 'Failed to create the project.',
-                'error' => $result['error'],
-            ], 500);
-        }
-
         return response()->json([
             'message' => 'Project created successfully.',
             'data' => $result,

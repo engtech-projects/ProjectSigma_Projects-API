@@ -23,6 +23,7 @@ class FilterProjectRequest extends FormRequest
     {
         return [
             'key' => 'nullable|string',
+            'status' => 'nullable|string',
         ];
     }
 }

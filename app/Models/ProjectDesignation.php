@@ -10,6 +10,7 @@ class ProjectDesignation extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'project_designation';
     protected $fillable = [
         'project_id',
         'employee_id',
