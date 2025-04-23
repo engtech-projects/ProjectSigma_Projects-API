@@ -16,7 +16,6 @@ class ResourceItem extends Model
     protected $table = 'resources';
 
     protected $fillable = [
-        'project_id',
         'task_id',
         'name_id',
         'description',

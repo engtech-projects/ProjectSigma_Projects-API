@@ -22,17 +22,14 @@ class StoreResourceItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'project_id' => ['required', 'exists:projects,id'],
             'task_id' => ['required', 'exists:tasks,id'],
-            'items' => ['required', 'min:1', 'array'],
-            'items.*.id' => ['nullable', 'exists:resources,id'],
-            'items.*.name_id' => ['required', 'exists:resource_names,id'],
-            'items.*.description' => ['required', 'string'],
-            'items.*.quantity' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
-            'items.*.unit' => ['required', 'string'],
-            'items.*.unit_cost' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
-            'items.*.resource_count' => ['required', 'integer'],
-            'items.*.total_cost' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
+            'name_id' => ['required', 'exists:resource_names,id'],
+            'description' => ['required', 'string'],
+            'quantity' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
+            'unit' => ['required', 'string'],
+            'unit_cost' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
+            'resource_count' => ['required', 'integer'],
+            'total_cost' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
         ];
     }
 }
