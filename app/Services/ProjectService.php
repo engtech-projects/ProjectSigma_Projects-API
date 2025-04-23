@@ -33,6 +33,21 @@ class ProjectService
         });
     }
 
+    public function withPagination(array $attr)
+    {
+        $query  = Project::query();
+
+        $query->when(isset($attr['key']), function ($query) use ($attr) {
+            $query->where('name', 'like', "%{$attr['key']}%")
+                ->orWhere('code', 'like', "%{$attr['key']}%");
+        });
+        $query->when(isset($attr['status']), function ($query) use ($attr) {
+            $query->where('stage', $attr['status']);
+        });
+        $query->with('phases.tasks');
+        return $query->paginate(config('services.pagination.limit'));
+    }
+
     public function update(Project $project, array $attr)
     {
         return DB::transaction(function () use ($project, $attr) {
