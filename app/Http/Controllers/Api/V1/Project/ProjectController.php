@@ -99,7 +99,7 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        return response()->json(new ProjectResource($project), 200);
+        return response()->json(new ProjectCollection($project), 200);
     }
 
     /**

@@ -2,6 +2,9 @@
 
 namespace App\Services;
 
+use App\Enums\ProjectStage;
+use App\Enums\ProjectStatus;
+use App\Http\Resources\Project\ProjectCollection;
 use App\Models\Phase;
 use App\Models\Project;
 use App\Models\Task;
@@ -20,11 +23,9 @@ class ProjectService
     public function create(array $attr)
     {
         return DB::transaction(function () use ($attr) {
-
+            $attr['stage'] = ProjectStage::DRAFT->value;
+            $attr['created_by'] = auth()->user()->id;
             $data = Project::create($attr);
-            $data->projectDesignation()->create([
-                'employee_id' => $attr['employee_id'],
-            ]);
 
             return new JsonResponse([
                 'message' => 'Project created successfully.',
@@ -42,10 +43,14 @@ class ProjectService
                 ->orWhere('code', 'like', "%{$attr['key']}%");
         });
         $query->when(isset($attr['status']), function ($query) use ($attr) {
+            if ($attr['status'] === ProjectStatus::DRAFT->value)
+            {
+                $query->where('created_by', auth()->user()->id);
+            }
             $query->where('stage', $attr['status']);
         });
         $query->with('phases.tasks');
-        return $query->paginate(config('services.pagination.limit'));
+        return ProjectCollection::collection($query->paginate(config('services.pagination.limit')))->response()->getData(true);
     }
 
     public function update(Project $project, array $attr)
