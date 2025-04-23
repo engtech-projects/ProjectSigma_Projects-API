@@ -8,6 +8,7 @@ use App\Http\Resources\Task\TaskCollection;
 use App\Models\Phase;
 use App\Models\Project;
 use App\Services\ProjectService;
+use App\Services\TaskService;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
@@ -43,15 +44,13 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTaskRequest $request, ProjectService $projectService)
+    public function store(StoreTaskRequest $request)
     {
         $validated = $request->validated();
-        $phase = Phase::find($validated['phase_id']);
-        $result = $projectService->addTasks($phase, $validated['tasks']);
 
         return response()->json([
             'message' => 'Project tasks added successfully.',
-            'data' => new TaskCollection($result),
+            'data' => TaskService::create($validated),
         ], 201);
     }
 
@@ -60,7 +59,11 @@ class TaskController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $task = TaskService::show($id);
+        return response()->json([
+            'message' => 'Project tasks fetched successfully.',
+            'data' => $task,
+        ], 200);
     }
 
     /**

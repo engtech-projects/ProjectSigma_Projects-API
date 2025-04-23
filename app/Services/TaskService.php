@@ -29,8 +29,13 @@ class TaskService
         return $this->task->all($request);
     }
 
-    public function create(array $attr)
+    public static function create(array $attr)
     {
+        // add addional required
+        $attr['quantity'] = 0;
+        $attr['unit'] = 0;
+        $attr['unit_price'] = 0;
+        $attr['amount'] = 0;
         return DB::transaction(function () use ($attr) {
             $data = Task::create($attr);
 
@@ -45,6 +50,10 @@ class TaskService
 
             return $task;
         });
+    }
+    public static function show($id)
+    {
+        return Task::find($id);
     }
 
     public function delete(Task $task)

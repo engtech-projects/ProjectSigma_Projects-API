@@ -26,10 +26,6 @@ class UpdateTaskRequest extends FormRequest
             'phase_id' => ['required', 'exists:phases,id'],
             'name' => ['required', 'string'],
             'description' => ['required', 'string'],
-            'quantity' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
-            'unit' => ['required', 'string'],
-            'unit_price' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
-            'amount' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
         ];
     }
 }

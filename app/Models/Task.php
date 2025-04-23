@@ -16,7 +16,6 @@ class Task extends Model
     protected $table = 'tasks';
 
     protected $fillable = [
-        'project_id',
         'phase_id',
         'name',
         'description',
@@ -40,11 +39,6 @@ class Task extends Model
     public function phase(): BelongsTo
     {
         return $this->belongsTo(Phase::class);
-    }
-
-    public function project(): BelongsTo
-    {
-        return $this->belongsTo(Project::class);
     }
 
     public function resources(): HasMany
