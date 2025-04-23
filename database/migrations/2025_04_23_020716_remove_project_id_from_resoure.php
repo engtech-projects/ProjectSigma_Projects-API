@@ -11,9 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS = 0');
         Schema::table('resources', function (Blueprint $table) {
+            $table->dropForeign('resources_project_id_foreign');
             $table->dropColumn('project_id');
         });
+        DB::statement('SET FOREIGN_KEY_CHECKS = 1');
     }
 
     /**
