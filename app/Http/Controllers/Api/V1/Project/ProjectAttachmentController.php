@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api\V1\Project;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Project;
-use App\Models\Attachment;
-use App\Traits\Upload;
 use App\Http\Requests\Attachment\StoreAttachmentRequest;
+use App\Models\Attachment;
+use App\Models\Project;
+use App\Traits\Upload;
+use Illuminate\Http\Request;
 
 class ProjectAttachmentController extends Controller
 {
@@ -16,9 +16,9 @@ class ProjectAttachmentController extends Controller
     public function store(StoreAttachmentRequest $request, Project $project)
     {
         $validated = $request->validated();
-        
+
         foreach ($request->file('attachments') as $attachment) {
-           
+
             $path = $this->uploadFile($attachment, "projects/{$project->id}");
 
             $project->attachments()->create([

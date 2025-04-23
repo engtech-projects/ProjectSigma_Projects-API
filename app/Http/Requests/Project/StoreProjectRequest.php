@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests\Project;
 
+use App\Enums\ProjectStage;
+use App\Enums\ProjectStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Enums\ProjectStatus;
-use App\Enums\ProjectStage;
 
 class StoreProjectRequest extends FormRequest
 {
@@ -25,21 +25,20 @@ class StoreProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-			'parent_project_id' => ['nullable', 'exists:projects,id'],
-			'contract_id' => ['required', 'string'],
-			'code' => ['nullable', 'string', 'unique:projects,code'],
-			'name' => ['required', 'string'],
-			'location' => ['required', 'string'],
-			'amount' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
-			'contract_date' => ['nullable','date', 'date_format:Y-m-d'],
-			'duration' => ['required', 'string'],
-			'noa_date' => ['nullable','date', 'date_format:Y-m-d'],
-			'ntp_date' => ['nullable','date', 'date_format:Y-m-d'],
-			'license'=> ['nullable', 'string'],
-			'nature_of_work' => ['nullable', 'string'],
-			'stage' => [Rule::enum(ProjectStage::class)],
-			'status' => [Rule::enum(ProjectStatus::class)],
-
+            'contract_id' => ['required', 'string'],
+            'code' => ['nullable', 'string', 'unique:projects,code'],
+            'name' => ['required', 'string'],
+            'location' => ['required', 'string'],
+            'amount' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
+            'contract_date' => ['nullable', 'date', 'date_format:Y-m-d'],
+            'duration' => ['required', 'string'],
+            'noa_date' => ['nullable', 'date', 'date_format:Y-m-d'],
+            'ntp_date' => ['nullable', 'date', 'date_format:Y-m-d'],
+            'license' => ['nullable', 'string'],
+            'employee_id' => ['required', 'exists:employees,id'],
+            'nature_of_work' => ['nullable', 'string'],
+            'stage' => [Rule::enum(ProjectStage::class)],
+            'status' => [Rule::enum(ProjectStatus::class)],
         ];
     }
 }

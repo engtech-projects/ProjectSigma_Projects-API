@@ -4,11 +4,10 @@ namespace App\Http\Resources\Project;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use App\Http\Resources\Project\ProjectResource;
 
 class ProjectCollection extends ResourceCollection
-{	
-	public static $wrap = 'projects';
+{
+    public static $wrap = 'projects';
 
     /**
      * Transform the resource collection into an array.
@@ -17,8 +16,8 @@ class ProjectCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-		return $this->collection->transform(function ($project){
-			return new ProjectResource($project);
-		})->toArray();
+        return $this->collection->transform(function ($project) {
+            return new ProjectResource($project);
+        })->toArray();
     }
 }

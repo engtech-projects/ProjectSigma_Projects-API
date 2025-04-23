@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -11,7 +10,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('projects', function($table) {
+        Schema::table('projects', function ($table) {
             $table->string('project_identifier')->nullable();
             $table->string('implementing_office')->nullable();
         });
@@ -22,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('projects', function($table) {
+        Schema::table('projects', function ($table) {
             $table->dropColumn('project_identifier');
             $table->dropColumn('implementing_office');
         });

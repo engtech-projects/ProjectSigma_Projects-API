@@ -16,7 +16,7 @@ class DBTransactionException extends Exception
     /**
      * Constructor to initialize the exception with a message and status code.
      */
-    public function __construct(string $message = "Database transaction failed", int $statusCode = 500)
+    public function __construct(string $message = 'Database transaction failed', int $statusCode = 500)
     {
         parent::__construct($message);
         $this->statusCode = $statusCode;

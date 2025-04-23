@@ -1,0 +1,1062 @@
+openapi: 3.0.0
+info:
+  title: API Documentation
+  description: API endpoints for the application
+  version: 1.0.0
+
+paths:
+  # Secret API Routes
+  /api/sigma/sync/users:
+    get:
+      tags:
+        - Sigma Services
+      summary: Sync users from Sigma
+      operationId: syncUsers
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - secretApiKey: []
+
+  /api/sigma/sync/employees:
+    get:
+      tags:
+        - Sigma Services
+      summary: Sync employees from Sigma
+      operationId: syncEmployees
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - secretApiKey: []
+
+  /api/sigma/sync/item-profiles:
+    get:
+      tags:
+        - Sigma Services
+      summary: Sync item profiles from Sigma
+      operationId: syncItemProfiles
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - secretApiKey: []
+
+  /api/sigma/sync/suppliers:
+    get:
+      tags:
+        - Sigma Services
+      summary: Sync suppliers from Sigma
+      operationId: syncSuppliers
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - secretApiKey: []
+
+  /api/sigma/sync/units:
+    get:
+      tags:
+        - Sigma Services
+      summary: Sync units from Sigma
+      operationId: syncUnits
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - secretApiKey: []
+
+  # Auth API Routes
+  /api/user:
+    get:
+      tags:
+        - User
+      summary: Get authenticated user
+      operationId: getAuthUser
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResource'
+      security:
+        - bearerAuth: []
+
+  /api/project-status:
+    get:
+      tags:
+        - Projects
+      summary: Get all project statuses
+      operationId: getProjectStatuses
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+      security:
+        - bearerAuth: []
+
+  /api/project-stage:
+    get:
+      tags:
+        - Projects
+      summary: Get all project stages
+      operationId: getProjectStages
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+      security:
+        - bearerAuth: []
+
+  /api/resource-names:
+    get:
+      tags:
+        - Resources
+      summary: Get all resource names
+      operationId: getResourceNames
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResourceName'
+      security:
+        - bearerAuth: []
+
+  /api/projects:
+    get:
+      tags:
+        - Projects
+      summary: Get all projects
+      operationId: getProjects
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Projects
+      summary: Create a new project
+      operationId: createProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '201':
+          description: Project created successfully
+      security:
+        - bearerAuth: []
+
+  /api/projects/{projectId}:
+    get:
+      tags:
+        - Projects
+      summary: Get project by ID
+      operationId: getProjectById
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Projects
+      summary: Update project
+      operationId: updateProject
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        '200':
+          description: Project updated successfully
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Projects
+      summary: Delete project
+      operationId: deleteProject
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Project deleted successfully
+      security:
+        - bearerAuth: []
+
+  /api/original/projects:
+    get:
+      tags:
+        - Projects
+      summary: Get original projects
+      operationId: getOriginalProjects
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+
+  /api/revised/projects:
+    get:
+      tags:
+        - Projects
+      summary: Get revised projects
+      operationId: getRevisedProjects
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+
+  /api/projects/{projectId}/archive:
+    post:
+      tags:
+        - Projects
+      summary: Archive a project
+      operationId: archiveProject
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Project archived successfully
+      security:
+        - bearerAuth: []
+
+  /api/projects/{projectId}/complete:
+    post:
+      tags:
+        - Projects
+      summary: Mark project as complete
+      operationId: completeProject
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Project marked as complete
+      security:
+        - bearerAuth: []
+
+  /api/projects/{projectId}/status:
+    patch:
+      tags:
+        - Projects
+      summary: Update project status
+      operationId: updateProjectStatus
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+      responses:
+        '200':
+          description: Project status updated successfully
+      security:
+        - bearerAuth: []
+
+  /api/projects/{projectId}/replicate:
+    post:
+      tags:
+        - Projects
+      summary: Clone/duplicate a project
+      operationId: replicateProject
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Project cloned successfully
+      security:
+        - bearerAuth: []
+
+  /api/projects/{projectId}/attachments:
+    post:
+      tags:
+        - Projects
+      summary: Add attachment to project
+      operationId: addProjectAttachment
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Attachment added successfully
+      security:
+        - bearerAuth: []
+
+  /api/attachments/{attachmentId}/remove:
+    delete:
+      tags:
+        - Projects
+      summary: Remove attachment
+      operationId: removeAttachment
+      parameters:
+        - name: attachmentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Attachment removed successfully
+      security:
+        - bearerAuth: []
+
+  /api/phases:
+    get:
+      tags:
+        - Phases
+      summary: Get all phases
+      operationId: getPhases
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Phases
+      summary: Create a new phase
+      operationId: createPhase
+      responses:
+        '201':
+          description: Phase created successfully
+      security:
+        - bearerAuth: []
+
+  /api/phases/{phaseId}:
+    get:
+      tags:
+        - Phases
+      summary: Get phase by ID
+      operationId: getPhaseById
+      parameters:
+        - name: phaseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Phases
+      summary: Update phase
+      operationId: updatePhase
+      parameters:
+        - name: phaseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Phase updated successfully
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Phases
+      summary: Delete phase
+      operationId: deletePhase
+      parameters:
+        - name: phaseId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Phase deleted successfully
+      security:
+        - bearerAuth: []
+
+  /api/tasks:
+    get:
+      tags:
+        - Tasks
+      summary: Get all tasks
+      operationId: getTasks
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Tasks
+      summary: Create a new task
+      operationId: createTask
+      responses:
+        '201':
+          description: Task created successfully
+      security:
+        - bearerAuth: []
+
+  /api/tasks/{taskId}:
+    get:
+      tags:
+        - Tasks
+      summary: Get task by ID
+      operationId: getTaskById
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Tasks
+      summary: Update task
+      operationId: updateTask
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Task updated successfully
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Tasks
+      summary: Delete task
+      operationId: deleteTask
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Task deleted successfully
+      security:
+        - bearerAuth: []
+
+  /api/resource-items:
+    get:
+      tags:
+        - Resources
+      summary: Get all resource items
+      operationId: getResourceItems
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Resources
+      summary: Create a new resource item
+      operationId: createResourceItem
+      responses:
+        '201':
+          description: Resource item created successfully
+      security:
+        - bearerAuth: []
+
+  /api/resource-items/{resourceItemId}:
+    get:
+      tags:
+        - Resources
+      summary: Get resource item by ID
+      operationId: getResourceItemById
+      parameters:
+        - name: resourceItemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Resources
+      summary: Update resource item
+      operationId: updateResourceItem
+      parameters:
+        - name: resourceItemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Resource item updated successfully
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Resources
+      summary: Delete resource item
+      operationId: deleteResourceItem
+      parameters:
+        - name: resourceItemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Resource item deleted successfully
+      security:
+        - bearerAuth: []
+
+  /api/revisions:
+    get:
+      tags:
+        - Revisions
+      summary: Get all revisions
+      operationId: getRevisions
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+
+  /api/revisions/{revisionId}:
+    get:
+      tags:
+        - Revisions
+      summary: Get revision by ID
+      operationId: getRevisionById
+      parameters:
+        - name: revisionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+
+  /api/revisions/{projectId}/request:
+    post:
+      tags:
+        - Revisions
+      summary: Request revision for a project
+      operationId: requestRevision
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Revision requested successfully
+      security:
+        - bearerAuth: []
+
+  /api/revisions/{revisionId}/approve:
+    post:
+      tags:
+        - Revisions
+      summary: Approve revision
+      operationId: approveRevision
+      parameters:
+        - name: revisionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Revision approved successfully
+      security:
+        - bearerAuth: []
+
+  /api/revisions/{revisionId}/reject:
+    post:
+      tags:
+        - Revisions
+      summary: Reject revision
+      operationId: rejectRevision
+      parameters:
+        - name: revisionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Revision rejected successfully
+      security:
+        - bearerAuth: []
+
+  /api/roles:
+    get:
+      tags:
+        - Roles
+      summary: Get all roles
+      operationId: getRoles
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Roles
+      summary: Create a new role
+      operationId: createRole
+      responses:
+        '201':
+          description: Role created successfully
+      security:
+        - bearerAuth: []
+
+  /api/roles/{roleId}:
+    get:
+      tags:
+        - Roles
+      summary: Get role by ID
+      operationId: getRoleById
+      parameters:
+        - name: roleId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Roles
+      summary: Update role
+      operationId: updateRole
+      parameters:
+        - name: roleId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Role updated successfully
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Roles
+      summary: Delete role
+      operationId: deleteRole
+      parameters:
+        - name: roleId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Role deleted successfully
+      security:
+        - bearerAuth: []
+
+  /api/permissions:
+    get:
+      tags:
+        - Permissions
+      summary: Get all permissions
+      operationId: getPermissions
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Permissions
+      summary: Create a new permission
+      operationId: createPermission
+      responses:
+        '201':
+          description: Permission created successfully
+      security:
+        - bearerAuth: []
+
+  /api/permissions/{permissionId}:
+    get:
+      tags:
+        - Permissions
+      summary: Get permission by ID
+      operationId: getPermissionById
+      parameters:
+        - name: permissionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Permissions
+      summary: Update permission
+      operationId: updatePermission
+      parameters:
+        - name: permissionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Permission updated successfully
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Permissions
+      summary: Delete permission
+      operationId: deletePermission
+      parameters:
+        - name: permissionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Permission deleted successfully
+      security:
+        - bearerAuth: []
+
+  /api/logs:
+    get:
+      tags:
+        - Logs
+      summary: Get all logs
+      operationId: getLogs
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Logs
+      summary: Create a new log
+      operationId: createLog
+      responses:
+        '201':
+          description: Log created successfully
+      security:
+        - bearerAuth: []
+
+  /api/logs/{logId}:
+    get:
+      tags:
+        - Logs
+      summary: Get log by ID
+      operationId: getLogById
+      parameters:
+        - name: logId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Logs
+      summary: Update log
+      operationId: updateLog
+      parameters:
+        - name: logId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Log updated successfully
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Logs
+      summary: Delete log
+      operationId: deleteLog
+      parameters:
+        - name: logId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Log deleted successfully
+      security:
+        - bearerAuth: []
+
+  /api/employees:
+    get:
+      tags:
+        - Employees
+      summary: Get all employees
+      operationId: getAllEmployees
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+
+  /api/employee/{employeeId}:
+    get:
+      tags:
+        - Employees
+      summary: Get employee by ID
+      operationId: showEmployee
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+
+  /api/project-assignments/{projectId}/team:
+    get:
+      tags:
+        - Project Assignments
+      summary: Get project team assignments
+      operationId: getProjectTeam
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+
+  /api/project-assignments/{projectAssignmentId}:
+    get:
+      tags:
+        - Project Assignments
+      summary: Get project assignment by ID
+      operationId: getProjectAssignment
+      parameters:
+        - name: projectAssignmentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+
+  /api/project-assignments:
+    post:
+      tags:
+        - Project Assignments
+      summary: Create a new project assignment
+      operationId: createProjectAssignment
+      responses:
+        '201':
+          description: Project assignment created successfully
+      security:
+        - bearerAuth: []
+
+  /api/positions:
+    get:
+      tags:
+        - Positions
+      summary: Get all positions
+      operationId: getPositions
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - Positions
+      summary: Create a new position
+      operationId: createPosition
+      parameters:
+        - name: name
+          in: body
+          required: true
+          schema:
+            type: string
+          description: The name of the position
+        - name: description
+          in: body
+          required: true
+          schema:
+            type: string
+          description: A brief description of the position
+      responses:
+        '201':
+          description: Position created successfully
+      security:
+        - bearerAuth: []
+
+  /api/positions/{positionId}:
+    get:
+      tags:
+        - Positions
+      summary: Get position by ID
+      operationId: getPositionById
+      parameters:
+        - name: positionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+      security:
+        - bearerAuth: []
+    put:
+      tags:
+        - Positions
+      summary: Update position
+      operationId: updatePosition
+      parameters:
+        - name: positionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Position updated successfully
+      security:
+        - bearerAuth: []
+    delete:
+      tags:
+        - Positions
+      summary: Delete position
+      operationId: deletePosition
+      parameters:
+        - name: positionId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Position deleted successfully
+      security:
+        - bearerAuth: []

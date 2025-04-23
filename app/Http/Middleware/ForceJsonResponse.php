@@ -16,8 +16,8 @@ class ForceJsonResponse
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
-        
-        if( $request->is('api/*') ) {
+
+        if ($request->is('api/*')) {
             $response->headers->set('Content-Type', 'application/json');
         }
 

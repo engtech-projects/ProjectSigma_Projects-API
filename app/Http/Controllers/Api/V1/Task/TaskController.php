@@ -3,24 +3,34 @@
 namespace App\Http\Controllers\Api\V1\Task;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\Task\StoreTaskRequest;
+use App\Http\Resources\Task\TaskCollection;
 use App\Models\Phase;
 use App\Models\Project;
-use App\Models\Task;
-use App\Http\Resources\Task\TaskCollection;
-use App\Http\Resources\Task\TaskResource;
-use App\Http\Requests\Task\StoreTaskRequest;
-use App\Http\Requests\Task\UpdateTaskRequest;
 use App\Services\ProjectService;
+use App\Services\TaskService;
+use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+
+        if ($request->has('project_id')) {
+            $project = Project::find($request->project_id);
+
+            return response()->json($project->load('tasks'), 200);
+        }
+
+        if ($request->has('phase_id')) {
+            $phase = Phase::find($request->phase_id);
+
+            return response()->json($phase->load('tasks'), 200);
+        }
+
     }
 
     /**
@@ -34,26 +44,14 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTaskRequest $request, ProjectService $projectService)
+    public function store(StoreTaskRequest $request)
     {
         $validated = $request->validated();
 
-		// return $validated;
-		$phase = Phase::find($validated['phase_id']);
-		
-		$result = $projectService->addTasks($phase, $validated['tasks']);
-
-		if (isset($result['error'])) {
-			return response()->json([
-				'message' => 'Failed to add Project tasks.',
-				'error' => $result['error']
-			], 500);
-		}
-
-		return response()->json([
-			'message' => 'Project tasks added successfully.',
-			'data' => $result
-		], 201);
+        return response()->json([
+            'message' => 'Project tasks added successfully.',
+            'data' => TaskService::create($validated),
+        ], 201);
     }
 
     /**
@@ -61,7 +59,11 @@ class TaskController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $task = TaskService::show($id);
+        return response()->json([
+            'message' => 'Project tasks fetched successfully.',
+            'data' => $task,
+        ], 200);
     }
 
     /**

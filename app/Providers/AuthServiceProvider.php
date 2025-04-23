@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
 use App\Guards\AuthTokenGuard;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+
+// use Spatie\Permission\Models\Permission;
+// use Auth;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -22,7 +24,6 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->registerPolicies();
         $this->app['auth']->extend(
             'hrms-auth',
             function ($app, $name, array $config) {
@@ -30,6 +31,7 @@ class AuthServiceProvider extends ServiceProvider
                     $app['request']
                 );
                 $app->refresh('request', $guard, 'setRequest');
+
                 return $guard;
             }
         );

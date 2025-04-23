@@ -4,7 +4,6 @@ namespace App\Http\Resources\ResourceItem;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use App\Http\Resources\ResourceItemResource;
 
 class ResourceItemCollection extends ResourceCollection
 {
@@ -17,8 +16,8 @@ class ResourceItemCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-		return $this->collection->transform(function ($resourceItem){
-			return new ResourceItemResource($resourceItem);
-		})->toArray();
+        return $this->collection->transform(function ($resourceItem) {
+            return new ResourceItemResource($resourceItem);
+        })->toArray();
     }
 }

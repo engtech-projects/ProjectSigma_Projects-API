@@ -6,20 +6,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 class Phase extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-	protected $table = "phases";
+    protected $table = 'phases';
 
-	protected $fillable = [
-		'project_id',
-		'name',
-		'description',
-		'total_cost',
-	];
+    protected $fillable = [
+        'project_id',
+        'name',
+        'description',
+        'total_cost',
+    ];
 
     protected static function boot()
     {
@@ -32,14 +33,13 @@ class Phase extends Model
         });
     }
 
-	public function project() : BelongsTo
-	{
-		return $this->belongsTo(Project::class);
-	}
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
 
-	public function tasks() : HasMany
-	{
-		return $this->hasMany(Task::class);
-	}
-
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
 }

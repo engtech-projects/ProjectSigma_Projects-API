@@ -67,5 +67,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'optimizeImages' => \Spatie\LaravelImageOptimizer\Middlewares\OptimizeImages::class,
         // 'force.json' => \App\Http\Middleware\ForceJsonResponse::class,
+        'secret_api' => \App\Http\Middleware\SecretApiKey::class,
     ];
 }

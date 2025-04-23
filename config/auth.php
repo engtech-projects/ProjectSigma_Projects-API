@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'api',
         'passwords' => 'users',
     ],
 
@@ -66,11 +66,11 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => \App\Models\User::class
+            'model' => \App\Models\User::class,
         ],
         'hrms_users' => [
             'driver' => 'eloquent',
-            'model' => \App\Models\HrmsUser::class
+            'model' => \App\Models\HrmsUser::class,
         ],
 
         // 'users' => [

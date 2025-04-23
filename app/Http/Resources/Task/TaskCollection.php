@@ -7,17 +7,18 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class TaskCollection extends ResourceCollection
 {
-	public static $wrap = 'tasks';
+    public static $wrap = 'tasks';
+
     /**
      * Transform the resource collection into an array.
      *
      * @return array<int|string, mixed>
      */
     public function toArray(Request $request): array
-    {	
-		return $this->collection->transform(function ($task){
-			return new TaskResource($task);
-		})->toArray();
-	
-	}
+    {
+        return $this->collection->transform(function ($task) {
+            return new TaskResource($task);
+        })->toArray();
+
+    }
 }

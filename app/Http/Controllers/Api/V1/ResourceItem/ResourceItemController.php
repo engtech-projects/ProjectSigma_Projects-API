@@ -3,14 +3,12 @@
 namespace App\Http\Controllers\Api\V1\ResourceItem;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Task;
-use App\Models\ResourceItem;
-use App\Http\Resources\ResourceItem\ResourceItemCollection;
-use App\Http\Resources\ResourceItem\ResourceItemResource;
 use App\Http\Requests\ResourceItem\StoreResourceItemRequest;
 use App\Http\Requests\ResourceItem\UpdateResourceItemRequest;
+use App\Models\ResourceItem;
+use App\Models\Task;
 use App\Services\ProjectService;
+use App\Services\ResourceService;
 
 class ResourceItemController extends Controller
 {
@@ -25,34 +23,20 @@ class ResourceItemController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        
-    }
+    public function create() {}
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreResourceItemRequest $request, ProjectService $projectService)
+    public function store(StoreResourceItemRequest $request)
     {
         $validated = $request->validated();
+        $result = ResourceService::create($validated);
 
-		// return $validated;
-		$task = Task::find($validated['task_id']);
-		
-		$result = $projectService->addResources($task, $validated['items']);
-
-		if (isset($result['error'])) {
-			return response()->json([
-				'message' => 'Failed to allocate resources.',
-				'error' => $result['error']
-			], 500);
-		}
-
-		return response()->json([
-			'message' => 'task resource allocation added successfully.',
-			'data' => $result
-		], 201);
+        return response()->json([
+            'message' => 'task resource allocation added successfully.',
+            'data' => $result,
+        ], 201);
     }
 
     /**
@@ -60,7 +44,9 @@ class ResourceItemController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return response()->json([
+            'data' => $id,
+        ], 201);
     }
 
     /**
@@ -74,9 +60,17 @@ class ResourceItemController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateResourceItemRequest $request, ResourceItem $resourceItem)
     {
-        //
+        $validated = $request->validated();
+
+        $resourceItem->fill($validated)->save();
+
+        return response()->json([
+            'message' => 'Updated.',
+            'data' => $resourceItem,
+        ], 201);
+
     }
 
     /**

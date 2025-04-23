@@ -2,15 +2,11 @@
 
 namespace App\Services;
 
-use App\Enums\ProjectStatus;
-use App\Exceptions\DBTransactionException;
-use App\Models\Project;
 use App\Models\Phase;
+use App\Models\Project;
 use App\Models\Task;
-use Carbon\Carbon;
-use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
-use Throwable;
 
 class ProjectService
 {
@@ -21,98 +17,126 @@ class ProjectService
         $this->project = $project;
     }
 
-	public function create(array $attr)
-	{
-		try {
-			return DB::transaction(function () use ($attr) {
-				return Project::create($attr);
-			});
-		} catch (\Throwable $e) {
-			// Return response
-			return ['error' => $e->getMessage()];
-		}
-	}
-
-	public function update(Project $project, array $attr)
-	{
-		try {
-		
-			DB::transaction(function () use ($project, $attr) {
-				$project->fill($attr)->save();
-			});
-	
-			return $project;
-		} catch (\Throwable $e) {
-			// Log the exception for debugging purposes
-			// Log::error('Project Update Error: ' . $e->getMessage(), ['exception' => $e]);
-			// Return response
-			return ['error' => $e->getMessage()];
-		}
-	}
-
-	public function addPhases(Project $project, array $attr)
-	{
-		try {
-		
-			DB::transaction(function () use ($project, $attr) {
-				foreach ($attr as $phase) {
-					$project->phases()->updateOrCreate(
-						['id' => $phase['id'] ?? null], // Match id
-						$phase // Data to update or create
-					);
-				}
-			});
-			
-			return $project->phases()->get();
-		} catch (\Throwable $e) {
-			// Return response
-			return ['error' => $e->getMessage()];
-		}
-	}
-
-	public function addTasks(Phase $phase, array $attr)
-	{
-		try {
-		
-			DB::transaction(function () use ($phase, $attr) {
-				foreach ($attr as $task) {
-					$phase->tasks()->updateOrCreate(
-						['id' => $task['id'] ?? null], // Match id
-						$task // Data to update or create
-					);
-				}
-			});
-	
-			return $phase->tasks()->get();
-		} catch (\Throwable $e) {
-			// Return response
-			return ['error' => $e->getMessage()];
-		}
-	}
-
-	public function addResources(Task $task, array $attr)
-	{
-		try {
-		
-			DB::transaction(function () use ($task, $attr) {
-                foreach ($attr as $item) {
-					$task->resources()->updateOrCreate(
-						['id' => $item['id'] ?? null], // Match id
-						$item // Data to update or create
-					);
-				}
-				
-			});
-	
-			return $task->resources()->get();
-		} catch (\Throwable $e) {
-			// Return response
-			return ['error' => $e->getMessage()];
-		}
-	}
-
-    public function generateBillofQuantities()
+    public function create(array $attr)
     {
-        
+        return DB::transaction(function () use ($attr) {
+
+            $data = Project::create($attr);
+            $data->projectDesignation()->create([
+                'employee_id' => $attr['employee_id'],
+            ]);
+
+            return new JsonResponse([
+                'message' => 'Project created successfully.',
+                'data' => $data,
+            ], 201);
+        });
+    }
+
+    public function withPagination(array $attr)
+    {
+        $query  = Project::query();
+
+        $query->when(isset($attr['key']), function ($query) use ($attr) {
+            $query->where('name', 'like', "%{$attr['key']}%")
+                ->orWhere('code', 'like', "%{$attr['key']}%");
+        });
+        $query->when(isset($attr['status']), function ($query) use ($attr) {
+            $query->where('stage', $attr['status']);
+        });
+        $query->with('phases.tasks');
+        return $query->paginate(config('services.pagination.limit'));
+    }
+
+    public function update(Project $project, array $attr)
+    {
+        return DB::transaction(function () use ($project, $attr) {
+            $project->fill($attr)->save();
+
+            return new JsonResponse([
+                'message' => 'Project updated successfully.',
+                'data' => $project,
+            ], 200);
+        });
+    }
+
+    public function assignTeam(Project $project, array $attr)
+    {
+        return DB::transaction(function () use ($project, $attr) {
+            foreach ($attr as $personnel) {
+                $personnel['project_id'] = $project->id;
+                $project->team()->updateOrCreate(
+                    ['id' => $personnel['id'] ?? null], // Match id
+                    $personnel // Data to update or create
+                );
+            }
+
+            return new JsonResponse([
+                'message' => 'Team assigned successfully.',
+                'data' => $project->team()->get(),
+            ], 200);
+        });
+    }
+
+    public function addPhases(Project $project, array $attr)
+    {
+        DB::transaction(function () use ($project, $attr) {
+            foreach ($attr as $phase) {
+                $project->phases()->updateOrCreate(
+                    ['id' => $phase['id'] ?? null], // Match id
+                    $phase // Data to update or create
+                );
+            }
+        });
+
+        return new JsonResponse([
+            'message' => 'Phases added successfully.',
+            'data' => $project->phases()->get(),
+        ], 200);
+    }
+
+    public function addTasks(Phase $phase, array $attr)
+    {
+        DB::transaction(function () use ($phase, $attr) {
+            foreach ($attr as $task) {
+                $task['project_id'] = $phase->project_id;
+                $phase->tasks()->updateOrCreate(
+                    ['id' => $task['id'] ?? null], // Match id
+                    $task // Data to update or create
+                );
+            }
+        });
+
+        return new JsonResponse([
+            'message' => 'Tasks added successfully.',
+            'data' => $phase->tasks()->get(),
+        ], 200);
+    }
+
+    public function addResources(Task $task, array $attr)
+    {
+        DB::transaction(function () use ($task, $attr) {
+
+            DB::transaction(function () use ($task, $attr) {
+                foreach ($attr as $item) {
+                    $item['project_id'] = $task->project_id;
+                    $task->resources()->updateOrCreate(
+                        ['id' => $item['id'] ?? null], // Match id
+                        $item // Data to update or create
+                    );
+                }
+
+            });
+
+            return new JsonResponse([
+                'message' => 'Resources added successfully.',
+                'data' => $task->resources()->get(),
+            ], 200);
+        });
+
+        return new JsonResponse([
+            'message' => 'Resources added successfully.',
+            'data' => [],
+        ], 200);
     }
 }

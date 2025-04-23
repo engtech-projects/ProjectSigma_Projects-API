@@ -3,19 +3,19 @@
 namespace App\Guards;
 
 use App\Models\HrmsUser;
+use App\Models\User;
 use Illuminate\Auth\GuardHelpers;
 use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Laravel\Sanctum;
 
 class AuthTokenGuard implements Guard
 {
     use GuardHelpers;
 
     protected $request;
+
     protected $hrmsApiUrl;
 
     public function __construct(Request $request)
@@ -30,25 +30,30 @@ class AuthTokenGuard implements Guard
         if ($this->user !== null) {
             return $this->user;
         }
+
         $token = $this->request->bearerToken();
 
-        $response = Http::acceptJson()->throw()->withToken($token)->get($this->hrmsApiUrl . '/api/session');
+        $response = Http::acceptJson()->throw()->withToken($token)->get($this->hrmsApiUrl.'/api/session');
 
         Log::info($response);
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             return null;
         }
 
         if ($response->json()) {
-            $this->user = new HrmsUser();
+            $this->user = new User;
             $this->user->id = $response->json()['id'];
             $this->user->name = $response->json()['name'];
             $this->user->email = $response->json()['email'];
             $this->user->type = $response->json()['type'];
+            $this->user->token = $token;
+            $this->user->accessibilities = $response->json()['accessibilities'];
+            $this->user->accessibilities_name = $response->json()['accessibility_names'];
+            $this->user->employee = $response->json()['employee'];
         }
+
         return $this->user;
     }
-    public function validate(array $credentials = [])
-    {
-    }
+
+    public function validate(array $credentials = []) {}
 }

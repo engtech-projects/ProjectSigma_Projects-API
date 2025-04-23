@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers\Api\V1\Project;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Project;
-use App\Http\Requests\Project\UpdateProjectStatusRequest;
 use App\Enums\ProjectStatus;
-use App\Enums\ProjectStage;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Project\UpdateProjectStatusRequest;
+use App\Models\Project;
 
 class ProjectStatusController extends Controller
 {
@@ -31,5 +29,4 @@ class ProjectStatusController extends Controller
     {
         $project->complete();
     }
-
 }

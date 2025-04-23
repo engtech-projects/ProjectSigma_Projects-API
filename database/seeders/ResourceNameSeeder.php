@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\ResourceName;
+use Illuminate\Database\Seeder;
 
 class ResourceNameSeeder extends Seeder
 {
@@ -13,22 +12,22 @@ class ResourceNameSeeder extends Seeder
      */
     public function run(): void
     {
-		ResourceName::updateOrCreate([
-			'name' => 'Materials',
-			'category' => 'inventory',
-			'description' => 'Construction Materials',
-		]);
+        ResourceName::updateOrCreate([
+            'name' => 'Materials',
+            'category' => 'inventory',
+            'description' => 'Construction Materials',
+        ]);
 
-		ResourceName::updateOrCreate([
-			'name' => 'Labor',
-			'category' => 'service',
-			'description' => 'Labor Expense',
-		]);
+        ResourceName::updateOrCreate([
+            'name' => 'Labor',
+            'category' => 'service',
+            'description' => 'Labor Expense',
+        ]);
 
-		ResourceName::updateOrCreate([
-			'name' => 'Equipment',
-			'category' => 'service',
-			'description' => 'Equipment Rental',
-		]);
+        ResourceName::updateOrCreate([
+            'name' => 'Equipment',
+            'category' => 'service',
+            'description' => 'Equipment Rental',
+        ]);
     }
 }

@@ -5,20 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 class Attachment extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-	protected $table = "attachments";
+    protected $table = 'attachments';
 
-	protected $fillable = [
-		'project_id',
-		'name',
-		'path',
-		'mime_type',
-	];
+    protected $fillable = [
+        'project_id',
+        'name',
+        'path',
+        'mime_type',
+    ];
 
     protected static function boot()
     {
@@ -31,9 +32,8 @@ class Attachment extends Model
         });
     }
 
-	public function project() : BelongsTo
-	{
-		return $this->belongsTo(Project::class);
-	}
-
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
 }
