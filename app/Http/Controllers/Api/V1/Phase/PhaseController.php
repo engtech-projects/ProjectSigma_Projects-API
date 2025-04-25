@@ -21,7 +21,8 @@ class PhaseController extends Controller
     {
         // $validated = $request->validated();
         // $phases = PhaseService::withProjects($validated);
-        $phases =  PhaseService::withPagination($request->validated());
+        $phases = PhaseService::withPagination($request->validated());
+
         return response()->json([
             'message' => 'Phases retrieved successfully.',
             'data' => new PhaseCollection($phases),

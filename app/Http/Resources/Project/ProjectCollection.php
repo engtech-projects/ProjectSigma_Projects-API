@@ -16,7 +16,7 @@ class ProjectCollection extends JsonResource
     {
         return [
             ...parent::toArray($request),
-            'code' => $this->code ?? "NOT PROVIDED / DRAFT OR PROPOSAL"
+            'code' => $this->code ?? 'NOT PROVIDED / DRAFT OR PROPOSAL',
         ];
     }
 }

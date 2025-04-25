@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Phase;
 use App\Models\ResourceItem;
 use Illuminate\Support\Facades\DB;
 
@@ -38,6 +37,7 @@ class ResourceService
     {
         return DB::transaction(function () use ($request) {
             $data = ResourceItem::create($request);
+
             return $data;
         });
     }
