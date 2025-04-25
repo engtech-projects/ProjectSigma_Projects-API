@@ -4,10 +4,8 @@ namespace App\Http\Controllers\Api\V1\Task;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Task\StoreTaskRequest;
-use App\Http\Resources\Task\TaskCollection;
 use App\Models\Phase;
 use App\Models\Project;
-use App\Services\ProjectService;
 use App\Services\TaskService;
 use Illuminate\Http\Request;
 
@@ -60,6 +58,7 @@ class TaskController extends Controller
     public function show(string $id)
     {
         $task = TaskService::show($id);
+
         return response()->json([
             'message' => 'Project tasks fetched successfully.',
             'data' => $task,

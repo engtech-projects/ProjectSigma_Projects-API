@@ -36,20 +36,19 @@ class ProjectService
 
     public function withPagination(array $attr)
     {
-        $query  = Project::query();
+        $query = Project::query();
 
         $query->when(isset($attr['key']), function ($query) use ($attr) {
             $query->where('name', 'like', "%{$attr['key']}%")
                 ->orWhere('code', 'like', "%{$attr['key']}%");
         });
         $query->when(isset($attr['status']), function ($query) use ($attr) {
-            if ($attr['status'] === ProjectStatus::DRAFT->value)
-            {
+            if ($attr['status'] === ProjectStatus::DRAFT->value) {
                 $query->where('created_by', auth()->user()->id);
             }
             $query->where('stage', $attr['status']);
         });
-        $query->with('phases.tasks');
+
         return ProjectCollection::collection($query->paginate(config('services.pagination.limit')))->response()->getData(true);
     }
 
