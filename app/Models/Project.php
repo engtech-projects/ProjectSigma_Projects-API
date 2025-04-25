@@ -50,6 +50,7 @@ class Project extends Model
         'project_identifier',
         'implementing_office',
         'current_revision_id',
+        'created_by',
     ];
 
     /**
