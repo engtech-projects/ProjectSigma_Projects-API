@@ -27,7 +27,7 @@ class TaskCollection extends JsonResource
             'unit' => $this->unit,
             'unit_price' => $this->unit_price,
             'amount' => $this->amount,
-            'resources' => ResourceItemCollection::collection($this->resources),
+            'resources' => new ResourceItemCollection($this->resources),
         ];
     }
 }

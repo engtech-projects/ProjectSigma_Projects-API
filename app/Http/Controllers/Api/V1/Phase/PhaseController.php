@@ -23,7 +23,7 @@ class PhaseController extends Controller
 
         return response()->json([
             'message' => 'Phases retrieved successfully.',
-            'data' => PhaseCollection::collection($phases),
+            'data' => new PhaseCollection($phases),
         ], 200);
     }
 

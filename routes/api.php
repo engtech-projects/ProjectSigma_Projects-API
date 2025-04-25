@@ -56,7 +56,7 @@ Route::middleware('secret_api')->group(function () {
 Route::middleware('auth:api')->group(function () {
 
     Route::get('/user', function () {
-        return response()->json(UserCollection::collection(Auth::user()), 200);
+        return response()->json(new UserCollection(Auth::user()), 200);
     });
 
     Route::get('/project-status', function () {
