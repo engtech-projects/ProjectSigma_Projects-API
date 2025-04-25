@@ -45,7 +45,7 @@ class ProjectController extends Controller
             ->filter($filters)
             ->retrieve(true, $request->per_page);
 
-        return response()->json(new ProjectCollection($projects), 200);
+        return response()->json(ProjectCollection::collection($projects), 200);
     }
 
     /**
@@ -61,7 +61,7 @@ class ProjectController extends Controller
             ->filter($filters)
             ->retrieve(true, $request->per_page);
 
-        return response()->json(new ProjectCollection($projects), 200);
+        return response()->json(ProjectCollection::collection($projects), 200);
     }
 
     /**
@@ -76,7 +76,7 @@ class ProjectController extends Controller
             ->filter($filters)
             ->retrieve(true, $request->per_page);
 
-        return response()->json(new ProjectCollection($projects), 200);
+        return response()->json(ProjectCollection::collection($projects), 200);
     }
 
     /**
@@ -99,7 +99,7 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        return response()->json(new ProjectCollection($project->load('phases.tasks')), 200);
+        return response()->json(ProjectCollection::collection($project->load('phases.tasks')), 200);
     }
 
     /**

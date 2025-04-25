@@ -37,7 +37,7 @@ class RevisionController extends Controller
 
     public function show(Revision $revision)
     {
-        return response()->json(new RevisionCollection($revision), 200);
+        return response()->json(RevisionCollection::collection($revision), 200);
     }
 
     public function approve(Request $request, Revision $revision)

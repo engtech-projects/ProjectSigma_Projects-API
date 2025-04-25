@@ -31,7 +31,7 @@ class ReplicateProject extends Controller
 
             return response()->json([
                 'message' => 'Awarded Project can be viewed in ******.',
-                'replica' => new ProjectCollection($replica),
+                'replica' => ProjectCollection::collection($replica),
             ]);
         }
 

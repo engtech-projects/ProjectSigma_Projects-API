@@ -19,13 +19,11 @@ class PhaseController extends Controller
      */
     public function index(FilterPhraseRequest $request)
     {
-        // $validated = $request->validated();
-        // $phases = PhaseService::withProjects($validated);
         $phases = PhaseService::withPagination($request->validated());
 
         return response()->json([
             'message' => 'Phases retrieved successfully.',
-            'data' => new PhaseCollection($phases),
+            'data' => PhaseCollection::collection($phases),
         ], 200);
     }
 
