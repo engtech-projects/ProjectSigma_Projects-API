@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Http\Traits\ModelHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProjectDesignation extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, ModelHelper;
 
     protected $table = 'project_designation';
 

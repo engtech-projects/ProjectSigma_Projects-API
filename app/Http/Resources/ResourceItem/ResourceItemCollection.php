@@ -3,9 +3,9 @@
 namespace App\Http\Resources\ResourceItem;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\Resources\Json\JsonResource;
 
-class ResourceItemCollection extends ResourceCollection
+class ResourceItemCollection extends JsonResource
 {
     public static $wrap = 'resources';
 
@@ -16,8 +16,17 @@ class ResourceItemCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-        return $this->collection->transform(function ($resourceItem) {
-            return new ResourceItemResource($resourceItem);
-        })->toArray();
+        return [
+            'id' => $this->id,
+            'project_id' => $this->project_id,
+            'task_id' => $this->task_id,
+            'resource' => $this->resourceName,
+            'description' => $this->description,
+            'quantity' => $this->quantity,
+            'unit' => $this->unit,
+            'unit_cost' => $this->unit_cost,
+            'resource_count' => $this->resource_count,
+            'total_cost' => $this->total_cost,
+        ];
     }
 }

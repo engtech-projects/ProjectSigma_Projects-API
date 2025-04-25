@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api\V1\Command;
 
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
-use App\Models\ItemProfile;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -20,16 +19,7 @@ class ApiSyncController extends Controller
     {
         $this->token = $request->bearerToken();
 
-        // if( $request->has('users') )
-        // {
-        //     $this->users();
-        // }
-
-        // if( $request->has('employees') )
-        // {
         return $this->employees();
-        // }
-
     }
 
     public function users()
@@ -107,39 +97,4 @@ class ApiSyncController extends Controller
     }
 
     public function departments() {}
-
-    public function itemProfiles()
-    {
-        try {
-
-            $response = Http::withToken($this->token)
-                ->acceptJson()
-                ->get(config('services.url.hrms_api_url').'/api/employee/list');
-
-            if ($response->ok()) {
-
-                $items = $response->json()['data'] ?? [];
-
-                DB::transaction(function () {
-
-                    // foreach ($items as $item) {
-                    //     ItemProfile::updateOrCreate(
-                    //         ['item_id' => $item['id']], // Prevent duplicate items
-                    //         [
-                    //             'name' => $employee['first_name'],
-                    //             'unit' => $employee['middle_name'],
-                    //             'family_name' => $employee['family_name'],
-                    //             'deleted_at' => $employee['deleted_at'] ? Carbon::parse($employee['deleted_at'])->format('Y-m-d H:i:s') : null,
-                    //             'created_at' => $employee['created_at'] ? Carbon::parse($employee['created_at'])->format('Y-m-d H:i:s') : null,
-                    //             'updated_at' => $employee['updated_at'] ? Carbon::parse($employee['updated_at'])->format('Y-m-d H:i:s') : null,
-                    //         ]
-                    //     );
-                    // }
-                });
-            }
-
-        } catch (\Throwable $e) {
-            return ['error' => $e->getMessage()];
-        }
-    }
 }

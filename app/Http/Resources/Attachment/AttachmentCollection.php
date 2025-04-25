@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources\Employee;
+namespace App\Http\Resources\Attachment;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class EmployeeResource extends JsonResource
+class AttachmentCollection extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,8 +16,10 @@ class EmployeeResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'employee_id' => $this->employee_id,
-            'name' => $this->getFormattedFullname('last_first'),
+            'project_id' => $this->project_id,
+            'name' => $this->name,
+            'path' => $this->path,
+            'mime_type' => $this->mime_type,
         ];
     }
 }

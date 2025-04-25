@@ -6,12 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectAssignment\StoreProjectAssignmentRequest;
 use App\Http\Requests\ProjectAssignment\UpdateProjectAssignmentRequest;
 use App\Http\Resources\ProjectAssignment\ProjectAssignmentCollection;
-use App\Http\Resources\ProjectAssignment\ProjectAssignmentResource;
 use App\Models\Project;
 use App\Models\ProjectAssignment;
 use App\Services\ProjectService;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class ProjectAssignmentController extends Controller
 {
@@ -44,7 +42,6 @@ class ProjectAssignmentController extends Controller
             $request->project_assignments
         );
 
-        // return response()->json($request->all(), 201);
         return response()->json($projectTeam, 201);
     }
 
@@ -53,7 +50,7 @@ class ProjectAssignmentController extends Controller
      */
     public function show(Project $project, ProjectAssignment $projectAssignment)
     {
-        return response()->json(new ProjectAssignmentResource($projectAssignment), 200);
+        return response()->json(new ProjectAssignmentCollection($projectAssignment), 200);
     }
 
     /**

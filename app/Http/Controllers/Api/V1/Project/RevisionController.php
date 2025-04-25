@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\V1\Project;
 use App\Enums\RevisionStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Project\ProjectCollection;
-use App\Http\Resources\Revision\RevisionResource;
+use App\Http\Resources\Revision\RevisionCollection;
 use App\Models\Project;
 use App\Models\Revision;
 use Illuminate\Http\Request;
@@ -37,22 +37,11 @@ class RevisionController extends Controller
 
     public function show(Revision $revision)
     {
-        return response()->json(new RevisionResource($revision), 200);
+        return response()->json(new RevisionCollection($revision), 200);
     }
 
     public function approve(Request $request, Revision $revision)
     {
-        // if previous status is active - set
-        // if( $revision->status == RevisionStatus::DRAFT->label() ) {
-        //     return response()->json(['message' => 'draft'], 200);
-        // }else{
-        //     return response()->json(['message' => $revision->status], 200);
-        // }
-
-        // $revision->status = RevisionStatus::ACTIVE;
-        // $revision->comments = $request->comments;
-        // $revision->save();
-
         return response()->json($revision, 200);
     }
 
@@ -61,13 +50,6 @@ class RevisionController extends Controller
         $revision->status = RevisionStatus::REJECTED;
         $revision->comments = $request->comments;
         $revision->save();
-
-        // if( $revision->status == RevisionStatus::DRAFT->label() ) {
-        //     return response()->json(['message' => 'draft'], 200);
-        // }else{
-        //     return response()->json(['message' => $revision->status], 200);
-        // }
-
     }
 
     public function archive(Request $request, Revision $revision)
