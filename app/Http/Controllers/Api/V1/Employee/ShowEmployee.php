@@ -14,6 +14,6 @@ class ShowEmployee extends Controller
      */
     public function __invoke(Request $request, Employee $employee)
     {
-        return response()->json(EmployeeCollection::collection($employee), 200);
+        return response()->json(new EmployeeCollection($employee), 200);
     }
 }

@@ -16,6 +16,6 @@ class GetAllEmployees extends Controller
     {
         $employees = Employee::latest()->paginate(10);
 
-        return response()->json(EmployeeCollection::collection($employees), 200);
+        return response()->json(new EmployeeCollection($employees), 200);
     }
 }
