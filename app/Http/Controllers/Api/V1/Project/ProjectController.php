@@ -7,7 +7,6 @@ use App\Http\Requests\Project\FilterProjectRequest;
 use App\Http\Requests\Project\StoreProjectRequest;
 use App\Http\Requests\Project\UpdateProjectRequest;
 use App\Http\Resources\Project\ProjectCollection;
-use App\Http\Resources\Project\ProjectResource;
 use App\Models\Project;
 use App\Services\ProjectService;
 use Illuminate\Http\Request;
@@ -88,6 +87,7 @@ class ProjectController extends Controller
         $validated = $request->validated();
 
         $result = $this->projectService->create($validated);
+
         return response()->json([
             'message' => 'Project created successfully.',
             'data' => $result,
@@ -99,7 +99,7 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        return response()->json(new ProjectResource($project), 200);
+        return response()->json(new ProjectCollection($project->load('phases.tasks')), 200);
     }
 
     /**

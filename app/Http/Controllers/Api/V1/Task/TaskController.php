@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Api\V1\Task;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Task\StoreTaskRequest;
-use App\Http\Resources\Task\TaskCollection;
 use App\Models\Phase;
 use App\Models\Project;
-use App\Services\ProjectService;
+use App\Models\Task;
 use App\Services\TaskService;
 use Illuminate\Http\Request;
 
@@ -18,19 +17,11 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-
-        if ($request->has('project_id')) {
-            $project = Project::find($request->project_id);
-
-            return response()->json($project->load('tasks'), 200);
-        }
-
         if ($request->has('phase_id')) {
             $phase = Phase::find($request->phase_id);
-
-            return response()->json($phase->load('tasks'), 200);
+            return response()->json($phase->load('tasks.resources.resourceName'), 200);
         }
-
+        return response()->json(Task::all()->load('resources.resourceName'), 200);
     }
 
     /**
@@ -60,6 +51,7 @@ class TaskController extends Controller
     public function show(string $id)
     {
         $task = TaskService::show($id);
+
         return response()->json([
             'message' => 'Project tasks fetched successfully.',
             'data' => $task,
@@ -85,8 +77,12 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Task $task)
     {
-        //
+        $task->delete();
+        return response()->json([
+            'message' => 'Project Task has been deleted',
+            'data' => $task,
+        ], 200);
     }
 }

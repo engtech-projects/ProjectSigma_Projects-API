@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\V1\Project;
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Project\ProjectResource;
+use App\Http\Resources\Project\ProjectCollection;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -29,22 +29,9 @@ class ReplicateProject extends Controller
             $replica->parent_project_id = $project->id;
             $replica->save();
 
-            // foreach (['phases'] as $relation) {
-            //     if ($project->$relation()->exists()) {
-            //         foreach ($project->$relation as $related) {
-            //             // return response()->json([
-            //             //     'message' => 'Awarded Project can be viewed in ******.',
-            //             //     'replica' => new ProjectResource($replica),
-            //             // ]);
-            //             // $clonedRelated = $related->replicate();
-            //             // $clonedRelated->project_id = $replica->id; // Update foreign key
-            //             // $clonedRelated->save();
-            //         }
-            //     }
-            // }
             return response()->json([
                 'message' => 'Awarded Project can be viewed in ******.',
-                'replica' => new ProjectResource($replica),
+                'replica' => new ProjectCollection($replica),
             ]);
         }
 

@@ -6,8 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ResourceItem\StoreResourceItemRequest;
 use App\Http\Requests\ResourceItem\UpdateResourceItemRequest;
 use App\Models\ResourceItem;
-use App\Models\Task;
-use App\Services\ProjectService;
 use App\Services\ResourceService;
 
 class ResourceItemController extends Controller
@@ -76,8 +74,12 @@ class ResourceItemController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(ResourceItem $resourceItem)
     {
-        //
+        $resourceItem->delete();
+        return response()->json([
+            'message' => 'Project Resources Item has been deleted',
+            'data' => $resourceItem,
+        ], 200);
     }
 }

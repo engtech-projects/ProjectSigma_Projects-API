@@ -11,7 +11,6 @@ use App\Models\Phase;
 use App\Models\Project;
 use App\Services\PhaseService;
 use App\Services\ProjectService;
-
 class PhaseController extends Controller
 {
     /**
@@ -19,9 +18,8 @@ class PhaseController extends Controller
      */
     public function index(FilterPhraseRequest $request)
     {
-        // $validated = $request->validated();
-        // $phases = PhaseService::withProjects($validated);
-        $phases =  PhaseService::withPagination($request->validated());
+        $phases = PhaseService::withPagination($request->validated());
+
         return response()->json([
             'message' => 'Phases retrieved successfully.',
             'data' => new PhaseCollection($phases),
@@ -60,14 +58,6 @@ class PhaseController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(UpdatePhaseRequest $request, Phase $phase)
@@ -85,5 +75,11 @@ class PhaseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Phase $phase) {}
+    public function destroy(Phase $phase) {
+        $phase->delete();
+        return response()->json([
+            'message' => 'Project phase has been deleted',
+            'data' => $phase,
+        ], 200);
+    }
 }

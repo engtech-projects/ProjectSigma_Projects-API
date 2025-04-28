@@ -2,7 +2,6 @@
 
 namespace App\Guards;
 
-use App\Models\HrmsUser;
 use App\Models\User;
 use Illuminate\Auth\GuardHelpers;
 use Illuminate\Contracts\Auth\Guard;

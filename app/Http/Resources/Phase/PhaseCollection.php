@@ -2,10 +2,11 @@
 
 namespace App\Http\Resources\Phase;
 
+use App\Http\Resources\Task\TaskCollection;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\Resources\Json\JsonResource;
 
-class PhaseCollection extends ResourceCollection
+class PhaseCollection extends JsonResource
 {
     public static $wrap = 'phases';
 
@@ -16,8 +17,13 @@ class PhaseCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-        return $this->collection->transform(function ($phase) {
-            return new PhaseResource($phase);
-        })->toArray();
+        return [
+            'id' => $this->id,
+            'project_id' => $this->project_id,
+            'name' => $this->name,
+            'description' => $this->description,
+            'total_cost' => $this->total_cost,
+            'tasks' => TaskCollection::make($this->whenLoaded('tasks')),
+        ];
     }
 }

@@ -3,9 +3,9 @@
 namespace App\Http\Resources\Employee;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\Resources\Json\JsonResource;
 
-class EmployeeCollection extends ResourceCollection
+class EmployeeCollection extends JsonResource
 {
     public static $wrap = 'employees';
 
@@ -16,8 +16,10 @@ class EmployeeCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-        return $this->collection->transform(function ($employee) {
-            return new EmployeeResource($employee);
-        })->toArray();
+        return [
+            'id' => $this->id,
+            'employee_id' => $this->employee_id,
+            'name' => $this->getFormattedFullname('last_first'),
+        ];
     }
 }

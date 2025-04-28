@@ -9,7 +9,14 @@ class LogController extends Controller
 {
     public function index()
     {
-        $activities = Activity::all(); // Retrieve all logs
+        $activities = Activity::paginate(config('services.pagination.limit'));
+
+        return response()->json($activities);
+    }
+
+    public function all()
+    {
+        $activities = Activity::all();
 
         return $activities;
     }

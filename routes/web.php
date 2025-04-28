@@ -16,3 +16,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return response()->json(['version' => app()->version()]);
 });
+Route::get('artisan-clear-optimization', function () {
+    Artisan::call('optimize:clear');
+
+    return 'success';
+});

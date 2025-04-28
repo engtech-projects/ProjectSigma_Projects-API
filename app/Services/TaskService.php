@@ -36,6 +36,7 @@ class TaskService
         $attr['unit'] = 0;
         $attr['unit_price'] = 0;
         $attr['amount'] = 0;
+
         return DB::transaction(function () use ($attr) {
             $data = Task::create($attr);
 
@@ -51,9 +52,10 @@ class TaskService
             return $task;
         });
     }
+
     public static function show($id)
     {
-        return Task::find($id);
+        return Task::find($id)->load('resources.resourceName');
     }
 
     public function delete(Task $task)

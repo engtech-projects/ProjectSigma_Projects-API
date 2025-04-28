@@ -23,7 +23,7 @@ use App\Http\Controllers\Api\V1\Project\ReplicateProject;
 use App\Http\Controllers\Api\V1\Project\RevisionController;
 use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
 use App\Http\Controllers\Api\V1\Task\TaskController;
-use App\Http\Resources\User\UserResource;
+use App\Http\Resources\User\UserCollection;
 use App\Models\ResourceName;
 use Illuminate\Support\Facades\Route;
 
@@ -56,7 +56,7 @@ Route::middleware('secret_api')->group(function () {
 Route::middleware('auth:api')->group(function () {
 
     Route::get('/user', function () {
-        return response()->json(new UserResource(Auth::user()), 200);
+        return response()->json(new UserCollection(Auth::user()), 200);
     });
 
     Route::get('/project-status', function () {
