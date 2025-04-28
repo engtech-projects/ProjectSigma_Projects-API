@@ -55,7 +55,7 @@ class TaskService
 
     public static function show($id)
     {
-        return Task::find($id);
+        return Task::find($id)->load('resources.resourceName');
     }
 
     public function delete(Task $task)
