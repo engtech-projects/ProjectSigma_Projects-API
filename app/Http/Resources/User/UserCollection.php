@@ -23,7 +23,7 @@ class UserCollection extends JsonResource
             'roles' => $this->roles->map(function ($role) {
                 return [
                     'name' => $role->name,
-                    'permissions' => $role->permissions->pluck('name'), // Only return permission names
+                    'permissions' => $role->permissions->pluck('name'),
                 ];
             }),
         ];

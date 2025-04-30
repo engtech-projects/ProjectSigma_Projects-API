@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\V1\Task;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Task\StoreTaskRequest;
 use App\Models\Phase;
-use App\Models\Project;
 use App\Models\Task;
 use App\Services\TaskService;
 use Illuminate\Http\Request;
@@ -19,8 +18,10 @@ class TaskController extends Controller
     {
         if ($request->has('phase_id')) {
             $phase = Phase::find($request->phase_id);
+
             return response()->json($phase->load('tasks.resources.resourceName'), 200);
         }
+
         return response()->json(Task::all()->load('resources.resourceName'), 200);
     }
 
@@ -80,6 +81,7 @@ class TaskController extends Controller
     public function destroy(Task $task)
     {
         $task->delete();
+
         return response()->json([
             'message' => 'Project Task has been deleted',
             'data' => $task,

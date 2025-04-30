@@ -11,6 +11,7 @@ use App\Models\Phase;
 use App\Models\Project;
 use App\Services\PhaseService;
 use App\Services\ProjectService;
+
 class PhaseController extends Controller
 {
     /**
@@ -75,8 +76,10 @@ class PhaseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Phase $phase) {
+    public function destroy(Phase $phase)
+    {
         $phase->delete();
+
         return response()->json([
             'message' => 'Project phase has been deleted',
             'data' => $phase,
