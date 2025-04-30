@@ -22,7 +22,6 @@ class UpdateResourceItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'project_id' => ['required', 'exists:projects,id'],
             'task_id' => ['required', 'exists:tasks,id'],
             'name_id' => ['required', 'exists:resource_names,id'],
             'id' => ['nullable', 'exists:resources,id'],
