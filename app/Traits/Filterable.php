@@ -19,34 +19,24 @@ trait Filterable
         if ($filters instanceof Request) {
             $filters = $filters->all();
         }
-
         foreach ($filters as $key => $value) {
-
             $scopeMethod = Str::title(Str::lower($key));
             $scope = 'scope'.$scopeMethod;
             $withParams = false;
-
             if (Str::lower($key) === 'status' && is_string($value)) {
-
                 $scopeMethod = Str::title(Str::lower($value));
                 $scope = 'scope'.$scopeMethod;
-
             } else {
                 $withParams = true;
             }
-
             if (method_exists($this, $scope)) {
-
                 if ($withParams) {
                     $query->{$scopeMethod}($value);
                 } else {
                     $query->{$scopeMethod}();
                 }
-
             }
-
         }
-
         return $query;
     }
 

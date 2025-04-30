@@ -142,12 +142,12 @@ class Project extends Model
 
     public function isApproved(): bool
     {
-        return $this->status == ProjectStatus::APPROVED->label();
+        return $this->status == ProjectStatus::APPROVED->value;
     }
 
     public function isOpen(): bool
     {
-        return $this->status == ProjectStatus::OPEN->label();
+        return $this->status == ProjectStatus::OPEN->value;
     }
 
     // PROJECT SCOPES

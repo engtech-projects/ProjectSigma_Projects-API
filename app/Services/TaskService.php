@@ -31,7 +31,6 @@ class TaskService
 
     public static function create(array $attr)
     {
-        // add addional required
         $attr['quantity'] = 0;
         $attr['unit'] = 0;
         $attr['unit_price'] = 0;

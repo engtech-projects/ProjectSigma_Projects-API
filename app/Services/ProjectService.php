@@ -70,8 +70,8 @@ class ProjectService
             foreach ($attr as $personnel) {
                 $personnel['project_id'] = $project->id;
                 $project->team()->updateOrCreate(
-                    ['id' => $personnel['id'] ?? null], // Match id
-                    $personnel // Data to update or create
+                    ['id' => $personnel['id'] ?? null],
+                    $personnel
                 );
             }
 
@@ -87,8 +87,8 @@ class ProjectService
         DB::transaction(function () use ($project, $attr) {
             foreach ($attr as $phase) {
                 $project->phases()->updateOrCreate(
-                    ['id' => $phase['id'] ?? null], // Match id
-                    $phase // Data to update or create
+                    ['id' => $phase['id'] ?? null],
+                    $phase
                 );
             }
         });
@@ -105,8 +105,8 @@ class ProjectService
             foreach ($attr as $task) {
                 $task['project_id'] = $phase->project_id;
                 $phase->tasks()->updateOrCreate(
-                    ['id' => $task['id'] ?? null], // Match id
-                    $task // Data to update or create
+                    ['id' => $task['id'] ?? null],
+                    $task
                 );
             }
         });
@@ -125,8 +125,8 @@ class ProjectService
                 foreach ($attr as $item) {
                     $item['project_id'] = $task->project_id;
                     $task->resources()->updateOrCreate(
-                        ['id' => $item['id'] ?? null], // Match id
-                        $item // Data to update or create
+                        ['id' => $item['id'] ?? null],
+                        $item
                     );
                 }
 
