@@ -42,9 +42,6 @@ Route::prefix('sync')->group(function () {
 });
 
 Route::middleware('auth:api')->group(function () {
-    Route::get('/uom', function () {
-        return response()->json(Uom::all(), 200);
-    });
     Route::get('/user', function () {
         return response()->json(new UserCollection(Auth::user()), 200);
     });
@@ -99,4 +96,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/project-assignments', [ProjectAssignmentController::class, 'store']);
 
     Route::resource('/positions', PositionController::class);
+
+    Route::get('/uom', function () {
+        return response()->json(Uom::all(), 200);
+    });
 });
