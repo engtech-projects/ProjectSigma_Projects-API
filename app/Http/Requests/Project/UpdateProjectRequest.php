@@ -22,17 +22,17 @@ class UpdateProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'contract_id' => ['required', 'string'],
-            'code' => ['nullable', 'string'],
-            'name' => ['required', 'string'],
-            'location' => ['required', 'string'],
-            'amount' => ['required', 'regex:/^\d+(\.\d{1,2})?$/'],
-            'contract_date' => ['nullable', 'date', 'date_format:Y-m-d'],
-            'duration' => ['required', 'string'],
-            'noa_date' => ['nullable', 'date', 'date_format:Y-m-d'],
-            'ntp_date' => ['nullable', 'date', 'date_format:Y-m-d'],
-            'license' => ['nullable', 'string'],
-            'nature_of_work' => ['nullable', 'string'],
+            'contract_id' => 'required|string',
+            'code' => 'nullable|string',
+            'name' => 'required|string',
+            'location' => 'required|string',
+            'amount' => 'required|regex:/^\d+(\.\d{1,2})?$/',
+            'contract_date' => 'nullable|date|date_format:Y-m-d',
+            'duration' => 'required|string',
+            'noa_date' => 'nullable|date|date_format:Y-m-d',
+            'ntp_date' => 'nullable|date|date_format:Y-m-d',
+            'license' => 'nullable|string',
+            'nature_of_work' => 'nullable|string',
         ];
     }
 }

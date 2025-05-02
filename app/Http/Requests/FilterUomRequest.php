@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\ProjectAssignment;
+namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateProjectAssignmentRequest extends FormRequest
+class FilterUomRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,10 +22,7 @@ class UpdateProjectAssignmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'project_id' => 'required|exists:projects,id',
-            'employee_id' => 'required|exists:employees,id',
-            'start_date' => 'nullable|date|date_format:Y-m-d',
-            'end_date' => 'nullable|date|date_format:Y-m-d',
+            'key' => 'nullable|string',
         ];
     }
 }

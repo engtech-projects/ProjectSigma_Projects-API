@@ -77,6 +77,7 @@ class ResourceItemController extends Controller
     public function destroy(ResourceItem $resourceItem)
     {
         $resourceItem->delete();
+
         return response()->json([
             'message' => 'Project Resources Item has been deleted',
             'data' => $resourceItem,

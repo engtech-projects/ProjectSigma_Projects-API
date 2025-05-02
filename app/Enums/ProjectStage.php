@@ -11,11 +11,4 @@ enum ProjectStage: string
     case AWARDED = 'awarded';
     case DRAFT = 'draft';
 
-    public function label(): string
-    {
-        return match ($this) {
-            ProjectStage::PROPOSAL => 'proposal',
-            ProjectStage::AWARDED => 'awarded',
-        };
-    }
 }
