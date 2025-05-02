@@ -8,7 +8,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class TaskCollection extends JsonResource
 {
-    public static $wrap = 'tasks';
 
     /**
      * Transform the resource collection into an array.
@@ -27,7 +26,11 @@ class TaskCollection extends JsonResource
             'unit' => $this->unit,
             'unit_price' => $this->unit_price,
             'amount' => $this->amount,
-            'resources' => new ResourceItemCollection($this->resources),
+            'total_price' => $this->total_price,
+            'unit_price_with_quantity' => $this->unit_price_with_quantity,
+            'resources' => $this->whenLoaded('resources', function() {
+                return ResourceItemCollection::collection($this->resources);
+            }),
         ];
     }
 }
