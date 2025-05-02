@@ -31,12 +31,7 @@ class TaskService
 
     public static function create(array $attr)
     {
-        // add addional required
-        $attr['quantity'] = 0;
-        $attr['unit'] = 0;
-        $attr['unit_price'] = 0;
-        $attr['amount'] = 0;
-
+        $attr['amount'] = $attr['quantity'] * $attr['unit_price'];
         return DB::transaction(function () use ($attr) {
             $data = Task::create($attr);
 

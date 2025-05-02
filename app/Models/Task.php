@@ -25,6 +25,11 @@ class Task extends Model
         'amount',
     ];
 
+    protected $appends = [
+        'unit_price_with_quantity',
+        'total_price',
+    ];
+
     protected static function boot()
     {
         parent::boot();
@@ -44,5 +49,15 @@ class Task extends Model
     public function resources(): HasMany
     {
         return $this->hasMany(ResourceItem::class);
+    }
+
+    public function getUnitPriceWithQuantityAttribute()
+    {
+        return $this->unit_price . ' / ' . $this->unit;
+    }
+
+    public function getTotalPriceAttribute()
+    {
+        return $this->unit_price * $this->quantity;
     }
 }

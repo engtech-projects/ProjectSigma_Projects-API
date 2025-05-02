@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Task;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Task\StoreTaskRequest;
+use App\Http\Resources\Task\TaskCollection;
 use App\Models\Phase;
 use App\Models\Project;
 use App\Models\Task;
@@ -54,7 +55,7 @@ class TaskController extends Controller
 
         return response()->json([
             'message' => 'Project tasks fetched successfully.',
-            'data' => $task,
+            'data' => new TaskCollection($task),
         ], 200);
     }
 
