@@ -29,7 +29,15 @@ class TaskCollection extends JsonResource
             'total_price' => $this->total_price,
             'unit_price_with_quantity' => $this->unit_price_with_quantity,
             'resources' => $this->whenLoaded('resources', function() {
-                return ResourceItemCollection::collection($this->resources);
+                return [
+                    'ocm' => $this->ocm,
+                    'contractors_profit' => $this->contractors_profit,
+                    'vat' => $this->vat,
+                    'grand_total' => $this->grand_total,
+                    'resources_item_total' => $this->resource_item_total,
+                    'unit_cost_per' => $this->unit_cost_per,
+                    'data' => ResourceItemCollection::collection($this->resources),
+                ];
             }),
         ];
     }
