@@ -84,22 +84,22 @@ class Task extends Model
     }
     public function getOcmAttribute()
     {
-        return $this->resource_item_total * 0.1;
+        return $this->resource_item_total > 0 ? $this->resource_item_total * 0.1 : 0;
     }
     public function getContractorsProfitAttribute()
     {
-        return $this->resource_item_total * 0.1;
+        return $this->resource_item_total > 0 ? $this->resource_item_total * 0.1 : 0;
     }
     public function getVatAttribute()
     {
-        return 0.12 * ($this->resource_item_total + $this->ocm + $this->contractors_profit);
+        return $this->resource_item_total > 0 ? 0.12 * ($this->resource_item_total + $this->ocm + $this->contractors_profit) : 0;
     }
     public function getGrandTotalAttribute()
     {
-        return $this->resource_item_total + $this->ocm + $this->contractors_profit + $this->vat;
+        return $this->resource_item_total > 0 ? $this->resource_item_total + $this->ocm + $this->contractors_profit + $this->vat : 0;
     }
     public function getUnitCostPerAttribute()
     {
-        return round($this->grand_total / $this->quantity, 2);
+        return $this->quantity > 0 ? round($this->grand_total / $this->quantity, 2) : 0;
     }
 }

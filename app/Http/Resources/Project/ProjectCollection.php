@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Project;
 
+use App\Http\Resources\Phase\PhaseCollection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -15,7 +16,29 @@ class ProjectCollection extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            ...parent::toArray($request),
+            'id' => $this->id,
+            'parent_project_id' => $this->parent_project_id,
+            'contract_id' => $this->contract_id,
+            'code' => $this->code,
+            'name' => $this->name,
+            'location' => $this->location,
+            'nature_of_work' => $this->nature_of_work,
+            'amount' => $this->amount,
+            'contract_date' => $this->contract_date,
+            'duration' => $this->duration,
+            'noa_date' => $this->noa_date,
+            'ntp_date' => $this->ntp_date,
+            'license' => $this->license,
+            'stage' => $this->stage,
+            'status' => $this->status,
+            'is_original' => $this->is_original,
+            'version' => $this->version,
+            'summary_of_rates' => $this->summary_of_rates,
+            'project_identifier' => $this->project_identifier,
+            'implementing_office' => $this->implementing_office,
+            'current_revision_id' => $this->current_revision_id,
+            'created_by' => $this->created_by,
+            'phases' => $this->whenLoaded('phases', fn () => PhaseCollection::collection($this->phases)),
         ];
     }
 }

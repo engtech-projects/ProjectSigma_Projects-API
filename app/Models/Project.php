@@ -71,6 +71,10 @@ class Project extends Model
         ];
     }
 
+    protected $appends = [
+        'summary_of_rates',
+    ];
+
     protected static function boot()
     {
         parent::boot();
@@ -103,11 +107,6 @@ class Project extends Model
     public function phases(): HasMany
     {
         return $this->hasMany(Phase::class);
-    }
-
-    public function tasks(): HasMany
-    {
-        return $this->hasMany(Task::class);
     }
 
     public function attachments(): HasMany
@@ -212,5 +211,37 @@ class Project extends Model
     public function scopeArchived(Builder $query)
     {
         return $query->onlyTrashed();
+    }
+    public function getSummaryOfRatesAttribute()
+    {
+        $summary_of_rates = [];
+        if ($this->phases) {
+            foreach ($this->phases as $phase) {
+                if ($phase->tasks) {
+                    foreach ($phase->tasks as $task) {
+                        if ($task->resources) {
+                            foreach ($task->resources as $value) {
+                                if ($value->quantity > 0 && $value->unit) {
+                                    $resourceName = $value->resourceName->name;
+                                    $key = $value->description;
+                                    if (isset($summary_of_rates[$resourceName][$key])) {
+                                        $summary_of_rates[$resourceName][$key]['ids'][] = $value->id;
+                                    } else {
+                                        $summary_of_rates[$resourceName][$key] = [
+                                            'description' => $value->description,
+                                            'resource_name' => $value->unit_cost.' / '.$value->unit,
+                                            'total_cost' => $value->total_cost,
+                                            'ids' => [$value->id]
+                                        ];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $summary_of_rates;
     }
 }
