@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Project;
 
 use App\Http\Resources\Phase\PhaseCollection;
+use App\Http\Resources\Phase\PhaseCollection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -34,6 +35,7 @@ class ProjectCollection extends JsonResource
             'is_original' => $this->is_original,
             'version' => $this->version,
             'summary_of_rates' => $this->summary_of_rates,
+            'summary_of_bid' => $this->summary_of_bid,
             'project_identifier' => $this->project_identifier,
             'implementing_office' => $this->implementing_office,
             'current_revision_id' => $this->current_revision_id,
