@@ -51,6 +51,7 @@ class Project extends Model
         'implementing_office',
         'current_revision_id',
         'created_by',
+        'cash_flow',
     ];
 
     /**
@@ -61,6 +62,7 @@ class Project extends Model
     protected function casts(): array
     {
         return [
+            'cash_flow' => 'json',
             'status' => ProjectStatus::class,
             'stage' => ProjectStage::class,
             'contract_date' => 'datetime:Y-m-d',
