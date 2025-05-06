@@ -3,7 +3,6 @@
 namespace App\Http\Resources\Project;
 
 use App\Http\Resources\Phase\PhaseCollection;
-use App\Http\Resources\Phase\PhaseCollection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
