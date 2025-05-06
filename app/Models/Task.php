@@ -100,6 +100,9 @@ class Task extends Model
     }
     public function getUnitCostPerAttribute()
     {
+        if ($this->quantity == 0) {
+            return 0;
+        }
         return round($this->grand_total / $this->quantity, 2);
     }
 }
