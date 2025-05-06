@@ -25,6 +25,12 @@ class ProjectService
         return DB::transaction(function () use ($attr) {
             $attr['stage'] = ProjectStage::DRAFT->value;
             $attr['created_by'] = auth()->user()->id;
+            $attr['cash_flow'] = json_encode(array_fill_keys(['wtax', 'q1', 'q2', 'q3', 'q4'], [
+                'accomplishment' => 0,
+                'cashflow' => 0,
+                'culmutative_accomplishment' => 0,
+                'culmutative_cashflow' => 0,
+            ]));
             $data = Project::create($attr);
 
             return new JsonResponse([

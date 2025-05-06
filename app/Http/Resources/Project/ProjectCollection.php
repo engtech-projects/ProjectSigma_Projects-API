@@ -39,6 +39,7 @@ class ProjectCollection extends JsonResource
             'implementing_office' => $this->implementing_office,
             'current_revision_id' => $this->current_revision_id,
             'created_by' => $this->created_by,
+            'cash_flow' => $this->cash_flow ? $this->cash_flow : null,
             'phases' => $this->whenLoaded('phases', fn () => PhaseCollection::collection($this->phases)),
         ];
     }
