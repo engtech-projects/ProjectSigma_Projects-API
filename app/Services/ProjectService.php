@@ -49,7 +49,7 @@ class ProjectService
             $query->where('stage', $attr['status']);
         });
 
-        return new ProjectCollection($query->paginate(config('services.pagination.limit')));
+        return $query->paginate(config('services.pagination.limit'));
     }
 
     public function update(Project $project, array $attr)
