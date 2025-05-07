@@ -40,6 +40,19 @@ class ProjectService
         });
     }
 
+    public function changeSummaryRates(array $attr)
+    {
+        return DB::transaction(function () use ($attr) {
+            DB::table('resources')
+                ->whereIn('id', $attr['ids'])
+                ->update(['unit_cost' => $attr['unit_cost']]);
+
+            return new JsonResponse([
+                'message' => 'Summary rates updated successfully, Number of Direct Cost Affected: ' . count($attr['ids']),
+            ], 200);
+        });
+    }
+
     public function withPagination(array $attr)
     {
         $query = Project::query();
