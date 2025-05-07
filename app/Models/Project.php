@@ -255,6 +255,8 @@ class Project extends Model
                     } else {
                         $summary_of_rates[$resourceName][$key] = [
                             'description' => $value->description,
+                            'unit_cost' => $value->unit_cost,
+                            'unit' => $value->unit,
                             'resource_name' => $value->unit_cost.' / '.$value->unit,
                             'total_cost' => $value->total_cost,
                             'ids' => [$value->id]
