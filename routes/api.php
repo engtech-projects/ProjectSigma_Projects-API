@@ -100,4 +100,5 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/uom', function () {
         return response()->json(Uom::all(), 200);
     });
+    Route::post('/projects/change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
 });

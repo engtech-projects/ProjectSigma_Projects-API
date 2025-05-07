@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Project\FilterProjectRequest;
 use App\Http\Requests\Project\StoreProjectRequest;
 use App\Http\Requests\Project\UpdateProjectRequest;
+use App\Http\Requests\SummaryRate\SummaryRateRequest;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Models\Project;
 use App\Services\ProjectService;
@@ -124,6 +125,13 @@ class ProjectController extends Controller
         ], 200);
     }
 
+    public function changeSummaryRates(SummaryRateRequest $request)
+    {
+        $validated = $request->validated();
+        $summaryOfRates = $this->projectService->changeSummaryRates($validated);
+
+        return $summaryOfRates;
+    }
     public function archive(Project $project) {}
 
     public function destroy(Project $project) {}
