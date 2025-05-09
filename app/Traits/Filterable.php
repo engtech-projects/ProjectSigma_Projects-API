@@ -37,6 +37,7 @@ trait Filterable
                 }
             }
         }
+
         return $query;
     }
 

@@ -89,11 +89,7 @@ return [
      * ],
      * ```
      */
-    'servers' => [
-        'Local' => 'http://projectsigma_projects-api.test/api',
-        'Staging' => 'https://projectsigma-projectsapi-staging.engtechglobalsolutions.com/api',
-        'Beta' => 'https://projectsigma-projectsapi.engtechglobalsolutions.com/api',
-    ],
+    'servers' => null,
 
     /**
      * Determines how Scramble stores the descriptions of enum cases.

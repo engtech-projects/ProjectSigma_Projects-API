@@ -215,10 +215,11 @@ class Project extends Model
     {
         return $query->onlyTrashed();
     }
+
     public function getSummaryOfBidAttribute()
     {
         $summaryOfBid = [];
-        if (!$this->phases) {
+        if (! $this->phases) {
             return $summaryOfBid;
         }
         foreach ($this->phases as $phase) {
@@ -228,24 +229,26 @@ class Project extends Model
                 'total_amount' => $phase->tasks ? $phase->tasks->sum('amount') : 0,
             ];
         }
+
         return $summaryOfBid;
     }
+
     public function getSummaryOfRatesAttribute()
     {
         $summary_of_rates = [];
-        if (!$this->phases) {
+        if (! $this->phases) {
             return $summary_of_rates;
         }
         foreach ($this->phases as $phase) {
-            if (!$phase->tasks) {
+            if (! $phase->tasks) {
                 continue;
             }
             foreach ($phase->tasks as $task) {
-                if (!$task->resources) {
+                if (! $task->resources) {
                     continue;
                 }
                 foreach ($task->resources as $value) {
-                    if ($value->quantity <= 0 || !$value->unit) {
+                    if ($value->quantity <= 0 || ! $value->unit) {
                         continue;
                     }
                     $resourceName = $value->resourceName->name;
@@ -259,13 +262,13 @@ class Project extends Model
                             'unit' => $value->unit,
                             'resource_name' => $value->unit_cost.' / '.$value->unit,
                             'total_cost' => $value->total_cost,
-                            'ids' => [$value->id]
+                            'ids' => [$value->id],
                         ];
                     }
                 }
             }
         }
+
         return $summary_of_rates;
     }
-
 }

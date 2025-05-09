@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\V1\Employee;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Employee\EmployeeCollection;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 

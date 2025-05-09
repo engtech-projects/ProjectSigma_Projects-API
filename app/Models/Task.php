@@ -59,7 +59,7 @@ class Task extends Model
 
     public function getUnitPriceWithQuantityAttribute()
     {
-        return $this->unit_price . ' / ' . $this->unit;
+        return $this->unit_price.' / '.$this->unit;
     }
 
     public function getTotalPriceAttribute()
@@ -69,40 +69,48 @@ class Task extends Model
 
     public function getEachResourceItemTotalAttribute()
     {
-        $resource =  [];
+        $resource = [];
         foreach ($this->resources as $key => $value) {
-            if (!isset($resource[$value->resourceName->name]['total_cost'])) {
+            if (! isset($resource[$value->resourceName->name]['total_cost'])) {
                 $resource[$value->resourceName->name]['total_cost'] = 0;
             }
             $resource[$value->resourceName->name]['total_cost'] += $value->total_cost;
         }
+
         return $resource;
     }
+
     public function getResourceItemTotalAttribute()
     {
         return $this->resources->sum('total_cost');
     }
+
     public function getOcmAttribute()
     {
         return $this->resource_item_total > 0 ? $this->resource_item_total * 0.1 : 0;
     }
+
     public function getContractorsProfitAttribute()
     {
         return $this->resource_item_total > 0 ? $this->resource_item_total * 0.1 : 0;
     }
+
     public function getVatAttribute()
     {
         return $this->resource_item_total > 0 ? 0.12 * ($this->resource_item_total + $this->ocm + $this->contractors_profit) : 0;
     }
+
     public function getGrandTotalAttribute()
     {
         return $this->resource_item_total > 0 ? $this->resource_item_total + $this->ocm + $this->contractors_profit + $this->vat : 0;
     }
+
     public function getUnitCostPerAttribute()
     {
         if ($this->quantity == 0) {
             return 0;
         }
+
         return round($this->grand_total / $this->quantity, 2);
     }
 }

@@ -51,5 +51,4 @@ class ResourceItem extends Model
     {
         return $this->hasOne(ResourceName::class, 'id', 'name_id');
     }
-
 }

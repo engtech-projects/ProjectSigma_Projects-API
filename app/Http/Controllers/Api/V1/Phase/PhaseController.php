@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterPhraseRequest;
 use App\Http\Requests\Phase\StorePhaseRequest;
 use App\Http\Requests\Phase\UpdatePhaseRequest;
-use App\Http\Resources\Phase\PhaseCollection;
 use App\Models\Phase;
 use App\Models\Project;
 use App\Services\PhaseService;

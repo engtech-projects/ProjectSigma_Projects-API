@@ -8,7 +8,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ResourceItemCollection extends JsonResource
 {
-
     /**
      * Transform the resource collection into an array.
      *
@@ -20,7 +19,7 @@ class ResourceItemCollection extends JsonResource
             'id' => $this->id,
             'project_id' => $this->project_id,
             'task_id' => $this->task_id,
-            'resources' => $this->whenLoaded('resourceName', function($resourceName) {
+            'resources' => $this->whenLoaded('resourceName', function ($resourceName) {
                 return new ResourceNameCollection($resourceName);
             }),
             'description' => $this->description,

@@ -4,10 +4,7 @@ namespace App\Services;
 
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
-use App\Http\Resources\Project\ProjectCollection;
-use App\Models\Phase;
 use App\Models\Project;
-use App\Models\Task;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -48,7 +45,7 @@ class ProjectService
                 ->update(['unit_cost' => $attr['unit_cost']]);
 
             return new JsonResponse([
-                'message' => 'Summary rates updated successfully, Number of Direct Cost Affected: ' . count($attr['ids']),
+                'message' => 'Summary rates updated successfully, Number of Direct Cost Affected: '.count($attr['ids']),
             ], 200);
         });
     }
