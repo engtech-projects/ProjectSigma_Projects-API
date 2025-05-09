@@ -14,8 +14,8 @@ class GetAllEmployees extends Controller
      */
     public function __invoke(Request $request)
     {
-        $employees = Employee::latest()->paginate(10);
+        $employees = Employee::latest()->paginate(config('services.pagination.limit'));
 
-        return response()->json(new EmployeeCollection($employees), 200);
+        return response()->json($employees, 200);
     }
 }
