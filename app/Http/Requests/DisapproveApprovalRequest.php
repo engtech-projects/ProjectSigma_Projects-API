@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Position;
+namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class EditPositionRequest extends FormRequest
+class DisapproveApprovalRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,7 @@ class EditPositionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string',
-            'description' => 'required|string',
+            'remarks' => 'required|string|max:255',
         ];
     }
 }

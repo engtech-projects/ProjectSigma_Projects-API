@@ -2,6 +2,8 @@
 
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
+use App\Http\Controllers\Actions\Approvals\ApproveApproval;
+use App\Http\Controllers\Actions\Approvals\DisapproveApproval;
 use App\Http\Controllers\Api\V1\Accessibility\PermissionController;
 use App\Http\Controllers\Api\V1\Accessibility\RoleController;
 use App\Http\Controllers\Api\V1\Assignment\ProjectAssignmentController;
@@ -56,6 +58,12 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('/resource-names', function () {
         return response()->json(ResourceName::all(), 200);
+    });
+
+    //APPROVALS ROUTES
+    Route::prefix('approvals')->group(function () {
+        Route::post('approve/{modelName}/{model}', ApproveApproval::class);
+        Route::post('disapprove/{modelName}/{model}', DisapproveApproval::class);
     });
 
     Route::resource('/projects', ProjectController::class);

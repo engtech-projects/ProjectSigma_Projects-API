@@ -52,6 +52,8 @@ class Project extends Model
         'current_revision_id',
         'created_by',
         'cash_flow',
+        'approvals',
+        'request_status',
     ];
 
     /**
