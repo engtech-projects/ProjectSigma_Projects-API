@@ -6,11 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterPhraseRequest;
 use App\Http\Requests\Phase\StorePhaseRequest;
 use App\Http\Requests\Phase\UpdatePhaseRequest;
-use App\Http\Resources\Phase\PhaseCollection;
 use App\Models\Phase;
 use App\Models\Project;
 use App\Services\PhaseService;
 use App\Services\ProjectService;
+
 class PhaseController extends Controller
 {
     /**
@@ -22,16 +22,8 @@ class PhaseController extends Controller
 
         return response()->json([
             'message' => 'Phases retrieved successfully.',
-            'data' => new PhaseCollection($phases),
+            'data' => $phases,
         ], 200);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -54,7 +46,7 @@ class PhaseController extends Controller
      */
     public function show(Phase $phase)
     {
-        return response()->json($phase->tasks(), 200);
+        return response()->json($phase->load('tasks'), 200);
     }
 
     /**
@@ -75,8 +67,10 @@ class PhaseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Phase $phase) {
+    public function destroy(Phase $phase)
+    {
         $phase->delete();
+
         return response()->json([
             'message' => 'Project phase has been deleted',
             'data' => $phase,

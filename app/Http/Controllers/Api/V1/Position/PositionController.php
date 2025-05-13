@@ -54,8 +54,6 @@ class PositionController extends Controller
      */
     public function show(Position $position)
     {
-        $position = PositionService::show($position);
-
         return response()->json([
             'message' => 'Position retrieved successfully.',
             'data' => $position,
@@ -63,12 +61,26 @@ class PositionController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified resource in storage (PUT).
      */
     public function update(EditPositionRequest $request, Position $position)
     {
         $validatedData = $request->validated();
-        $position = PositionService::update($validatedData, $position);
+        $position->update($validatedData);
+
+        return response()->json([
+            'message' => 'Position updated successfully.',
+            'data' => $position,
+        ], 200);
+    }
+
+    /**
+     * Partially update the specified resource in storage (PATCH).
+     */
+    public function patch(EditPositionRequest $request, Position $position)
+    {
+        $validatedData = $request->validated();
+        $position->update($validatedData);
 
         return response()->json([
             'message' => 'Position updated successfully.',
@@ -81,7 +93,7 @@ class PositionController extends Controller
      */
     public function destroy(Position $position)
     {
-        $position = PositionService::delete($position);
+        $position->delete();
 
         return response()->json([
             'message' => 'Position deleted successfully.',

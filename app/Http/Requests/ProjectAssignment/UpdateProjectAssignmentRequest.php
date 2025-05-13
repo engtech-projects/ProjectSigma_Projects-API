@@ -22,10 +22,10 @@ class UpdateProjectAssignmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'project_id' => ['required', 'exists:projects, id'],
-            'employee_id' => ['required', 'exists:employees, id'],
-            'start_date' => ['nullable', 'date', 'date_format:Y-m-d'],
-            'end_date' => ['nullable', 'date', 'date_format:Y-m-d'],
+            'project_id' => 'required|exists:projects,id',
+            'employee_id' => 'required|exists:employees,id',
+            'start_date' => 'nullable|date|date_format:Y-m-d',
+            'end_date' => 'nullable|date|date_format:Y-m-d',
         ];
     }
 }

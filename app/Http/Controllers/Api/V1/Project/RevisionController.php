@@ -14,8 +14,9 @@ class RevisionController extends Controller
 {
     public function index(Request $request)
     {
-        // $projects = Project::revised()->latest()->with(['revisions'])->paginate(10);
-        // return response()->json(new ProjectCollection($projects), 200);
+        $projects = Project::revised()->latest()->with(['revisions'])->paginate(config('services.pagination.limit'));
+
+        return response()->json(new ProjectCollection($projects), 200);
     }
 
     public function revise(Request $request, Project $project)

@@ -51,6 +51,9 @@ class Project extends Model
         'implementing_office',
         'current_revision_id',
         'created_by',
+        'cash_flow',
+        'approvals',
+        'request_status',
     ];
 
     /**
@@ -61,6 +64,7 @@ class Project extends Model
     protected function casts(): array
     {
         return [
+            'cash_flow' => 'json',
             'status' => ProjectStatus::class,
             'stage' => ProjectStage::class,
             'contract_date' => 'datetime:Y-m-d',
@@ -70,6 +74,11 @@ class Project extends Model
             'is_original' => 'boolean',
         ];
     }
+
+    protected $appends = [
+        'summary_of_rates',
+        'summary_of_bid',
+    ];
 
     protected static function boot()
     {
@@ -105,11 +114,6 @@ class Project extends Model
         return $this->hasMany(Phase::class);
     }
 
-    public function tasks(): HasMany
-    {
-        return $this->hasMany(Task::class);
-    }
-
     public function attachments(): HasMany
     {
         return $this->hasMany(Attachment::class);
@@ -142,12 +146,12 @@ class Project extends Model
 
     public function isApproved(): bool
     {
-        return $this->status == ProjectStatus::APPROVED->label();
+        return $this->status == ProjectStatus::APPROVED->value;
     }
 
     public function isOpen(): bool
     {
-        return $this->status == ProjectStatus::OPEN->label();
+        return $this->status == ProjectStatus::OPEN->value;
     }
 
     // PROJECT SCOPES
@@ -212,5 +216,61 @@ class Project extends Model
     public function scopeArchived(Builder $query)
     {
         return $query->onlyTrashed();
+    }
+
+    public function getSummaryOfBidAttribute()
+    {
+        $summaryOfBid = [];
+        if (! $this->phases) {
+            return $summaryOfBid;
+        }
+        foreach ($this->phases as $phase) {
+            $summaryOfBid[] = [
+                'part_no' => $phase->name,
+                'description' => $phase->description,
+                'total_amount' => $phase->tasks ? $phase->tasks->sum('amount') : 0,
+            ];
+        }
+
+        return $summaryOfBid;
+    }
+
+    public function getSummaryOfRatesAttribute()
+    {
+        $summary_of_rates = [];
+        if (! $this->phases) {
+            return $summary_of_rates;
+        }
+        foreach ($this->phases as $phase) {
+            if (! $phase->tasks) {
+                continue;
+            }
+            foreach ($phase->tasks as $task) {
+                if (! $task->resources) {
+                    continue;
+                }
+                foreach ($task->resources as $value) {
+                    if ($value->quantity <= 0 || ! $value->unit) {
+                        continue;
+                    }
+                    $resourceName = $value->resourceName->name;
+                    $key = $value->description;
+                    if (isset($summary_of_rates[$resourceName][$key])) {
+                        $summary_of_rates[$resourceName][$key]['ids'][] = $value->id;
+                    } else {
+                        $summary_of_rates[$resourceName][$key] = [
+                            'description' => $value->description,
+                            'unit_cost' => $value->unit_cost,
+                            'unit' => $value->unit,
+                            'resource_name' => $value->unit_cost.' / '.$value->unit,
+                            'total_cost' => $value->total_cost,
+                            'ids' => [$value->id],
+                        ];
+                    }
+                }
+            }
+        }
+
+        return $summary_of_rates;
     }
 }

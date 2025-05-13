@@ -23,7 +23,7 @@ class PhaseCollection extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'total_cost' => $this->total_cost,
-            'tasks' => TaskCollection::make($this->whenLoaded('tasks')),
+            'tasks' => $this->whenLoaded('tasks', fn () => TaskCollection::collection($this->tasks)),
         ];
     }
 }

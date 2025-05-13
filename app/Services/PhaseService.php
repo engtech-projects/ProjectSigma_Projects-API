@@ -18,7 +18,7 @@ class PhaseService
         });
         $query->with('tasks');
 
-        return $query->get();
+        return $query->paginate(config('services.pagination.limit'));
     }
 
     public static function withProjects($request)

@@ -2,15 +2,11 @@
 
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
+use App\Http\Controllers\Actions\Approvals\ApproveApproval;
+use App\Http\Controllers\Actions\Approvals\DisapproveApproval;
 use App\Http\Controllers\Api\V1\Accessibility\PermissionController;
 use App\Http\Controllers\Api\V1\Accessibility\RoleController;
 use App\Http\Controllers\Api\V1\Assignment\ProjectAssignmentController;
-use App\Http\Controllers\Api\V1\Command\ApiSyncController;
-use App\Http\Controllers\Api\V1\Command\SyncEmployees;
-use App\Http\Controllers\Api\V1\Command\SyncItemProfiles;
-use App\Http\Controllers\Api\V1\Command\SyncSuppliers;
-use App\Http\Controllers\Api\V1\Command\SyncUnits;
-use App\Http\Controllers\Api\V1\Command\SyncUsers;
 use App\Http\Controllers\Api\V1\Employee\GetAllEmployees;
 use App\Http\Controllers\Api\V1\Employee\ShowEmployee;
 use App\Http\Controllers\Api\V1\Logs\LogController;
@@ -23,8 +19,10 @@ use App\Http\Controllers\Api\V1\Project\ReplicateProject;
 use App\Http\Controllers\Api\V1\Project\RevisionController;
 use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
 use App\Http\Controllers\Api\V1\Task\TaskController;
+use App\Http\Controllers\APiSyncController;
 use App\Http\Resources\User\UserCollection;
 use App\Models\ResourceName;
+use App\Models\Uom;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,24 +35,15 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::middleware('secret_api')->group(function () {
-    // SIGMA SERVICES ROUTES
-    Route::prefix('sigma')->group(function () {
-        // Route::resource('sync-departments', DepartmentsController::class)->names("syncDepartmentsresource");
-        // Route::resource('sync-projects', ProjectsController::class)->names("syncProjectsresource");
-        Route::get('sync/users', SyncUsers::class);
-        Route::get('sync/employees', SyncEmployees::class);
-        // Route::resource('sync-employees', EmployeeController::class)->names("syncEmployeeresource");
-        // Route::get('suppliers', [RequestSupplierController::class, 'get']);
-        Route::get('sync/item-profiles', SyncItemProfiles::class);
-        Route::get('sync/suppliers', SyncSuppliers::class);
-        Route::get('sync/units', SyncUnits::class);
-        // Route::get('uoms', [UOMController::class, 'get']);
+
+// SYNCHRONIZATION ROUTES
+Route::prefix('sync')->group(function () {
+    Route::prefix('inventory')->group(function () {
+        Route::post('/uom', [APiSyncController::class, 'syncUom']);
     });
 });
 
 Route::middleware('auth:api')->group(function () {
-
     Route::get('/user', function () {
         return response()->json(new UserCollection(Auth::user()), 200);
     });
@@ -69,6 +58,12 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('/resource-names', function () {
         return response()->json(ResourceName::all(), 200);
+    });
+
+    //APPROVALS ROUTES
+    Route::prefix('approvals')->group(function () {
+        Route::post('approve/{modelName}/{model}', ApproveApproval::class);
+        Route::post('disapprove/{modelName}/{model}', DisapproveApproval::class);
     });
 
     Route::resource('/projects', ProjectController::class);
@@ -109,4 +104,9 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/project-assignments', [ProjectAssignmentController::class, 'store']);
 
     Route::resource('/positions', PositionController::class);
+
+    Route::get('/uom', function () {
+        return response()->json(Uom::all(), 200);
+    });
+    Route::post('/projects/change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
 });

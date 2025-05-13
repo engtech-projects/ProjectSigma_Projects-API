@@ -22,7 +22,6 @@ class EditPositionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'required|exists:positions,id',
             'name' => 'required|string',
             'description' => 'required|string',
         ];

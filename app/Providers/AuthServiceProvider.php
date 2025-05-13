@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use App\Guards\AuthTokenGuard;
+use Dedoc\Scramble\Scramble;
+use Dedoc\Scramble\Support\Generator\OpenApi;
+use Dedoc\Scramble\Support\Generator\SecurityScheme;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 // use Spatie\Permission\Models\Permission;
@@ -35,5 +38,12 @@ class AuthServiceProvider extends ServiceProvider
                 return $guard;
             }
         );
+
+        Scramble::configure()
+            ->withDocumentTransformers(function (OpenApi $openApi) {
+                $openApi->secure(
+                    SecurityScheme::http('bearer')
+                );
+            });
     }
 }
