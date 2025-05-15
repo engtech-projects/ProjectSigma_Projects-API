@@ -2,12 +2,20 @@
 
 namespace App\Http\Controllers\Api\V1\Project;
 
+use App\Enums\ProjectStage;
 use App\Enums\RevisionStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Revision\ApproveAwardedRequest;
+use App\Http\Requests\Revision\ApproveProposalRequest;
+use App\Http\Requests\Revision\RejectAwardedRequest;
+use App\Http\Requests\Revision\RejectProposalRequest;
+use App\Http\Requests\Revision\RevisionApproveRequest;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Revision\RevisionCollection;
 use App\Models\Project;
 use App\Models\Revision;
+use App\Services\ProjectService;
+use DB;
 use Illuminate\Http\Request;
 
 class RevisionController extends Controller
@@ -19,21 +27,21 @@ class RevisionController extends Controller
         return response()->json(new ProjectCollection($projects), 200);
     }
 
-    public function revise(Request $request, Project $project)
+    public function addRevision($status, $id)
     {
-        // project should be a replica and open status
-        if (! $project->isOriginal() && $project->isOpen()) {
-            $revision = Revision::create([
+        DB::transaction(function () use ($status, $id) {
+            $project = Project::findOrFail($id)->load('phases.tasks.resources');
+            $revisionCount = Revision::where('project_id', $project->id)->where('status', $status)->count();
+            Revision::create([
                 'project_id' => $project->id,
                 'project_uuid' => $project->uuid,
                 'data' => $project->toJson(),
-                'comments' => $request->comments,
-                'status' => RevisionStatus::DRAFT,
+                'version' => $revisionCount + 1.0,
+                'status' => $status,
             ]);
+        });
 
-            return response()->json($revision, 200);
-        }
-
+        return true;
     }
 
     public function show(Revision $revision)
@@ -41,20 +49,52 @@ class RevisionController extends Controller
         return response()->json(new RevisionCollection($revision), 200);
     }
 
-    public function approve(Request $request, Revision $revision)
+    public function changeToProposal(ApproveProposalRequest $request)
     {
-        return response()->json($revision, 200);
+        $validatedData = $request->validated();
+        $this->addRevision(ProjectStage::PROPOSAL->value, $validatedData['id']);
+        DB::transaction(function () use ($validatedData) {
+            ProjectService::changeToProposal($validatedData['id']);
+            $revision = Project::findOrFail($validatedData['id']);
+            $revision->status = ProjectStage::PROPOSAL->value;
+            $revision->save();
+        });
+
+        return response()->json([
+            'message' => 'Project approved to proposal',
+        ], 200);
     }
 
-    public function reject(Request $request, Revision $revision)
+    public function returnToDraft(RejectProposalRequest $request)
     {
-        $revision->status = RevisionStatus::REJECTED;
-        $revision->comments = $request->comments;
-        $revision->save();
+        $validatedData = $request->validated();
+        $this->addRevision(ProjectStage::DRAFT->value, $validatedData['id']);
+        DB::transaction(function () use ($validatedData) {
+            ProjectService::changeToDraft($validatedData['id']);
+            $revision = Project::findOrFail($validatedData['id']);
+            $revision->status = ProjectStage::DRAFT->value;
+            $revision->save();
+        });
+
+        return response()->json([
+            'message' => 'Project returned to draft',
+        ], 200);
     }
+
 
     public function archive(Request $request, Revision $revision)
     {
-        return response()->json($revision, 200);
+        $validatedData = $request->validated();
+        $this->addRevision(ProjectStage::ARCHIVED->value, $validatedData['id']);
+        DB::transaction(function () use ($validatedData) {
+            ProjectService::changeToArchived($validatedData['id']);
+            $revision = Project::findOrFail($validatedData['id']);
+            $revision->status = ProjectStage::ARCHIVED->value;
+            $revision->save();
+        });
+
+        return response()->json([
+            'message' => 'Project archived',
+        ], 200);
     }
 }
