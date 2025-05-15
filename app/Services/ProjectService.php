@@ -64,6 +64,9 @@ class ProjectService
             }
             $query->where('stage', $attr['status']);
         });
+        $query->with('revisions', function ($query) {
+            return $query->latestRevision();
+        });
 
         return $query->paginate(config('services.pagination.limit'));
     }
@@ -95,6 +98,50 @@ class ProjectService
                 'message' => 'Team assigned successfully.',
                 'data' => $project->team()->get(),
             ], 200);
+        });
+    }
+
+    public static function changeToDraft($id)
+    {
+        return DB::transaction(function () use ($id) {
+            $project = Project::findOrFail($id);
+            $project->stage = ProjectStage::DRAFT->value;
+            $project->save();
+
+            return true;
+        });
+    }
+
+    public static function changeToAwarded($id)
+    {
+        return DB::transaction(function () use ($id) {
+            $project = Project::findOrFail($id);
+            $project->stage = ProjectStage::AWARDED->value;
+            $project->save();
+
+            return true;
+        });
+    }
+
+    public static function changeToProposal($id)
+    {
+        return DB::transaction(function () use ($id) {
+            $project = Project::findOrFail($id);
+            $project->stage = ProjectStage::PROPOSAL->value;
+            $project->save();
+
+            return true;
+        });
+    }
+
+    public static function changeToArchived($id)
+    {
+        return DB::transaction(function () use ($id) {
+            $project = Project::findOrFail($id);
+            $project->stage = ProjectStage::ARCHIVED->value;
+            $project->save();
+
+            return true;
         });
     }
 }

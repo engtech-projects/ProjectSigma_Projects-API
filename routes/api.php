@@ -60,7 +60,7 @@ Route::middleware('auth:api')->group(function () {
         return response()->json(ResourceName::all(), 200);
     });
 
-    //APPROVALS ROUTES
+    // APPROVALS ROUTES
     Route::prefix('approvals')->group(function () {
         Route::post('approve/{modelName}/{model}', ApproveApproval::class);
         Route::post('disapprove/{modelName}/{model}', DisapproveApproval::class);
@@ -83,14 +83,10 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('/tasks', TaskController::class);
     Route::resource('/resource-items', ResourceItemController::class);
 
-    Route::get('/revisions', [RevisionController::class, 'index']);
-    Route::get('/revisions/{revision}', [RevisionController::class, 'show']);
-    Route::post('/revisions/{project}/request', [RevisionController::class, 'revise']);
-    Route::post('/revisions/{revision}/approve', [RevisionController::class, 'approve']);
-    Route::post('/revisions/{revision}/reject', [RevisionController::class, 'reject']);
-
-    // Route::get('/sync/api-data', [ApiSyncController::class, 'sync']);
-
+    Route::prefix('project-revisions')->group(function () {
+        Route::post('change-to-proposal/{id}', [RevisionController::class, 'changeToProposal']);
+        Route::post('return-to-draft/{id}', [RevisionController::class, 'returnToDraft']);
+    });
     Route::resource('/roles', RoleController::class);
     Route::resource('/permissions', PermissionController::class);
 
