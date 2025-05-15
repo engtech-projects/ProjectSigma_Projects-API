@@ -64,14 +64,12 @@ class Project extends Model
     protected function casts(): array
     {
         return [
-            'cash_flow' => 'json',
-            'status' => ProjectStatus::class,
-            'stage' => ProjectStage::class,
+            'cash_flow' => 'array',
             'contract_date' => 'datetime:Y-m-d',
             'noa_date' => 'datetime:Y-m-d',
             'ntp_date' => 'datetime:Y-m-d',
             'amount' => 'decimal:2',
-            'is_original' => 'boolean',
+            'approvals' => 'array',
         ];
     }
 
@@ -101,12 +99,6 @@ class Project extends Model
     public function archive(): void
     {
         $this->updateStatus(ProjectStatus::ARCHIVED);
-    }
-
-    // Archive the project
-    public function complete(): void
-    {
-        $this->updateStatus(ProjectStatus::COMPLETED);
     }
 
     public function phases(): HasMany

@@ -67,14 +67,12 @@ Route::middleware('auth:api')->group(function () {
     });
 
     Route::resource('/projects', ProjectController::class);
-    Route::get('/original/projects', [ProjectController::class, 'original']);
-    Route::get('/revised/projects', [ProjectController::class, 'revised']);
     // project status updates
     Route::post('/projects/{project}/archive', [ProjectStatusController::class, 'archive']);
     Route::post('/projects/{project}/complete', [ProjectStatusController::class, 'complete']);
     Route::patch('/projects/{project}/status', [ProjectStatusController::class, 'updateStatus']);
     // duplicate/clone project
-    Route::post('/projects/{project}/replicate', ReplicateProject::class);
+    Route::post('/projects/replicate', [ProjectController::class, 'replicate']);
 
     Route::post('/projects/{project}/attachments', [ProjectAttachmentController::class, 'store']);
     Route::delete('/attachments/{attachment}/remove', [ProjectAttachmentController::class, 'destroy']);
@@ -84,8 +82,8 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('/resource-items', ResourceItemController::class);
 
     Route::prefix('project-revisions')->group(function () {
-        Route::post('change-to-proposal/{id}', [RevisionController::class, 'changeToProposal']);
-        Route::post('return-to-draft/{id}', [RevisionController::class, 'returnToDraft']);
+        Route::post('change-to-proposal', [RevisionController::class, 'changeToProposal']);
+        Route::post('return-to-draft', [RevisionController::class, 'returnToDraft']);
     });
     Route::resource('/roles', RoleController::class);
     Route::resource('/permissions', PermissionController::class);
