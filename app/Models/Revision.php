@@ -51,7 +51,8 @@ class Revision extends Model
     {
         return $this->belongsTo(Project::class);
     }
-    public function scopeLatestRevision( $query)
+
+    public function scopeLatestRevision($query)
     {
         return $query->orderBy('created_at', 'desc')->first();
     }

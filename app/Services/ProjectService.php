@@ -100,6 +100,7 @@ class ProjectService
             ], 200);
         });
     }
+
     public static function changeToDraft($id)
     {
         return DB::transaction(function () use ($id) {
@@ -110,6 +111,7 @@ class ProjectService
             return true;
         });
     }
+
     public static function changeToAwarded($id)
     {
         return DB::transaction(function () use ($id) {
@@ -120,6 +122,7 @@ class ProjectService
             return true;
         });
     }
+
     public static function changeToProposal($id)
     {
         return DB::transaction(function () use ($id) {
@@ -130,6 +133,7 @@ class ProjectService
             return true;
         });
     }
+
     public static function changeToArchived($id)
     {
         return DB::transaction(function () use ($id) {

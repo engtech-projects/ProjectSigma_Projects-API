@@ -3,13 +3,9 @@
 namespace App\Http\Controllers\Api\V1\Project;
 
 use App\Enums\ProjectStage;
-use App\Enums\RevisionStatus;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Revision\ApproveAwardedRequest;
 use App\Http\Requests\Revision\ApproveProposalRequest;
-use App\Http\Requests\Revision\RejectAwardedRequest;
 use App\Http\Requests\Revision\RejectProposalRequest;
-use App\Http\Requests\Revision\RevisionApproveRequest;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Revision\RevisionCollection;
 use App\Models\Project;
@@ -80,7 +76,6 @@ class RevisionController extends Controller
             'message' => 'Project returned to draft',
         ], 200);
     }
-
 
     public function archive(Request $request, Revision $revision)
     {
