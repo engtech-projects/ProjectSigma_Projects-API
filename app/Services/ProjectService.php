@@ -4,7 +4,10 @@ namespace App\Services;
 
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
+use App\Models\Phase;
 use App\Models\Project;
+use App\Models\ResourceItem;
+use App\Models\Task;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -106,6 +109,7 @@ class ProjectService
         return DB::transaction(function () use ($id) {
             $project = Project::findOrFail($id);
             $project->stage = ProjectStage::DRAFT->value;
+            $project->status = ProjectStatus::DRAFT->value;
             $project->save();
 
             return true;
@@ -117,6 +121,7 @@ class ProjectService
         return DB::transaction(function () use ($id) {
             $project = Project::findOrFail($id);
             $project->stage = ProjectStage::AWARDED->value;
+            $project->status = ProjectStatus::ONGOING->value;
             $project->save();
 
             return true;
@@ -128,6 +133,7 @@ class ProjectService
         return DB::transaction(function () use ($id) {
             $project = Project::findOrFail($id);
             $project->stage = ProjectStage::PROPOSAL->value;
+            $project->status = ProjectStatus::OPEN->value;
             $project->save();
 
             return true;
@@ -139,9 +145,84 @@ class ProjectService
         return DB::transaction(function () use ($id) {
             $project = Project::findOrFail($id);
             $project->stage = ProjectStage::ARCHIVED->value;
+            $project->status = ProjectStatus::ARCHIVED->value;
             $project->save();
 
             return true;
+        });
+    }
+    public static function replicate($attribute)
+    {
+        $id = $attribute['id'];
+        return DB::transaction(function () use ($id) {
+            $project = Project::findOrFail($id)->load('phases.tasks.resources');
+            $newProjectData = [
+                'parent_project_id' => $id,
+                'contract_id' => $project->contract_id.'-COPY',
+                'code' => null,
+                'name' => $project->name . '-COPY',
+                'location' => $project->location,
+                'nature_of_work' => $project->nature_of_work,
+                'amount' => $project->amount,
+                'contract_date' => $project->contract_date,
+                'duration' => $project->duration,
+                'noa_date' => $project->noa_date,
+                'ntp_date' => $project->ntp_date,
+                'license' => $project->license,
+                'stage' => ProjectStage::DRAFT->value,
+                'status' => ProjectStatus::DRAFT->value,
+                'is_original' => 0,
+                'version' => $project->version,
+                'project_identifier' => $project->project_identifier,
+                'implementing_office' => $project->implementing_office,
+                'current_revision_id' => $project->current_revision_id,
+                'cash_flow' => $project->cash_flow,
+                'created_by' => auth()->user()->id,
+            ];
+
+            $newProject = Project::create($newProjectData);
+
+            foreach ($project->phases as $phase) {
+                $newPhaseData = [
+                    'project_id' => $newProject->id,
+                    'name' => $phase->name,
+                    'description' => $phase->description,
+                    'total_cost' => $phase->total_cost,
+                ];
+                $newPhase = Phase::create($newPhaseData);
+
+                foreach ($phase->tasks as $task) {
+                    $newTaskData = [
+                        'phase_id' => $newPhase->id,
+                        'name' => $task->name,
+                        'description' => $task->description,
+                        'quantity' => $task->quantity,
+                        'unit' => $task->unit,
+                        'unit_price' => $task->unit_price,
+                        'amount' => $task->amount,
+                    ];
+                    $newTask = Task::create($newTaskData);
+
+                    foreach ($task->resources as $resource) {
+                        $newResourceData = [
+                            'task_id' => $newTask->id,
+                            'name_id' => $resource->name_id,
+                            'description' => $resource->description,
+                            'quantity' => $resource->quantity,
+                            'unit' => $resource->unit,
+                            'unit_cost' => $resource->unit_cost,
+                            'resource_count' => $resource->resource_count,
+                            'total_cost' => $resource->total_cost,
+                        ];
+                        ResourceItem::create($newResourceData);
+                    }
+                }
+            }
+
+            return response()->json([
+                'message' => 'Project replicated successfully.',
+                'data' => $newProject->load('phases.tasks.resources'),
+            ], 201);
         });
     }
 }
