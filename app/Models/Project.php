@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Traits\Filterable;
+use App\Traits\HasApproval;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,7 +19,11 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class Project extends Model
 {
-    use Filterable, HasFactory, LogsActivity, SoftDeletes;
+    use Filterable;
+    use HasFactory;
+    use LogsActivity;
+    use SoftDeletes;
+    use HasApproval;
 
     protected $table = 'projects';
 

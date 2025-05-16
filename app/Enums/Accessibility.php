@@ -7,5 +7,5 @@ use App\Enums\Traits\EnumHelper;
 enum Accessibility: string
 {
     use EnumHelper;
-    case SUPERADMIN = "project sigma:super admin";
+    case SUPERADMIN = 'project sigma:super admin';
 }
