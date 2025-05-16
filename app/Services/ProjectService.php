@@ -133,6 +133,16 @@ class ProjectService
             return true;
         });
     }
+    public static function changeToBidding($id)
+    {
+        return DB::transaction(function () use ($id) {
+            $project = Project::findOrFail($id);
+            $project->stage = ProjectStage::BIDDING->value;
+            $project->save();
+
+            return true;
+        });
+    }
 
     public static function changeToArchived($id)
     {

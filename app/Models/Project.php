@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
+use App\Enums\RequestStatuses;
 use App\Traits\Filterable;
 use App\Traits\HasApproval;
 use Illuminate\Database\Eloquent\Builder;
@@ -240,6 +241,38 @@ class Project extends Model
         return $summaryOfBid;
     }
 
+    public function completeRequestStatus()
+    {
+        switch ($this->stage) {
+            case ProjectStage::PROPOSAL->value:
+                $this->status = ProjectStage::BIDDING->value;
+                break;
+            case ProjectStage::BIDDING->value:
+                $this->status = ProjectStage::AWARDED->value;
+                break;
+            default:
+                break;
+        }
+        $this->request_status = RequestStatuses::APPROVED->value;
+        $this->save();
+        $this->refresh();
+    }
+    public function denyRequestStatus()
+    {
+        switch ($this->stage) {
+            case ProjectStage::BIDDING->value:
+                $this->status = ProjectStage::PROPOSAL->value;
+                break;
+            case ProjectStage::PROPOSAL->value:
+                $this->status = ProjectStage::DRAFT->value;
+                break;
+            default:
+                break;
+        }
+        $this->request_status = RequestStatuses::DENIED->value;
+        $this->save();
+        $this->refresh();
+    }
     public function getSummaryOfRatesAttribute()
     {
         $summary_of_rates = [];
