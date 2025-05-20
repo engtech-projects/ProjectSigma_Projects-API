@@ -10,7 +10,8 @@ use Illuminate\Support\Str;
 
 class ProjectAssignment extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'project_assignment';
 

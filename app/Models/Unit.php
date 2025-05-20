@@ -8,5 +8,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Unit extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 }

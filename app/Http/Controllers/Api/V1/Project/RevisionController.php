@@ -60,6 +60,21 @@ class RevisionController extends Controller
             'message' => 'Project approved to proposal',
         ], 200);
     }
+    public function changeToBidding(ApproveProposalRequest $request)
+    {
+        $validatedData = $request->validated();
+        $this->addRevision(ProjectStage::BIDDING->value, $validatedData['id']);
+        DB::transaction(function () use ($validatedData) {
+            ProjectService::changeToBidding($validatedData['id']);
+            $revision = Project::findOrFail($validatedData['id']);
+            $revision->status = ProjectStage::BIDDING->value;
+            $revision->save();
+        });
+
+        return response()->json([
+            'message' => 'Project approved to bidding',
+        ], 200);
+    }
 
     public function returnToDraft(RejectProposalRequest $request)
     {

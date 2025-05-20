@@ -98,7 +98,11 @@ class ProjectController extends Controller
         return $summaryOfRates;
     }
 
-    public function archive(Project $project) {}
+    public function archive(Project $project)
+    {
+    }
 
-    public function destroy(Project $project) {}
+    public function destroy(Project $project)
+    {
+    }
 }

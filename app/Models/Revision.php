@@ -11,7 +11,8 @@ use Illuminate\Support\Str;
 
 class Revision extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'revisions';
 
