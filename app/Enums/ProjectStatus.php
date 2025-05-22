@@ -17,4 +17,5 @@ enum ProjectStatus: string
     case VOID = 'void';
     case DELETED = 'deleted';
     case DRAFT = 'draft';
+    case MY_PROJECT = 'myProjects';
 }

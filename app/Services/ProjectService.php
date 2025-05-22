@@ -58,14 +58,17 @@ class ProjectService
         $query = Project::query();
 
         $query->when(isset($attr['key']), function ($query) use ($attr) {
-            $query->where('name', 'like', "%{$attr['key']}%")
-                ->orWhere('code', 'like', "%{$attr['key']}%");
+            $query->where('stage', $attr['key']);
         });
         $query->when(isset($attr['status']), function ($query) use ($attr) {
             if ($attr['status'] === ProjectStatus::DRAFT->value) {
                 $query->where('created_by', auth()->user()->id);
             }
-            $query->where('stage', $attr['status']);
+            if ($attr['status'] === ProjectStatus::MY_PROJECT->value) {
+                $query->where('created_by', auth()->user()->id);
+            }else{
+                $query->where('stage', $attr['status']);
+            }
         });
         $query->with('revisions', function ($query) {
             return $query->latestRevision();
