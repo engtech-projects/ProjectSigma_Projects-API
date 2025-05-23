@@ -4,11 +4,13 @@ namespace App\Http\Requests\Project;
 
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
+use App\Http\Traits\HasApprovalValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StoreProjectRequest extends FormRequest
 {
+    use HasApprovalValidation;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -39,6 +41,7 @@ class StoreProjectRequest extends FormRequest
             'nature_of_work' => 'nullable|string',
             'stage' => [Rule::enum(ProjectStage::class)],
             'status' => [Rule::enum(ProjectStatus::class)],
+            ...$this->storeApprovals(),
         ];
     }
 }
