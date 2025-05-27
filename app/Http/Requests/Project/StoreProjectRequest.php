@@ -4,7 +4,7 @@ namespace App\Http\Requests\Project;
 
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
-use App\Http\Traits\HasApprovalValidation;
+use App\Traits\HasApprovalValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
