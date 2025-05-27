@@ -8,6 +8,8 @@ use App\Models\Attachment;
 use App\Models\Project;
 use App\Traits\Upload;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Http\JsonResponse;
 
 class ProjectAttachmentController extends Controller
 {
@@ -29,6 +31,31 @@ class ProjectAttachmentController extends Controller
         }
 
         return response()->json($project->attachments()->get(), 201);
+    }
+
+    public function uploadAttachment(Request $request)
+    {
+        $request->validate([
+            'attachment_files' => 'required|array',
+            'attachment_files.*' => 'file',
+        ]);
+
+        $encryptedFileNames = [];
+
+        if ($request->hasFile('attachment_files')) {
+            foreach ($request->file('attachment_files') as $file) {
+                $encryptedFileName = Str::random(40) . '.' . $file->getClientOriginalExtension();
+                $file->storeAs('temp/', $encryptedFileName);
+                $encryptedFileNames[] = $encryptedFileName;
+            }
+        }
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Attachments uploaded successfully',
+            'data' => $encryptedFileNames,
+        ], 200);
+
     }
 
     public function destroy(Request $request, Attachment $attachment)
