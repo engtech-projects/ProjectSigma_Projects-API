@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DocumentViewerController;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return response()->json(['version' => app()->version()]);
 });
+Route::get('document-viewer', [DocumentViewerController::class, '__invoke']);
 Route::get('artisan-clear-optimization', function () {
     Artisan::call('optimize:clear');
 
