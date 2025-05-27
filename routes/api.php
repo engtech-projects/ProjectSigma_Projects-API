@@ -15,7 +15,6 @@ use App\Http\Controllers\Api\V1\Position\PositionController;
 use App\Http\Controllers\Api\V1\Project\ProjectAttachmentController;
 use App\Http\Controllers\Api\V1\Project\ProjectController;
 use App\Http\Controllers\Api\V1\Project\ProjectStatusController;
-use App\Http\Controllers\Api\V1\Project\ReplicateProject;
 use App\Http\Controllers\Api\V1\Project\RevisionController;
 use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
 use App\Http\Controllers\Api\V1\Task\TaskController;
@@ -103,4 +102,6 @@ Route::middleware('auth:api')->group(function () {
         return response()->json(Uom::all(), 200);
     });
     Route::post('/projects/change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
+
+    Route::post('upload-attachments', [ProjectAttachmentController::class, 'store']);
 });
