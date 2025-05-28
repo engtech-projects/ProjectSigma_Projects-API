@@ -7,6 +7,13 @@ use App\Models\Project;
 
 class DocumentViewerController extends Controller
 {
+    /**
+     * Handles HTTP requests to display project document attachments.
+     *
+     * Validates the request for a valid project ID, retrieves the corresponding project, and processes its attachments. Copies attachment files to a public directory if necessary and returns a view with the list of public file paths. If the project or attachments are not found, or an error occurs, returns a JSON response with a 404 status and error message.
+     *
+     * @return \Illuminate\View\View|\Illuminate\Http\JsonResponse The document viewer view with attachment paths, or a JSON error response if attachments are not found.
+     */
     public function __invoke(Request $request)
     {
         $validatedRequest = $request->validate([
