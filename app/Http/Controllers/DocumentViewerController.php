@@ -16,27 +16,39 @@ class DocumentViewerController extends Controller
         $prfId = $validatedRequest['id'];
 
         try {
-            $prf = Project::where('id', $prfId)->first();
+            $prf = Project::find($prfId);
 
             if ($prf && !empty($prf->attachment_url)) {
                 $attachmentUrls = is_array($prf->attachment_url) ? $prf->attachment_url : json_decode($prf->attachment_url, true);
                 $publicFilePaths = [];
 
                 foreach ($attachmentUrls as $attachmentUrl) {
+                    // Validate filename to prevent path traversal attacks
+                    if (strpos($attachmentUrl, '..') !== false || strpos($attachmentUrl, './') !== false) {
+                        continue; // Skip potentially malicious file paths
+                    }
                     $originalFilePath = "prf/$prfId/$attachmentUrl";
                     $publicFilePath = "storage/prf/$prfId/$attachmentUrl";
                     $publicDir = public_path("storage/prf/$prfId");
 
                     if (!file_exists($publicDir)) {
-                        mkdir($publicDir, 0777, true);
+                        if (!mkdir($publicDir, 0755, true)) {
+                            throw new \Exception('Failed to create directory');
+                        }
                     }
+                    $sourceFile = storage_path("app/$originalFilePath");
+                    if (!file_exists($sourceFile)) {
+                        continue;// skip if file does not exist
+                    }
+
                     if (!file_exists(public_path($publicFilePath))) {
-                        copy(storage_path("app/$originalFilePath"), public_path($publicFilePath));
+                        if (!copy($sourceFile, public_path($publicFilePath))) {
+                            throw new \Exception('Failed to copy file');
+                        }
                     }
 
                     $publicFilePaths[] = $publicFilePath;
                 }
-                $pdfUrl = asset($publicFilePath);
 
                 return view('document-viewer', [
                     'title' => 'Sigma Projects Attachments',
