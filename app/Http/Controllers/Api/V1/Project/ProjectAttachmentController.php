@@ -56,12 +56,20 @@ class ProjectAttachmentController extends Controller
 
         $encryptedFileNames = [];
 
-        if ($request->hasFile('attachment_files')) {
-            foreach ($request->file('attachment_files') as $file) {
-                $encryptedFileName = Str::random(40) . '.' . $file->getClientOriginalExtension();
-                $file->storeAs('temp/', $encryptedFileName);
-                $encryptedFileNames[] = $encryptedFileName;
+        try {
+            if ($request->hasFile('attachment_files')) {
+                foreach ($request->file('attachment_files') as $file) {
+                    $encryptedFileName = Str::random(40) . '.' . $file->getClientOriginalExtension();
+                    $file->storeAs('temp/', $encryptedFileName);
+                    $encryptedFileNames[] = $encryptedFileName;
+                }
             }
+        } catch (\Exception $e) {
+            // Clean up any partially uploaded files
+            foreach ($encryptedFileNames as $filename) {
+                Storage::delete('temp/' . $filename);
+            }
+            throw $e;
         }
 
         return new JsonResponse([
