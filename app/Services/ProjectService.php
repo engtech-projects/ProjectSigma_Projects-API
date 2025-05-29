@@ -53,6 +53,14 @@ class ProjectService
         });
     }
 
+    /**
+     * Retrieves a paginated list of projects with optional filtering by stage or status.
+     *
+     * Applies filters based on provided attributes, including limiting results to projects created by the authenticated user for certain statuses. Eager loads the latest revision for each project.
+     *
+     * @param array $attr Optional filters such as 'key' for stage or 'status' for project status.
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator Paginated list of projects.
+     */
     public function withPagination(array $attr)
     {
         $query = Project::query();

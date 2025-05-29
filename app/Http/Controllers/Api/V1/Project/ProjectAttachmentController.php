@@ -16,6 +16,13 @@ class ProjectAttachmentController extends Controller
 {
     use Upload;
 
+    /**
+     * Handles uploading and storing multiple attachments for a project.
+     *
+     * Validates the incoming request, uploads each provided file to a project-specific directory, and creates corresponding attachment records linked to the project. Returns a JSON response containing all attachments for the project.
+     *
+     * @return \Illuminate\Http\JsonResponse List of the project's attachments with HTTP status 201.
+     */
     public function store(StoreAttachmentRequest $request, Project $project)
     {
         $validated = $request->validated();
@@ -34,6 +41,13 @@ class ProjectAttachmentController extends Controller
         return response()->json($project->attachments()->get(), 201);
     }
 
+    /**
+     * Handles the upload of multiple attachment files to a temporary directory.
+     *
+     * Validates that the request contains an array of files under 'attachment_files', stores each file in the 'temp/' directory with a randomly generated encrypted filename, and returns a JSON response with the list of encrypted filenames.
+     *
+     * @return JsonResponse JSON response containing success status, message, and the list of encrypted filenames.
+     */
     public function uploadAttachment(Request $request)
     {
         $request->validate([
@@ -67,6 +81,13 @@ class ProjectAttachmentController extends Controller
 
     }
 
+    /****
+     * Deletes the specified attachment and its associated file from storage.
+     *
+     * Removes the physical file from storage using the attachment's path, deletes the attachment record from the database, and returns a JSON response indicating successful deletion.
+     *
+     * @return \Illuminate\Http\JsonResponse JSON response with the string 'deleted' and HTTP status 200.
+     */
     public function destroy(Request $request, Attachment $attachment)
     {
         $this->deleteFile($attachment->path);
