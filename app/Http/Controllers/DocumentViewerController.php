@@ -43,7 +43,6 @@ class DocumentViewerController extends Controller
 
                     $publicFilePaths[] = $publicFilePath;
                 }
-                $pdfUrl = asset($publicFilePath);
 
                 return view('document-viewer', [
                     'title' => 'Sigma Projects Attachments',
