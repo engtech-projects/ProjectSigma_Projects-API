@@ -10,6 +10,7 @@ use App\Traits\Upload;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 
 class ProjectAttachmentController extends Controller
 {
@@ -37,17 +38,25 @@ class ProjectAttachmentController extends Controller
     {
         $request->validate([
             'attachment_files' => 'required|array',
-            'attachment_files.*' => 'file',
+            'attachment_files.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png',
         ]);
 
         $encryptedFileNames = [];
 
-        if ($request->hasFile('attachment_files')) {
-            foreach ($request->file('attachment_files') as $file) {
-                $encryptedFileName = Str::random(40) . '.' . $file->getClientOriginalExtension();
-                $file->storeAs('temp/', $encryptedFileName);
-                $encryptedFileNames[] = $encryptedFileName;
+        try {
+            if ($request->hasFile('attachment_files')) {
+                foreach ($request->file('attachment_files') as $file) {
+                    $encryptedFileName = Str::random(40) . '.' . $file->getClientOriginalExtension();
+                    $file->storeAs('temp/', $encryptedFileName);
+                    $encryptedFileNames[] = $encryptedFileName;
+                }
             }
+        } catch (\Exception $e) {
+            // Clean up any partially uploaded files
+            foreach ($encryptedFileNames as $filename) {
+                Storage::delete('temp/' . $filename);
+            }
+            throw $e;
         }
 
         return new JsonResponse([
