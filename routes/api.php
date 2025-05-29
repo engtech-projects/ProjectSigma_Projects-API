@@ -103,5 +103,5 @@ Route::middleware('auth:api')->group(function () {
     });
     Route::post('/projects/change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
 
-    Route::post('upload-attachments', [ProjectAttachmentController::class, 'store']);
+    Route::post('upload-attachments', [ProjectAttachmentController::class, 'uploadAttachment']);
 });
