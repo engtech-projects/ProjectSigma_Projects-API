@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\V1\Project\RevisionController;
 use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
 use App\Http\Controllers\Api\V1\Task\TaskController;
 use App\Http\Controllers\APiSyncController;
+use App\Http\Controllers\DocumentViewerController;
 use App\Http\Resources\User\UserCollection;
 use App\Models\ResourceName;
 use App\Models\Uom;
@@ -104,4 +105,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/projects/change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
 
     Route::post('upload-attachments', [ProjectAttachmentController::class, 'uploadAttachment']);
+    Route::get('document-viewer', [DocumentViewerController::class, '__invoke'])
+        ->name('document.viewer') // required for generating signed urls
+        ->middleware('signed');
 });
