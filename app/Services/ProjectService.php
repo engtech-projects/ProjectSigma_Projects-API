@@ -8,8 +8,11 @@ use App\Models\Phase;
 use App\Models\Project;
 use App\Models\ResourceItem;
 use App\Models\Task;
+use Cache;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Js;
+use Str;
 
 class ProjectService
 {
@@ -48,7 +51,7 @@ class ProjectService
                 ->update(['unit_cost' => $attr['unit_cost']]);
 
             return new JsonResponse([
-                'message' => 'Summary rates updated successfully, Number of Direct Cost Affected: '.count($attr['ids']),
+                'message' => 'Summary rates updated successfully, Number of Direct Cost Affected: ' . count($attr['ids']),
             ], 200);
         });
     }
@@ -179,7 +182,7 @@ class ProjectService
             $project = Project::findOrFail($id)->load('phases.tasks.resources');
             $newProjectData = [
                 'parent_project_id' => $id,
-                'contract_id' => $project->contract_id.'-COPY',
+                'contract_id' => $project->contract_id . '-COPY',
                 'code' => null,
                 'name' => $project->name . '-COPY',
                 'location' => $project->location,
@@ -245,5 +248,27 @@ class ProjectService
                 'data' => $newProject->load('phases.tasks.resources'),
             ], 201);
         });
+    }
+
+    public static function generateToken($id)
+    {
+        $token = Str::random(40);
+
+        $cacheKey = "document-viewer-$id-$token"."-".auth()->user()->id;
+        Cache::put($cacheKey, true, now()->addMinutes(3));
+
+        return $token;
+    }
+
+    public static function validateToken($id, $token)
+    {
+        $cacheKey = "document-viewer-$id-$token"."-".auth()->user()->id;
+
+        if (!Cache::has($cacheKey)) {
+            return false;
+        }
+
+        Cache::forget($cacheKey);
+        return true;
     }
 }
