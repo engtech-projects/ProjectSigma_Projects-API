@@ -15,7 +15,6 @@ use App\Http\Controllers\Api\V1\Position\PositionController;
 use App\Http\Controllers\Api\V1\Project\ProjectAttachmentController;
 use App\Http\Controllers\Api\V1\Project\ProjectController;
 use App\Http\Controllers\Api\V1\Project\ProjectStatusController;
-use App\Http\Controllers\Api\V1\Project\ReplicateProject;
 use App\Http\Controllers\Api\V1\Project\RevisionController;
 use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
 use App\Http\Controllers\Api\V1\Task\TaskController;
@@ -103,4 +102,14 @@ Route::middleware('auth:api')->group(function () {
         return response()->json(Uom::all(), 200);
     });
     Route::post('/projects/change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
+});
+
+// SECRET API KEY ROUTES
+Route::middleware("secret_api")->group(function () {
+    // SIGMA SERVICES ROUTES
+    Route::prefix('sigma')->group(function () {
+        Route::prefix('sync-list')->group(function () {
+            Route::get("projects", [ApiServiceController::class, "getProjectList"]);
+        });
+    });
 });

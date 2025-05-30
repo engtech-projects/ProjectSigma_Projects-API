@@ -66,7 +66,7 @@ class ProjectService
             }
             if ($attr['status'] === ProjectStatus::MY_PROJECT->value) {
                 $query->where('created_by', auth()->user()->id);
-            }else{
+            } else {
                 $query->where('stage', $attr['status']);
             }
         });
