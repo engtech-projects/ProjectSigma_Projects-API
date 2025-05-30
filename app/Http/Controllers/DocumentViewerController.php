@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use App\Models\Project;
 
 class DocumentViewerController extends Controller
@@ -16,6 +17,8 @@ class DocumentViewerController extends Controller
      */
     public function __invoke(Request $request)
     {
+        $url = URL::temporarySignedRoute('document.viewer', now()->addMinutes(3), ['id' => $request->id]);
+
         $validatedRequest = $request->validate([
             'id' => 'required|integer|exists:projects,id',
         ]);
@@ -60,6 +63,7 @@ class DocumentViewerController extends Controller
                 return view('document-viewer', [
                     'title' => 'Sigma Projects Attachments',
                     'publicFilePaths' => $publicFilePaths,
+                    'url' => $url,
                 ]);
             }
 
