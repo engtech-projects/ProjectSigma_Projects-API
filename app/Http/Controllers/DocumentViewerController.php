@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\ProjectService;
 use Auth;
 use Cache;
 use Illuminate\Http\Request;
 use App\Models\Project;
 use Illuminate\Http\JsonResponse;
+use Str;
 
 class DocumentViewerController extends Controller
 {
@@ -19,15 +21,13 @@ class DocumentViewerController extends Controller
      */
     public function __invoke(Request $request)
     {
-        $cacheKey = "document-viewer" . "-" . $request->get('id') . Auth::user()->id;
-        if (!Cache::has($cacheKey)) {
-            return new JsonResponse([
+        if (!ProjectService::validateToken($request->id, $request->token)) {
+            return response()->json([
                 'success' => false,
-                'message' => 'Invalid Request',
-            ], 400);
+                'message' => 'Invalid access',
+                'data' => [],
+            ], 404);
         }
-
-        Cache::put($cacheKey, true, now()->addMinutes(3));
 
         $validatedRequest = $request->validate([
             'id' => 'required|integer|exists:projects,id',
