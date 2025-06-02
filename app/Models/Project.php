@@ -62,22 +62,15 @@ class Project extends Model
         'request_status',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'cash_flow' => 'array',
-            'contract_date' => 'datetime:Y-m-d',
-            'noa_date' => 'datetime:Y-m-d',
-            'ntp_date' => 'datetime:Y-m-d',
-            'amount' => 'decimal:2',
-            'approvals' => 'array',
-        ];
-    }
+    protected $casts = [
+        'cash_flow' => 'array',
+        'contract_date' => 'datetime:Y-m-d',
+        'noa_date' => 'datetime:Y-m-d',
+        'ntp_date' => 'datetime:Y-m-d',
+        'amount' => 'decimal:2',
+        'approvals' => 'array',
+    ];
+
 
     protected $appends = [
         'summary_of_rates',

@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\V1\Project\ProjectStatusController;
 use App\Http\Controllers\Api\V1\Project\RevisionController;
 use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
 use App\Http\Controllers\Api\V1\Task\TaskController;
+use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\APiSyncController;
 use App\Http\Resources\User\UserCollection;
 use App\Models\ResourceName;
@@ -97,6 +98,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/project-assignments', [ProjectAssignmentController::class, 'store']);
 
     Route::resource('/positions', PositionController::class);
+    Route::get('get-all-position', [PositionController::class, 'all']);
 
     Route::get('/uom', function () {
         return response()->json(Uom::all(), 200);
