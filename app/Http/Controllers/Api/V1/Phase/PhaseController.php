@@ -36,7 +36,7 @@ class PhaseController extends Controller
         $result = PhaseService::create($validated);
 
         return response()->json([
-            'message' => 'Project phases added successfully.',
+            'message' => 'Project Item added successfully.',
             'data' => $result,
         ], 201);
     }
