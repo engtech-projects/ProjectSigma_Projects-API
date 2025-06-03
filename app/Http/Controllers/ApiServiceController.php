@@ -9,14 +9,14 @@ use Illuminate\Http\JsonResponse;
 
 class ApiServiceController extends Controller
 {
-    public function getEmployeeList()
+    public function getProjectList()
     {
-        $employeeList = Project::orderBy('code')->where('stage', ProjectStage::AWARDED)->get();
+        $projectList = Project::orderBy('code')->where('stage', ProjectStage::AWARDED)->get();
 
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully fetched.',
-            'data' => ProjectDetailedEnumResource::collection($employeeList),
+            'data' => ProjectDetailedEnumResource::collection($projectList),
         ]);
     }
 }
