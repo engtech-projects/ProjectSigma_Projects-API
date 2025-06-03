@@ -19,7 +19,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        //
+        User::class => UserPolicy::class,
     ];
 
     /**
@@ -27,6 +27,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $this->registerPolicies();
         $this->app['auth']->extend(
             'hrms-auth',
             function ($app, $name, array $config) {
@@ -34,11 +35,9 @@ class AuthServiceProvider extends ServiceProvider
                     $app['request']
                 );
                 $app->refresh('request', $guard, 'setRequest');
-
                 return $guard;
             }
         );
-
         Scramble::configure()
             ->withDocumentTransformers(function (OpenApi $openApi) {
                 $openApi->secure(
