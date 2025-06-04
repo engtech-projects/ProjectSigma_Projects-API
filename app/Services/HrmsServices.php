@@ -14,7 +14,7 @@ class HrmsServices
         $response = Http::withToken(token: $token)
             ->acceptJson()
             ->withBody($notificationData)
-            ->post(config('services.url.hrms_api')."/api/notifications/services-notify/{$userid}");
+            ->post(config('services.url.hrms_api_url')."/api/notifications/services-notify/{$userid}");
         if (! $response->successful()) {
             return false;
         }
@@ -25,7 +25,7 @@ class HrmsServices
         $response = Http::withToken($token)
             ->acceptJson()
             ->withQueryParameters($approvals)
-            ->get(config('services.url.hrms_api').'/api/services/format-approvals');
+            ->get(config('services.url.hrms_api_url').'/api/services/format-approvals');
         if (! $response->successful()) {
             return $approvals;
         }
@@ -37,7 +37,7 @@ class HrmsServices
     {
         $response = Http::withToken($token)
             ->acceptJson()
-            ->get(config('services.url.hrms_api').'/api/services/user-employees', [
+            ->get(config('services.url.hrms_api_url').'/api/services/user-employees', [
                 'user_ids' => $user_ids,
             ]);
 

@@ -10,5 +10,7 @@ enum ProjectStage: string
     case PROPOSAL = 'proposal';
     case AWARDED = 'awarded';
     case DRAFT = 'draft';
+    case ARCHIVED = 'archived';
+    case BIDDING = 'bidding';
 
 }

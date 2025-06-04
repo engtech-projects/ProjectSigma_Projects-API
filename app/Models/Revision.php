@@ -11,7 +11,8 @@ use Illuminate\Support\Str;
 
 class Revision extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'revisions';
 
@@ -43,11 +44,17 @@ class Revision extends Model
     {
         return [
             'status' => RevisionStatus::class,
+            'data' => 'array',
         ];
     }
 
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function scopeLatestRevision($query)
+    {
+        return $query->orderBy('created_at', 'desc')->first();
     }
 }

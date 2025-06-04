@@ -4,7 +4,9 @@ namespace App\Models;
 
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
+use App\Enums\RequestStatuses;
 use App\Traits\Filterable;
+use App\Traits\HasApproval;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,7 +20,11 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class Project extends Model
 {
-    use Filterable, HasFactory, LogsActivity, SoftDeletes;
+    use Filterable;
+    use HasFactory;
+    use LogsActivity;
+    use SoftDeletes;
+    use HasApproval;
 
     protected $table = 'projects';
 
@@ -56,24 +62,15 @@ class Project extends Model
         'request_status',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'cash_flow' => 'json',
-            'status' => ProjectStatus::class,
-            'stage' => ProjectStage::class,
-            'contract_date' => 'datetime:Y-m-d',
-            'noa_date' => 'datetime:Y-m-d',
-            'ntp_date' => 'datetime:Y-m-d',
-            'amount' => 'decimal:2',
-            'is_original' => 'boolean',
-        ];
-    }
+    protected $casts = [
+        'cash_flow' => 'array',
+        'contract_date' => 'datetime:Y-m-d',
+        'noa_date' => 'datetime:Y-m-d',
+        'ntp_date' => 'datetime:Y-m-d',
+        'amount' => 'decimal:2',
+        'approvals' => 'array',
+    ];
+
 
     protected $appends = [
         'summary_of_rates',
@@ -101,12 +98,6 @@ class Project extends Model
     public function archive(): void
     {
         $this->updateStatus(ProjectStatus::ARCHIVED);
-    }
-
-    // Archive the project
-    public function complete(): void
-    {
-        $this->updateStatus(ProjectStatus::COMPLETED);
     }
 
     public function phases(): HasMany
@@ -235,6 +226,38 @@ class Project extends Model
         return $summaryOfBid;
     }
 
+    public function completeRequestStatus()
+    {
+        switch ($this->stage) {
+            case ProjectStage::PROPOSAL->value:
+                $this->status = ProjectStage::BIDDING->value;
+                break;
+            case ProjectStage::BIDDING->value:
+                $this->status = ProjectStage::AWARDED->value;
+                break;
+            default:
+                break;
+        }
+        $this->request_status = RequestStatuses::APPROVED->value;
+        $this->save();
+        $this->refresh();
+    }
+    public function denyRequestStatus()
+    {
+        switch ($this->stage) {
+            case ProjectStage::BIDDING->value:
+                $this->status = ProjectStage::PROPOSAL->value;
+                break;
+            case ProjectStage::PROPOSAL->value:
+                $this->status = ProjectStage::DRAFT->value;
+                break;
+            default:
+                break;
+        }
+        $this->request_status = RequestStatuses::DENIED->value;
+        $this->save();
+        $this->refresh();
+    }
     public function getSummaryOfRatesAttribute()
     {
         $summary_of_rates = [];

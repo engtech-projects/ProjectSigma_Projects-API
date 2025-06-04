@@ -11,11 +11,11 @@ enum ProjectStatus: string
     case SUBMITTED = 'submitted';
     case APPROVED = 'approved';
     case ONGOING = 'ongoing';
-    case COMPLETED = 'completed';
     case ARCHIVED = 'archived';
     case ONHOLD = 'on-hold';
     case CANCELLED = 'cancelled';
     case VOID = 'void';
     case DELETED = 'deleted';
     case DRAFT = 'draft';
+    case MY_PROJECT = 'myProjects';
 }

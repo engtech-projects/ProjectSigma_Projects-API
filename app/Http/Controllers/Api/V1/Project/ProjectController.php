@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Api\V1\Project;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Project\FilterProjectRequest;
+use App\Http\Requests\Project\ReplicateProjectRequest;
 use App\Http\Requests\Project\StoreProjectRequest;
 use App\Http\Requests\Project\UpdateProjectRequest;
 use App\Http\Requests\SummaryRate\SummaryRateRequest;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Models\Project;
 use App\Services\ProjectService;
-use Illuminate\Http\Request;
 
 // use Illuminate\Support\Facades\Gate;
 
@@ -34,52 +34,16 @@ class ProjectController extends Controller
         return response()->json($projects, 200);
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function original(Request $request)
+    public function replicate(ReplicateProjectRequest $request)
     {
-        $filters = $request->only(['search', 'status', 'sort']);
+        $validatedData = $request->validated();
+        $result = ProjectService::replicate($validatedData);
 
-        $projects = Project::query()
-            ->original()
-            ->filter($filters)
-            ->retrieve(true, $request->per_page);
-
-        return response()->json(new ProjectCollection($projects), 200);
+        return response()->json([
+            'message' => 'Project replicated successfully.',
+            'data' => $result,
+        ], 201);
     }
-
-    /**
-     * Display a listing of the resource.
-     */
-    public function revised(Request $request)
-    {
-
-        $filters = $request->only(['search', 'status', 'sort']);
-
-        $projects = Project::query()
-            ->revised()
-            ->filter($filters)
-            ->retrieve(true, $request->per_page);
-
-        return response()->json(new ProjectCollection($projects), 200);
-    }
-
-    /**
-     * Display a listing of the resource.
-     */
-    public function proposal(Request $request)
-    {
-        $filters = $request->only(['search', 'status', 'sort']);
-
-        $projects = Project::query()
-            ->proposal()
-            ->filter($filters)
-            ->retrieve(true, $request->per_page);
-
-        return response()->json(new ProjectCollection($projects), 200);
-    }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -133,7 +97,11 @@ class ProjectController extends Controller
         return $summaryOfRates;
     }
 
-    public function archive(Project $project) {}
+    public function archive(Project $project)
+    {
+    }
 
-    public function destroy(Project $project) {}
+    public function destroy(Project $project)
+    {
+    }
 }

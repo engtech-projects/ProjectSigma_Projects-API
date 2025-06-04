@@ -15,10 +15,10 @@ use App\Http\Controllers\Api\V1\Position\PositionController;
 use App\Http\Controllers\Api\V1\Project\ProjectAttachmentController;
 use App\Http\Controllers\Api\V1\Project\ProjectController;
 use App\Http\Controllers\Api\V1\Project\ProjectStatusController;
-use App\Http\Controllers\Api\V1\Project\ReplicateProject;
 use App\Http\Controllers\Api\V1\Project\RevisionController;
 use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
 use App\Http\Controllers\Api\V1\Task\TaskController;
+use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\APiSyncController;
 use App\Http\Resources\User\UserCollection;
 use App\Models\ResourceName;
@@ -60,21 +60,19 @@ Route::middleware('auth:api')->group(function () {
         return response()->json(ResourceName::all(), 200);
     });
 
-    //APPROVALS ROUTES
+    // APPROVALS ROUTES
     Route::prefix('approvals')->group(function () {
         Route::post('approve/{modelName}/{model}', ApproveApproval::class);
         Route::post('disapprove/{modelName}/{model}', DisapproveApproval::class);
     });
 
     Route::resource('/projects', ProjectController::class);
-    Route::get('/original/projects', [ProjectController::class, 'original']);
-    Route::get('/revised/projects', [ProjectController::class, 'revised']);
     // project status updates
     Route::post('/projects/{project}/archive', [ProjectStatusController::class, 'archive']);
     Route::post('/projects/{project}/complete', [ProjectStatusController::class, 'complete']);
     Route::patch('/projects/{project}/status', [ProjectStatusController::class, 'updateStatus']);
     // duplicate/clone project
-    Route::post('/projects/{project}/replicate', ReplicateProject::class);
+    Route::post('/projects/replicate', [ProjectController::class, 'replicate']);
 
     Route::post('/projects/{project}/attachments', [ProjectAttachmentController::class, 'store']);
     Route::delete('/attachments/{attachment}/remove', [ProjectAttachmentController::class, 'destroy']);
@@ -83,14 +81,10 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('/tasks', TaskController::class);
     Route::resource('/resource-items', ResourceItemController::class);
 
-    Route::get('/revisions', [RevisionController::class, 'index']);
-    Route::get('/revisions/{revision}', [RevisionController::class, 'show']);
-    Route::post('/revisions/{project}/request', [RevisionController::class, 'revise']);
-    Route::post('/revisions/{revision}/approve', [RevisionController::class, 'approve']);
-    Route::post('/revisions/{revision}/reject', [RevisionController::class, 'reject']);
-
-    // Route::get('/sync/api-data', [ApiSyncController::class, 'sync']);
-
+    Route::prefix('project-revisions')->group(function () {
+        Route::post('change-to-proposal', [RevisionController::class, 'changeToProposal']);
+        Route::post('return-to-draft', [RevisionController::class, 'returnToDraft']);
+    });
     Route::resource('/roles', RoleController::class);
     Route::resource('/permissions', PermissionController::class);
 
@@ -104,9 +98,20 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/project-assignments', [ProjectAssignmentController::class, 'store']);
 
     Route::resource('/positions', PositionController::class);
+    Route::get('get-all-position', [PositionController::class, 'all']);
 
     Route::get('/uom', function () {
         return response()->json(Uom::all(), 200);
     });
     Route::post('/projects/change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
+});
+
+// SECRET API KEY ROUTES
+Route::middleware("secret_api")->group(function () {
+    // SIGMA SERVICES ROUTES
+    Route::prefix('sigma')->group(function () {
+        Route::prefix('sync-list')->group(function () {
+            Route::get("projects", [ApiServiceController::class, "getProjectList"]);
+        });
+    });
 });
