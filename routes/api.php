@@ -105,7 +105,5 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/projects/change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
 
     Route::post('upload-attachments', [ProjectAttachmentController::class, 'uploadAttachment']);
-    Route::get('document-viewer', [DocumentViewerController::class,])
-        ->name('document.viewer') // required for generating signed urls
-        ->middleware('signed');
+    Route::get('get-documents', [DocumentViewerController::class, 'getDocuments']);
 });
