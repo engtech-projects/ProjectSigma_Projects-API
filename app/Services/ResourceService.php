@@ -36,6 +36,7 @@ class ResourceService
     public static function create($request)
     {
         return DB::transaction(function () use ($request) {
+            $request['total_cost'] = $request['quantity'] * $request['unit_cost'];
             $data = ResourceItem::create($request);
 
             return $data;

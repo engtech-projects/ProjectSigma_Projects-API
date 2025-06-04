@@ -29,7 +29,6 @@ class StoreResourceItemRequest extends FormRequest
             'unit' => 'required|string',
             'unit_cost' => 'required|regex:/^\d+(\.\d{1,2})?$/',
             'resource_count' => 'required|integer',
-            'total_cost' => 'required|regex:/^\d+(\.\d{1,2})?$/',
         ];
     }
 }
