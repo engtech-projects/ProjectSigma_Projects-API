@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\V1\Project\ProjectStatusController;
 use App\Http\Controllers\Api\V1\Project\RevisionController;
 use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
 use App\Http\Controllers\Api\V1\Task\TaskController;
+use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\APiSyncController;
 use App\Http\Controllers\DocumentViewerController;
 use App\Http\Resources\User\UserCollection;
@@ -98,6 +99,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/project-assignments', [ProjectAssignmentController::class, 'store']);
 
     Route::resource('/positions', PositionController::class);
+    Route::get('get-all-position', [PositionController::class, 'all']);
 
     Route::get('/uom', function () {
         return response()->json(Uom::all(), 200);
@@ -106,4 +108,14 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('upload-attachments', [ProjectAttachmentController::class, 'uploadAttachment']);
     Route::get('get-documents', [DocumentViewerController::class, 'getDocuments']);
+});
+
+// SECRET API KEY ROUTES
+Route::middleware("secret_api")->group(function () {
+    // SIGMA SERVICES ROUTES
+    Route::prefix('sigma')->group(function () {
+        Route::prefix('sync-list')->group(function () {
+            Route::get("projects", [ApiServiceController::class, "getProjectList"]);
+        });
+    });
 });
