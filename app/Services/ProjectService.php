@@ -250,26 +250,4 @@ class ProjectService
             ], 201);
         });
     }
-
-    public static function generateToken($id)
-    {
-        $token = Str::random(40);
-
-        $cacheKey = "document-viewer-$id-$token"."-".auth()->user()->id;
-        Cache::put($cacheKey, true, now()->addMinutes(3));
-
-        return $token;
-    }
-
-    public static function validateToken($id, $token)
-    {
-        $cacheKey = "document-viewer-$id-$token"."-".auth()->user()->id;
-
-        if (!Cache::has($cacheKey)) {
-            return false;
-        }
-
-        Cache::forget($cacheKey);
-        return true;
-    }
 }
