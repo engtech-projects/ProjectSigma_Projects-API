@@ -27,6 +27,7 @@ class ProjectService
     {
         return DB::transaction(function () use ($attr) {
             $attr['stage'] = ProjectStage::DRAFT->value;
+            $attr['status'] = ProjectStatus::OPEN->value;
             $attr['created_by'] = auth()->user()->id;
             $attr['cash_flow'] = json_encode(array_fill_keys(['wtax', 'q1', 'q2', 'q3', 'q4'], [
                 'accomplishment' => 0,
@@ -248,27 +249,5 @@ class ProjectService
                 'data' => $newProject->load('phases.tasks.resources'),
             ], 201);
         });
-    }
-
-    public static function generateToken($id)
-    {
-        $token = Str::random(40);
-
-        $cacheKey = "document-viewer-$id-$token"."-".auth()->user()->id;
-        Cache::put($cacheKey, true, now()->addMinutes(3));
-
-        return $token;
-    }
-
-    public static function validateToken($id, $token)
-    {
-        $cacheKey = "document-viewer-$id-$token"."-".auth()->user()->id;
-
-        if (!Cache::has($cacheKey)) {
-            return false;
-        }
-
-        Cache::forget($cacheKey);
-        return true;
     }
 }
