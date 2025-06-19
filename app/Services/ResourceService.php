@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\ResourceItem;
+use App\Models\Task;
 use Illuminate\Support\Facades\DB;
 
 class ResourceService
@@ -36,8 +37,17 @@ class ResourceService
     public static function create($request)
     {
         return DB::transaction(function () use ($request) {
-            $request['total_cost'] = $request['quantity'] * $request['unit_cost'];
+            if (isset($request['unit_count'])) {
+                $request['total_cost'] = ($request['unit_cost'] * $request['unit_count']) * $request['unit_count'];
+            }else{
+                $request['total_cost'] = $request['quantity'] * $request['unit_cost'];
+            }
+
             $data = ResourceItem::create($request);
+            $task = Task::findOrFail($request['task_id'])->load('resources');
+            $task->update([
+                'amount' => $task->resources->sum('total_cost'),
+            ]);
 
             return $data;
         });
@@ -47,7 +57,16 @@ class ResourceService
     {
         return DB::transaction(function () use ($request, $id) {
             $data = ResourceItem::findOrFail($id);
+            if (isset($request['unit_count'])) {
+                $request['total_cost'] = ($request['unit_cost'] * $request['unit_count']) * $request['unit_count'];
+            }else{
+                $request['total_cost'] = $request['quantity'] * $request['unit_cost'];
+            }
             $data->fill($request)->save();
+            $task = Task::findOrFail($request['task_id'])->load('resources');
+            $task->update([
+                'amount' => $task->resources->sum('total_cost'),
+            ]);
 
             return $data;
         });
@@ -58,6 +77,10 @@ class ResourceService
         return DB::transaction(function () use ($id) {
             $data = ResourceItem::findOrFail($id);
             $data->delete();
+            $task = Task::findOrFail($data->task_id)->load('resources');
+            $task->update([
+                'amount' => $task->resources->sum('total_cost'),
+            ]);
 
             return $data;
         });
