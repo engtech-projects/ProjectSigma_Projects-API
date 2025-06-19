@@ -26,6 +26,7 @@ class UpdateResourceItemRequest extends FormRequest
             'name_id' => 'required|exists:resource_names,id',
             'id' => 'nullable|exists:resources,id',
             'description' => 'required|string',
+            'unit_count' => 'nullable|integer',
             'quantity' => 'required|regex:/^\d+(\.\d{1,2})?$/',
             'unit' => 'required|string',
             'unit_cost' => 'required|regex:/^\d+(\.\d{1,2})?$/',

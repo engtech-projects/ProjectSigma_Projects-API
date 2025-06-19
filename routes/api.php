@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\NatureOfWork;
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Http\Controllers\Actions\Approvals\ApproveApproval;
@@ -42,7 +43,9 @@ Route::prefix('sync')->group(function () {
         Route::post('/uom', [APiSyncController::class, 'syncUom']);
     });
 });
-
+Route::get('nature-of-works', function () {
+    return response()->json(NatureOfWork::cases(), 200);
+});
 Route::middleware('auth:api')->group(function () {
     Route::get('/user', function () {
         return response()->json(new UserCollection(Auth::user()), 200);
@@ -98,7 +101,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/project-assignments', [ProjectAssignmentController::class, 'store']);
 
     Route::resource('/positions', PositionController::class);
-    Route::get('get-all-position', [PositionController::class, 'all']);
+    Route::get('all-position', [PositionController::class, 'all']);
 
     Route::get('/uom', function () {
         return response()->json(Uom::all(), 200);
