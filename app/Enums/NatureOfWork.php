@@ -15,6 +15,6 @@ enum NatureOfWork: string
     case OFFICE = 'OFFICE';
     case SLOPE_PROTECTION = 'SLOPE PROTECTION';
     case BRIDGE_REHABILITATION = 'BRIDGE REHABILITATION';
-    case FCSPS = 'Flood Control: Construction - Slope Protection using Structural Measures (e.g. Revetment, Retaining Structures, Wirenet)';
+    case FCSPS = 'Flood Control';
     case RCP_ROADS = 'CONSTRUCTION- PCCP';
 }

@@ -4,13 +4,11 @@ namespace App\Http\Requests\Project;
 
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
-use App\Traits\HasApprovalValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StoreProjectRequest extends FormRequest
 {
-    use HasApprovalValidation;
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -31,17 +29,17 @@ class StoreProjectRequest extends FormRequest
             'code' => 'nullable|string|unique:projects,code',
             'name' => 'required|string',
             'location' => 'required|string',
-            'amount' => 'required|regex:/^\d+(\.\d{1,2})?$/',
+            'amount' => 'nullable|regex:/^\d+(\.\d{1,2})?$/',
             'contract_date' => 'nullable|date|date_format:Y-m-d',
-            'duration' => 'required|string',
+            'duration' => 'nullable|string',
             'noa_date' => 'nullable|date|date_format:Y-m-d',
             'ntp_date' => 'nullable|date|date_format:Y-m-d',
             'license' => 'nullable|string',
-            'employee_id' => 'required|exists:employees,id',
+            'designation' => 'nullable|string',
             'nature_of_work' => 'nullable|string',
+            'position' => 'required',
             'stage' => [Rule::enum(ProjectStage::class)],
             'status' => [Rule::enum(ProjectStatus::class)],
-            ...$this->storeApprovals(),
         ];
     }
 }
