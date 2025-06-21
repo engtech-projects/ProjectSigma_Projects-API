@@ -111,7 +111,6 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('/upload-attachments', [ProjectAttachmentController::class, 'uploadAttachment']);
 
-
     Route::get('/documents/project/{id}', [ProjectAttachmentController::class, 'generateUrl']);
 
 });
