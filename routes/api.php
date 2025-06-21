@@ -99,6 +99,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/project-assignments', [ProjectAssignmentController::class, 'store']);
 
     Route::resource('/positions', PositionController::class);
+    Route::get('get-all-position', [PositionController::class, 'all']);
 
     Route::get('/uom', function () {
         return response()->json(Uom::all(), 200);
