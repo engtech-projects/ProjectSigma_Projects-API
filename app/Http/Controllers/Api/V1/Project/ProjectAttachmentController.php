@@ -7,6 +7,7 @@ use App\Http\Requests\Attachment\StoreAttachmentRequest;
 use App\Models\Attachment;
 use App\Models\Project;
 use App\Traits\Upload;
+use Cache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Http\JsonResponse;
@@ -80,6 +81,20 @@ class ProjectAttachmentController extends Controller
         ], 200);
 
     }
+
+    public function generateUrl(Request $request, Project $project)
+    {
+        $token =  'project-documents-' . Str::random(40);
+
+        Cache::put($token, $project->contract_id, now()->addMinutes(10));
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Attachments url generated successfully',
+            'data' => $token,
+        ], 200);
+    }
+
 
     /****
      * Deletes the specified attachment and its associated file from storage.
