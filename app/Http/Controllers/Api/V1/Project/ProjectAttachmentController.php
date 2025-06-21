@@ -86,12 +86,14 @@ class ProjectAttachmentController extends Controller
     {
         $token =  'project-documents-' . Str::random(40);
 
-        Cache::put($token, $project->contract_id, now()->addMinutes(10));
+        Cache::put($token, $project->id, now()->addMinutes(10));
+
+        $url = route('document-viewer', ['token' => $token]);
 
         return response()->json([
             'success' => true,
             'message' => 'Attachments url generated successfully',
-            'data' => $token,
+            'data' => $url,
         ], 200);
     }
 
