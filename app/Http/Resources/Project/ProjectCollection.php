@@ -42,7 +42,6 @@ class ProjectCollection extends JsonResource
             'created_by' => $this->created_by,
             'cash_flow' => $this->cash_flow ? $this->cash_flow : null,
             'approvals' => new ApprovalAttributeCollection(['approvals' => $this?->approvals]),
-            'next_approval' => $this->getNextPendingApproval(),
             'phases' => $this->whenLoaded('phases', fn () => PhaseCollection::collection($this->phases)),
         ];
     }

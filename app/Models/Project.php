@@ -6,7 +6,6 @@ use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Enums\RequestStatuses;
 use App\Traits\Filterable;
-use App\Traits\HasApproval;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,7 +23,6 @@ class Project extends Model
     use HasFactory;
     use LogsActivity;
     use SoftDeletes;
-    use HasApproval;
 
     protected $table = 'projects';
 
@@ -56,10 +54,10 @@ class Project extends Model
         'project_identifier',
         'implementing_office',
         'current_revision_id',
+        'position_id',
+        'designation',
         'created_by',
         'cash_flow',
-        'approvals',
-        'request_status',
     ];
 
     protected $casts = [
@@ -68,7 +66,6 @@ class Project extends Model
         'noa_date' => 'datetime:Y-m-d',
         'ntp_date' => 'datetime:Y-m-d',
         'amount' => 'decimal:2',
-        'approvals' => 'array',
     ];
 
 

@@ -28,6 +28,7 @@ class ProjectService
         return DB::transaction(function () use ($attr) {
             $attr['stage'] = ProjectStage::DRAFT->value;
             $attr['status'] = ProjectStatus::OPEN->value;
+            $attr['amount'] = $attr['amount'] ?? 0;
             $attr['created_by'] = auth()->user()->id;
             $attr['cash_flow'] = json_encode(array_fill_keys(['wtax', 'q1', 'q2', 'q3', 'q4'], [
                 'accomplishment' => 0,
@@ -236,6 +237,7 @@ class ProjectService
                             'quantity' => $resource->quantity,
                             'unit' => $resource->unit,
                             'unit_cost' => $resource->unit_cost,
+                            'unit_count' => $resource->unit_count,
                             'resource_count' => $resource->resource_count,
                             'total_cost' => $resource->total_cost,
                         ];
