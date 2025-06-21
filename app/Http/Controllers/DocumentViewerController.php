@@ -21,22 +21,18 @@ class DocumentViewerController extends Controller
      */
     public function __invoke(Request $request)
     {
-        if (!ProjectService::validateToken($request->id, $request->token)) {
+        $projectId = Cache::get($request->token);
+
+        if (!$projectId) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid access',
+                'message' => 'Invalid token',
                 'data' => [],
             ], 404);
         }
 
-        $validatedRequest = $request->validate([
-            'id' => 'required|integer|exists:projects,id',
-        ]);
-
-        $prfId = $validatedRequest['id'];
-
         try {
-            $prf = Project::find($prfId);
+            $prf = Project::find($projectId);
 
             if ($prf && !empty($prf->attachment_url)) {
                 $attachmentUrls = is_array($prf->attachment_url) ? $prf->attachment_url : json_decode($prf->attachment_url, true);
@@ -47,9 +43,9 @@ class DocumentViewerController extends Controller
                     if (strpos($attachmentUrl, '..') !== false || strpos($attachmentUrl, './') !== false) {
                         continue; // Skip potentially malicious file paths
                     }
-                    $originalFilePath = "prf/$prfId/$attachmentUrl";
-                    $publicFilePath = "storage/prf/$prfId/$attachmentUrl";
-                    $publicDir = public_path("storage/prf/$prfId");
+                    $originalFilePath = "projects/$projectId/$attachmentUrl";
+                    $publicFilePath = "storage/projects/$projectId/$attachmentUrl";
+                    $publicDir = public_path("storage/projects/$projectId");
 
                     if (!file_exists($publicDir)) {
                         if (!mkdir($publicDir, 0755, true)) {
