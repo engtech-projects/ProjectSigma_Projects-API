@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\V1\Project\RevisionController;
 use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
 use App\Http\Controllers\Api\V1\Task\TaskController;
 use App\Http\Controllers\APiSyncController;
+use App\Http\Controllers\DocumentViewerController;
 use App\Http\Resources\User\UserCollection;
 use App\Models\ResourceName;
 use App\Models\Uom;
@@ -111,6 +112,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('/upload-attachments', [ProjectAttachmentController::class, 'uploadAttachment']);
 
-    Route::get('/documents/project/{id}', [ProjectAttachmentController::class, 'generateUrl']);
+    Route::get('projects/{project}/document-viewer', [ProjectAttachmentController::class, 'generateUrl']);
+
 
 });
