@@ -84,19 +84,28 @@ class ProjectAttachmentController extends Controller
 
     public function generateUrl(Request $request, Project $project)
     {
-        $token =  'project-documents-' . Str::random(40);
+        $attachments = $project->attachments()->get();
 
-        Cache::put($token, $project->id, now()->addMinutes(10));
+        if (empty($attachments) || count($attachments) === 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No attachments found',
+                'data' => [],
+            ], 404);
+        }
 
-        $url = route('document-viewer', ['token' => $token]);
+        $uniqueKey = Str::random(15);
+
+        Cache::put($uniqueKey, $project->id, now()->addMinutes(10));
+
+        $webViewerUrl = route('web.document.viewer', ['cacheKey' => $uniqueKey]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Attachments url generated successfully',
-            'data' => $url,
+            'message' => 'Document viewer link generated successfully.',
+            'data' => ['url'=> $webViewerUrl],
         ], 200);
     }
-
 
     /****
      * Deletes the specified attachment and its associated file from storage.
