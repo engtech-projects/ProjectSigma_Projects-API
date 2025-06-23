@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\ProjectService;
 use Auth;
 use Cache;
+use File;
 use Illuminate\Http\Request;
 use App\Models\Project;
 use Illuminate\Http\JsonResponse;
@@ -19,66 +20,45 @@ class DocumentViewerController extends Controller
      *
      * @return \Illuminate\View\View|\Illuminate\Http\JsonResponse The document viewer view with attachment paths, or a JSON error response if attachments are not found.
      */
-    public function __invoke(Request $request)
+    public function __invoke($cacheKey)
     {
-        $projectId = Cache::get($request->token);
-
-        if (!$projectId) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid token',
-                'data' => [],
-            ], 404);
+        if(!Cache::has($cacheKey)) {
+            return view('document-not-found', ['message' => 'Document not found or cache key has expired.']);
         }
 
-        try {
-            $prf = Project::find($projectId);
+        $projectId = Cache::get($cacheKey);
+        $project = Project::find($projectId);
 
-            if ($prf && !empty($prf->attachment_url)) {
-                $attachmentUrls = is_array($prf->attachment_url) ? $prf->attachment_url : json_decode($prf->attachment_url, true);
-                $publicFilePaths = [];
+        if (!$project || empty($project->attachments) || !count($project->attachments)) {
+            return view('document-not-found', ['message' => 'Project not found or attachments not found.']);
+        }
 
-                foreach ($attachmentUrls as $attachmentUrl) {
-                    // Validate filename to prevent path traversal attacks
-                    if (strpos($attachmentUrl, '..') !== false || strpos($attachmentUrl, './') !== false) {
-                        continue; // Skip potentially malicious file paths
-                    }
-                    $originalFilePath = "projects/$projectId/$attachmentUrl";
-                    $publicFilePath = "storage/projects/$projectId/$attachmentUrl";
-                    $publicDir = public_path("storage/projects/$projectId");
+        $publicFilePaths = [];
 
-                    if (!file_exists($publicDir)) {
-                        if (!mkdir($publicDir, 0755, true)) {
-                            throw new \Exception('Failed to create directory');
-                        }
-                    }
-                    $sourceFile = storage_path("app/$originalFilePath");
-                    if (!file_exists($sourceFile)) {
-                        continue;// skip if file does not exist
-                    }
+        foreach ($project->attachments as $attachment) {
+            $originalFilePath = "project/{$project->id}/$attachment";
+            $publicFilePath = "storage/project/{$project->id}/$attachment";
+            $publicDir = public_path("storage/project/{$project->id}");
 
-                    if (!file_exists(public_path($publicFilePath))) {
-                        if (!copy($sourceFile, public_path($publicFilePath))) {
-                            throw new \Exception('Failed to copy file');
-                        }
-                    }
-
-                    $publicFilePaths[] = $publicFilePath;
+            if (!file_exists($publicDir)) {
+                if (!mkdir($publicDir, 0755, true)) {
+                    throw new \Exception('Failed to create directory');
                 }
-
-                return view('document-viewer', [
-                    'title' => 'Sigma Projects Attachments',
-                    'publicFilePaths' => $publicFilePaths,
-                ]);
             }
 
-            throw new \Exception('Attachments Not Found');
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-                'data' => [],
-            ], 404);
+            if (!file_exists($publicFilePath)) {
+                if (!copy(storage_path("app/{$originalFilePath}"), $publicFilePath)) {
+                    throw new \Exception('Failed to copy file');
+                }
+            }
+
+            $publicFilePaths[] = $publicFilePath;
         }
+
+        return view('document-viewer', [
+            'title' => 'Sigma Projects Attachments',
+            'publicFilePaths' => $publicFilePaths,
+        ]);
     }
+
 }
