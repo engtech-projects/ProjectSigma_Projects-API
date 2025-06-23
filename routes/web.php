@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Artisan;
 Route::get('/', function () {
     return response()->json(['version' => app()->version()]);
 });
-Route::get('document-viewer', DocumentViewerController::class);
+Route::get('document-viewer/{cacheKey}', [DocumentViewerController::class, '__invoke'])->name('web.document.viewer');
 Route::get('artisan-clear-optimization', function () {
     Artisan::call('optimize:clear');
 
