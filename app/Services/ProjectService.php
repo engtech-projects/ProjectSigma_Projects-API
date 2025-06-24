@@ -50,11 +50,19 @@ class ProjectService
                 ->update(['unit_cost' => $attr['unit_cost']]);
 
             return new JsonResponse([
-                'message' => 'Summary rates updated successfully, Number of Direct Cost Affected: '.count($attr['ids']),
+                'message' => 'Summary rates updated successfully, Number of Direct Cost Affected: ' . count($attr['ids']),
             ], 200);
         });
     }
 
+    /**
+     * Retrieves a paginated list of projects with optional filtering by stage or status.
+     *
+     * Applies filters based on provided attributes, including limiting results to projects created by the authenticated user for certain statuses. Eager loads the latest revision for each project.
+     *
+     * @param array $attr Optional filters such as 'key' for stage or 'status' for project status.
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator Paginated list of projects.
+     */
     public function withPagination(array $attr)
     {
         $query = Project::query();
@@ -173,7 +181,7 @@ class ProjectService
             $project = Project::findOrFail($id)->load('phases.tasks.resources');
             $newProjectData = [
                 'parent_project_id' => $id,
-                'contract_id' => $project->contract_id.'-COPY',
+                'contract_id' => $project->contract_id . '-COPY',
                 'code' => null,
                 'name' => $project->name . '-COPY',
                 'location' => $project->location,

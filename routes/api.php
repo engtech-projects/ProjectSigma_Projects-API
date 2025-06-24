@@ -19,11 +19,12 @@ use App\Http\Controllers\Api\V1\Project\ProjectStatusController;
 use App\Http\Controllers\Api\V1\Project\RevisionController;
 use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
 use App\Http\Controllers\Api\V1\Task\TaskController;
-use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\APiSyncController;
+use App\Http\Controllers\ApiServiceController;
 use App\Http\Resources\User\UserCollection;
 use App\Models\ResourceName;
 use App\Models\Uom;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -107,6 +108,11 @@ Route::middleware('auth:api')->group(function () {
         return response()->json(Uom::all(), 200);
     });
     Route::post('/projects/change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
+
+    Route::post('/upload-attachments', [ProjectAttachmentController::class, 'uploadAttachment']);
+
+    Route::get('projects/{project}/document-viewer', [ProjectAttachmentController::class, 'generateUrl']);
+
 });
 
 // SECRET API KEY ROUTES
