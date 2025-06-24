@@ -2,14 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\ProjectService;
-use Auth;
 use Cache;
 use File;
 use Illuminate\Http\Request;
 use App\Models\Project;
-use Illuminate\Http\JsonResponse;
-use Str;
 
 class DocumentViewerController extends Controller
 {
@@ -22,7 +18,7 @@ class DocumentViewerController extends Controller
      */
     public function __invoke($cacheKey)
     {
-        if(!Cache::has($cacheKey)) {
+        if (!Cache::has($cacheKey)) {
             return view('document-not-found', ['message' => 'Document not found or cache key has expired.']);
         }
 

@@ -20,13 +20,11 @@ use App\Http\Controllers\Api\V1\Project\RevisionController;
 use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
 use App\Http\Controllers\Api\V1\Task\TaskController;
 use App\Http\Controllers\APiSyncController;
-use App\Http\Controllers\DocumentViewerController;
 use App\Http\Resources\User\UserCollection;
 use App\Models\ResourceName;
 use App\Models\Uom;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-
 
 /*
 |--------------------------------------------------------------------------

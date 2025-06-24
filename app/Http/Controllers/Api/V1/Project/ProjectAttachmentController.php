@@ -103,7 +103,7 @@ class ProjectAttachmentController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Document viewer link generated successfully.',
-            'data' => ['url'=> $webViewerUrl],
+            'data' => ['url' => $webViewerUrl],
         ], 200);
     }
 

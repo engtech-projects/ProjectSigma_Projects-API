@@ -8,11 +8,8 @@ use App\Models\Phase;
 use App\Models\Project;
 use App\Models\ResourceItem;
 use App\Models\Task;
-use Cache;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
-use Js;
-use Str;
 
 class ProjectService
 {
