@@ -109,19 +109,18 @@ Route::middleware('auth:api')->group(function () {
     });
     Route::post('/projects/change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
 
-    // SECRET API KEY ROUTES
-    Route::middleware("secret_api")->group(function () {
-        // SIGMA SERVICES ROUTES
-        Route::prefix('sigma')->group(function () {
-            Route::prefix('sync-list')->group(function () {
-                Route::get("projects", [ApiServiceController::class, "getProjectList"]);
-            });
-        });
-    });
-
     Route::post('/upload-attachments', [ProjectAttachmentController::class, 'uploadAttachment']);
 
     Route::get('projects/{project}/document-viewer', [ProjectAttachmentController::class, 'generateUrl']);
 
+});
 
+// SECRET API KEY ROUTES
+Route::middleware("secret_api")->group(function () {
+    // SIGMA SERVICES ROUTES
+    Route::prefix('sigma')->group(function () {
+        Route::prefix('sync-list')->group(function () {
+            Route::get("projects", [ApiServiceController::class, "getProjectList"]);
+        });
+    });
 });
