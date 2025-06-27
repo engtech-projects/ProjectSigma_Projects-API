@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
+use App\Http\Resources\Project\ProjectCollection;
 use App\Models\Phase;
 use App\Models\Project;
 use App\Models\ResourceItem;
@@ -75,8 +76,7 @@ class ProjectService
         $query->with('revisions', function ($query) {
             return $query->latestRevision();
         });
-
-        return $query->paginate(config('services.pagination.limit'));
+        return ProjectCollection::collection($query->paginate(config('services.pagination.limit')))->response()->getData(true);
     }
 
     public function update(Project $project, array $attr)

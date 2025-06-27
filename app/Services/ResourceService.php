@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Project;
 use App\Models\ResourceItem;
 use App\Models\Task;
 use Illuminate\Support\Facades\DB;
@@ -44,11 +45,11 @@ class ResourceService
             }
 
             $data = ResourceItem::create($request);
-            $task = Task::findOrFail($request['task_id'])->load('resources');
+            $task = Task::findOrFail($request['task_id'])->load(['resources', 'phase']);
             $task->update([
                 'amount' => $task->resources->sum('total_cost'),
             ]);
-
+            self::updateProject($task->phase->project_id);
             return $data;
         });
     }
@@ -67,7 +68,6 @@ class ResourceService
             $task->update([
                 'amount' => $task->resources->sum('total_cost'),
             ]);
-
             return $data;
         });
     }
@@ -89,5 +89,16 @@ class ResourceService
     public static function show($id)
     {
         return ResourceItem::findOrFail($id);
+    }
+    public static function updateProject ($project_id)
+    {
+        $project = Project::where('id', $project_id)->first();
+        if ($project) {
+            $totalAmount = Task::whereHas('phase', function($query) use ($project) {
+                $query->where('project_id', $project->id);
+            })->sum('amount');
+
+            $project->update(['amount' => $totalAmount]);
+        }
     }
 }
