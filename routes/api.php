@@ -75,6 +75,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/projects/{project}/archive', [ProjectStatusController::class, 'archive']);
     Route::post('/projects/{project}/complete', [ProjectStatusController::class, 'complete']);
     Route::patch('/projects/{project}/status', [ProjectStatusController::class, 'updateStatus']);
+    Route::patch('/projects/{project}/stage', [ProjectController::class, 'updateStage']);
     // duplicate/clone project
     Route::post('/projects/replicate', [ProjectController::class, 'replicate']);
 
