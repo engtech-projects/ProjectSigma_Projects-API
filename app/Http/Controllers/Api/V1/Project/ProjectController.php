@@ -7,10 +7,14 @@ use App\Http\Requests\Project\FilterProjectRequest;
 use App\Http\Requests\Project\ReplicateProjectRequest;
 use App\Http\Requests\Project\StoreProjectRequest;
 use App\Http\Requests\Project\UpdateProjectRequest;
+use App\Http\Requests\Project\UpdateStageRequest;
 use App\Http\Requests\SummaryRate\SummaryRateRequest;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Models\Project;
 use App\Services\ProjectService;
+use App\Enums\ProjectStage;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 // use Illuminate\Support\Facades\Gate;
 
@@ -103,5 +107,20 @@ class ProjectController extends Controller
 
     public function destroy(Project $project)
     {
+    }
+
+    public function updateStage(Request $request, Project $project)
+    {
+        $request->validate([
+            'stage' => ['required','string',Rule::in(array_column(ProjectStage::cases(), 'value'))]
+        ]);
+
+        $project->stage = $request->stage;
+        $project->save();
+
+        return response()->json([
+            'message' => 'Stage updated successfully.',
+            'stage' => $project->stage,
+        ], 200);
     }
 }
