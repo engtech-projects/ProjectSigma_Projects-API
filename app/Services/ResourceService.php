@@ -90,11 +90,11 @@ class ResourceService
     {
         return ResourceItem::findOrFail($id);
     }
-    public static function updateProject ($project_id)
+    public static function updateProject($project_id)
     {
         $project = Project::where('id', $project_id)->first();
         if ($project) {
-            $totalAmount = Task::whereHas('phase', function($query) use ($project) {
+            $totalAmount = Task::whereHas('phase', function ($query) use ($project) {
                 $query->where('project_id', $project->id);
             })->sum('amount');
 

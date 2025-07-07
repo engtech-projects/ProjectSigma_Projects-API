@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
@@ -67,6 +68,7 @@ class Project extends Model
         'noa_date' => 'datetime:Y-m-d',
         'ntp_date' => 'datetime:Y-m-d',
         'amount' => 'decimal:2',
+        'stage' => ProjectStage::class,
     ];
 
     protected $appends = [
@@ -301,5 +303,26 @@ class Project extends Model
     public function getUpdatedAtFormattedAttribute()
     {
         return Carbon::parse($this->updated_at)->format('F j, Y h:i A');
+    }
+
+    public function updateStage(ProjectStage $newStage)
+    {
+        if ($this->status !== 'approved') {
+            throw ValidationException::withMessages(['status' => 'Project must be approved to update stage.']);
+        }
+
+        $flow = ProjectStage::flow();
+        $currentIndex = array_search($this->stage, $flow);
+        $newIndex = array_search($newStage, $flow);
+
+        if ($newIndex === false || $currentIndex === false || $newIndex !== $currentIndex + 1) {
+            throw ValidationException::withMessages(['stage' => 'Invalid stage transition.']);
+        }
+
+        $oldStage = $this->stage->value;
+        $this->stage = $newStage;
+        $this->save();
+
+        return $oldStage;
     }
 }

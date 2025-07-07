@@ -47,72 +47,77 @@ Route::prefix('sync')->group(function () {
 Route::get('nature-of-works', function () {
     return response()->json(NatureOfWork::cases(), 200);
 });
+
 Route::middleware('auth:api')->group(function () {
-    Route::get('/user', function () {
-        return response()->json(new UserCollection(Auth::user()), 200);
+
+    // ────── User Info ──────
+    Route::get('/user', fn() => response()->json(new UserCollection(Auth::user()), 200));
+
+    // ────── Lookups ──────
+    Route::prefix('lookups')->group(function () {
+        Route::get('/project-status', fn() => response()->json(ProjectStatus::cases(), 200));
+        Route::get('/project-stage', fn() => response()->json(ProjectStage::cases(), 200));
+        Route::get('/resource-names', fn() => response()->json(ResourceName::all(), 200));
+        Route::get('/uom', fn() => response()->json(Uom::all(), 200));
+        Route::get('/positions', [PositionController::class, 'index']);
+        Route::get('/all-position', [PositionController::class, 'all']);
     });
 
-    Route::get('/project-status', function () {
-        return response()->json(ProjectStatus::cases(), 200);
-    });
-
-    Route::get('/project-stage', function () {
-        return response()->json(ProjectStage::cases(), 200);
-    });
-
-    Route::get('/resource-names', function () {
-        return response()->json(ResourceName::all(), 200);
-    });
-
-    // APPROVALS ROUTES
+    // ────── Approvals ──────
     Route::prefix('approvals')->group(function () {
         Route::post('approve/{modelName}/{model}', ApproveApproval::class);
         Route::post('disapprove/{modelName}/{model}', DisapproveApproval::class);
     });
 
-    Route::resource('/projects', ProjectController::class);
-    // project status updates
-    Route::post('/projects/{project}/archive', [ProjectStatusController::class, 'archive']);
-    Route::post('/projects/{project}/complete', [ProjectStatusController::class, 'complete']);
-    Route::patch('/projects/{project}/status', [ProjectStatusController::class, 'updateStatus']);
-    // duplicate/clone project
-    Route::post('/projects/replicate', [ProjectController::class, 'replicate']);
+    // ────── Projects ──────
+    Route::prefix('projects')->group(function () {
+        Route::apiResource('/', ProjectController::class)->parameters(['' => 'project']);
+        Route::patch('{project}/status', [ProjectStatusController::class, 'updateStatus']);
+        Route::patch('{id}/update-stage', [ProjectController::class, 'updateStage']);
+        Route::post('{project}/archive', [ProjectStatusController::class, 'archive']);
+        Route::post('{project}/complete', [ProjectStatusController::class, 'complete']);
+        Route::post('replicate', [ProjectController::class, 'replicate']);
+        Route::post('{project}/attachments', [ProjectAttachmentController::class, 'store']);
+        Route::get('{project}/document-viewer', [ProjectAttachmentController::class, 'generateUrl']);
+        Route::post('change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
+    });
 
-    Route::post('/projects/{project}/attachments', [ProjectAttachmentController::class, 'store']);
-    Route::delete('/attachments/{attachment}/remove', [ProjectAttachmentController::class, 'destroy']);
+    // ────── Attachments ──────
+    Route::prefix('attachments')->group(function () {
+        Route::post('upload', [ProjectAttachmentController::class, 'uploadAttachment']);
+        Route::delete('{attachment}/remove', [ProjectAttachmentController::class, 'destroy']);
+    });
 
-    Route::resource('/phases', PhaseController::class);
-    Route::resource('/tasks', TaskController::class);
-    Route::resource('/resource-items', ResourceItemController::class);
+    // ────── Phases, Tasks, Resources ──────
+    Route::apiResource('phases', PhaseController::class);
+    Route::apiResource('tasks', TaskController::class);
+    Route::apiResource('resource-items', ResourceItemController::class);
 
+    // ────── Revisions ──────
     Route::prefix('project-revisions')->group(function () {
         Route::post('change-to-proposal', [RevisionController::class, 'changeToProposal']);
         Route::post('return-to-draft', [RevisionController::class, 'returnToDraft']);
     });
-    Route::resource('/roles', RoleController::class);
-    Route::resource('/permissions', PermissionController::class);
 
-    Route::resource('/logs', LogController::class);
+    // ────── Roles & Permissions ──────
+    Route::apiResource('roles', RoleController::class);
+    Route::apiResource('permissions', PermissionController::class);
 
-    Route::get('/employees', GetAllEmployees::class);
-    Route::get('/employee/{employee}', ShowEmployee::class);
+    // ────── Logs ──────
+    Route::apiResource('logs', LogController::class);
 
-    Route::get('/project-assignments/{project}/team', [ProjectAssignmentController::class, 'index']);
-    Route::get('/project-assignments/{project_assignment}', [ProjectAssignmentController::class, 'show']);
-    Route::post('/project-assignments', [ProjectAssignmentController::class, 'store']);
-
-    Route::resource('/positions', PositionController::class);
-    Route::get('all-position', [PositionController::class, 'all']);
-
-    Route::get('/uom', function () {
-        return response()->json(Uom::all(), 200);
+    // ────── Employees ──────
+    Route::prefix('employees')->group(function () {
+        Route::get('/', GetAllEmployees::class);
+        Route::get('{employee}', ShowEmployee::class);
     });
-    Route::post('/projects/change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
 
-    Route::post('/upload-attachments', [ProjectAttachmentController::class, 'uploadAttachment']);
-
-    Route::get('projects/{project}/document-viewer', [ProjectAttachmentController::class, 'generateUrl']);
-
+    // ────── Project Assignments ──────
+    Route::prefix('project-assignments')->group(function () {
+        Route::get('{project}/team', [ProjectAssignmentController::class, 'index']);
+        Route::get('{project_assignment}', [ProjectAssignmentController::class, 'show']);
+        Route::post('/', [ProjectAssignmentController::class, 'store']);
+    });
 });
 
 // SECRET API KEY ROUTES
