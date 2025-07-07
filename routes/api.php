@@ -71,7 +71,7 @@ Route::middleware('auth:api')->group(function () {
 
     // ────── Projects ──────
     Route::prefix('projects')->group(function () {
-        Route::apiResource('/', ProjectController::class)->parameters(['' => 'project']);
+        Route::resource('/', ProjectController::class)->parameters(['' => 'project']);
         Route::patch('{project}/status', [ProjectStatusController::class, 'updateStatus']);
         Route::patch('{id}/update-stage', [ProjectController::class, 'updateStage']);
         Route::post('{project}/archive', [ProjectStatusController::class, 'archive']);
@@ -89,9 +89,9 @@ Route::middleware('auth:api')->group(function () {
     });
 
     // ────── Phases, Tasks, Resources ──────
-    Route::apiResource('phases', PhaseController::class);
-    Route::apiResource('tasks', TaskController::class);
-    Route::apiResource('resource-items', ResourceItemController::class);
+    Route::resource('phases', PhaseController::class);
+    Route::resource('tasks', TaskController::class);
+    Route::resource('resource-items', ResourceItemController::class);
 
     // ────── Revisions ──────
     Route::prefix('project-revisions')->group(function () {
@@ -100,11 +100,11 @@ Route::middleware('auth:api')->group(function () {
     });
 
     // ────── Roles & Permissions ──────
-    Route::apiResource('roles', RoleController::class);
-    Route::apiResource('permissions', PermissionController::class);
+    Route::resource('roles', RoleController::class);
+    Route::resource('permissions', PermissionController::class);
 
     // ────── Logs ──────
-    Route::apiResource('logs', LogController::class);
+    Route::resource('logs', LogController::class);
 
     // ────── Employees ──────
     Route::prefix('employees')->group(function () {
