@@ -60,7 +60,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/project-stage', fn() => response()->json(ProjectStage::cases(), 200));
         Route::get('/resource-names', fn() => response()->json(ResourceName::all(), 200));
         Route::get('/uom', fn() => response()->json(Uom::all(), 200));
-        Route::get('/positions', [PositionController::class, 'index']);
+        Route::resource('positions', PositionController::class);
         Route::get('/all-position', [PositionController::class, 'all']);
     });
 
