@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers\Api\V1\Project;
 
+use App\Enums\ProjectStage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Project\FilterProjectRequest;
 use App\Http\Requests\Project\ReplicateProjectRequest;
 use App\Http\Requests\Project\StoreProjectRequest;
 use App\Http\Requests\Project\UpdateProjectRequest;
 use App\Http\Requests\SummaryRate\SummaryRateRequest;
+use App\Http\Requests\UpdateProjectStageRequest;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Models\Project;
 use App\Services\ProjectService;
+use Illuminate\Http\JsonResponse;
 
 // use Illuminate\Support\Facades\Gate;
 
@@ -97,11 +100,25 @@ class ProjectController extends Controller
         return $summaryOfRates;
     }
 
-    public function archive(Project $project)
+    public function updateStage(UpdateProjectStageRequest $request, $id)
     {
-    }
+        $valid = $request->validate();
+        $project = Project::findOrFail($id);
+        $newStage = ProjectStage::from($valid['stage']);
 
-    public function destroy(Project $project)
-    {
+        try {
+            $oldStage = $project->updateStage($newStage);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => "Failed to update stage from {$oldStage} to {$newStage->value}.",
+                'errors' => $e->errors(),
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => "Successfully updated stage from {$oldStage} to {$newStage->value}.",
+        ], JsonResponse::HTTP_OK);
     }
 }
