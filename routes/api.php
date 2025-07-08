@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
 use App\Http\Controllers\Api\V1\Task\TaskController;
 use App\Http\Controllers\APiSyncController;
 use App\Http\Controllers\ApiServiceController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Resources\User\UserCollection;
 use App\Models\ResourceName;
 use App\Models\Uom;
@@ -107,10 +108,7 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('logs', LogController::class);
 
     // ────── Employees ──────
-    Route::prefix('employees')->group(function () {
-        Route::get('/', GetAllEmployees::class);
-        Route::get('{employee}', ShowEmployee::class);
-    });
+    Route::resource('employees', EmployeeController::class);
 
     // ────── Project Assignments ──────
     Route::prefix('project-assignments')->group(function () {
