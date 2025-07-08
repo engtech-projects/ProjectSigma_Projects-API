@@ -49,7 +49,7 @@ class ResourceService
             $task->update([
                 'amount' => $task->resources->sum('total_cost'),
             ]);
-            self::updateProject($task->phase->project_id);
+            self::updateTotalProject($task->phase->project_id);
             return $data;
         });
     }
@@ -90,7 +90,7 @@ class ResourceService
     {
         return ResourceItem::findOrFail($id);
     }
-    public static function updateProject($project_id)
+    public static function updateTotalProject($project_id)
     {
         $project = Project::where('id', $project_id)->first();
         if ($project) {
