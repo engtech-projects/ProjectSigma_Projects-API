@@ -37,7 +37,7 @@ class StoreProjectRequest extends FormRequest
             'license' => 'nullable|string',
             'designation' => 'nullable|string',
             'nature_of_work' => 'nullable|string',
-            'position' => 'required',
+            'position_id' => 'required',
             'stage' => [Rule::enum(ProjectStage::class)],
             'status' => [Rule::enum(ProjectStatus::class)],
         ];
