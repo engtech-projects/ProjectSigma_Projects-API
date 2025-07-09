@@ -6,6 +6,7 @@ use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Enums\RequestStatuses;
 use App\Traits\Filterable;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -68,10 +69,11 @@ class Project extends Model
         'amount' => 'decimal:2',
     ];
 
-
     protected $appends = [
         'summary_of_rates',
         'summary_of_bid',
+        'created_at_formatted',
+        'updated_at_formatted',
     ];
 
     protected static function boot()
@@ -290,7 +292,14 @@ class Project extends Model
                 }
             }
         }
-
         return $summary_of_rates;
+    }
+    public function getCreatedAtFormattedAttribute()
+    {
+        return Carbon::parse($this->created_at)->format('F j, Y h:i A');
+    }
+    public function getUpdatedAtFormattedAttribute()
+    {
+        return Carbon::parse($this->updated_at)->format('F j, Y h:i A');
     }
 }
