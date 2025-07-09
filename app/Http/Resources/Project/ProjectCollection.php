@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Project;
 
+use App\Enums\TssStage;
 use App\Http\Resources\Approvals\ApprovalAttributeCollection;
 use App\Http\Resources\Phase\PhaseCollection;
 use Illuminate\Http\Request;
@@ -30,7 +31,9 @@ class ProjectCollection extends JsonResource
             'noa_date' => $this->noa_date,
             'ntp_date' => $this->ntp_date,
             'license' => $this->license,
-            'stage' => $this->stage,
+            'stage' => $this->tss_stage === TssStage::Pending->value
+                ? $this->marketing_stage
+                : $this->tss_stage,
             'status' => $this->status,
             'is_original' => $this->is_original,
             'version' => $this->version,

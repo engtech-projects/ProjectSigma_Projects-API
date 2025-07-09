@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\Project;
 
+use App\Enums\MarketingStage;
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
+use App\Enums\TssStage;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -37,9 +39,7 @@ class StoreProjectRequest extends FormRequest
             'license' => 'nullable|string',
             'designation' => 'nullable|string',
             'nature_of_work' => 'nullable|string',
-            'position_id' => 'required',
-            'stage' => [Rule::enum(ProjectStage::class)],
-            'status' => [Rule::enum(ProjectStatus::class)],
+            'position' => 'required',
         ];
     }
 }
