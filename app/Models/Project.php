@@ -214,6 +214,17 @@ class Project extends Model
         return $query->onlyTrashed();
     }
 
+    public function scopeAwarded(Builder $query)
+    {
+        return $query->where(function ($q) {
+            $q->where('tss_stage', '!=', TssStage::Pending->value)
+                ->where('tss_stage', ProjectStage::AWARDED->value);
+        })->orWhere(function ($q) {
+            $q->where('tss_stage', TssStage::Pending->value)
+                ->where('marketing_stage', ProjectStage::AWARDED->value);
+        });
+    }
+
     public function getSummaryOfBidAttribute()
     {
         $summaryOfBid = [];

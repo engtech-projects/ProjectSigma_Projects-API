@@ -11,7 +11,8 @@ use App\Http\Requests\Project\StoreProjectRequest;
 use App\Http\Requests\Project\UpdateProjectRequest;
 use App\Http\Requests\SummaryRate\SummaryRateRequest;
 use App\Http\Requests\UpdateProjectStageRequest;
-use App\Http\Resources\Project\ProjectCollection;
+use App\Http\Resources\Project\ProjectDetailResource;
+use App\Http\Resources\Project\ProjectResource;
 use App\Models\Project;
 use App\Services\ProjectService;
 use Illuminate\Http\Request;
@@ -34,7 +35,7 @@ class ProjectController extends Controller
     public function index(Request $request)
     {
         $data = Project::with('revisions')->where('created_by', auth()->user()->id)->paginate(config('services.pagination.limit'));
-        return ProjectCollection::collection($data)
+        return ProjectResource::collection($data)
             ->additional([
                 'success' => true,
                 'message' => 'Successfully fetched.',
@@ -61,7 +62,7 @@ class ProjectController extends Controller
         // Paginate always
         $data = $query->paginate(config('services.pagination.limit'));
 
-        return ProjectCollection::collection($data)->additional([
+        return ProjectResource::collection($data)->additional([
             'success' => true,
             'message' => 'Successfully fetched.',
         ]);
@@ -97,7 +98,12 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        return response()->json(new ProjectCollection($project->load('phases.tasks')), 200);
+        $data = $project->load('phases.tasks');
+        return new JsonResponse([
+            'success' => true,
+            'message' => "Successfully fetched.",
+            'data' => new ProjectDetailResource($data),
+        ], JsonResponse::HTTP_OK);
     }
 
     /**

@@ -2,12 +2,7 @@
 
 namespace App\Http\Requests\Project;
 
-use App\Enums\MarketingStage;
-use App\Enums\ProjectStage;
-use App\Enums\ProjectStatus;
-use App\Enums\TssStage;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreProjectRequest extends FormRequest
 {
