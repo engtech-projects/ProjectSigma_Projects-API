@@ -32,40 +32,19 @@ class ProjectController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(FilterProjectRequest $request)
     {
-        $data = Project::with('revisions')->where('created_by', auth()->user()->id)->paginate(config('services.pagination.limit'));
+        $validate = $request->validated();
+
+        $data = Project::with('revisions')->when(!empty($validate['stage']), function ($query) use ($validate) {
+            $query->filterByStage($validate['stage']);
+        })->paginate(config('services.pagination.limit'));
+
         return ProjectListingResource::collection($data)
             ->additional([
                 'success' => true,
                 'message' => 'Successfully fetched.',
             ]);
-    }
-
-    public function filterByStage(FilterProjectRequest $request)
-    {
-        $validated = $request->validated();
-        $stage = $validated['stage'] ?? null;
-
-        $query = Project::with('revisions')
-            ->where('created_by', auth()->user()->id);
-
-        // If stage is provided and not empty, apply filtering
-        if (!empty($stage)) {
-            $query->where('tss_stage', '!=', TssStage::PENDING->value)
-                ->where(function ($q) use ($stage) {
-                    $q->where('tss_stage', $stage)
-                        ->orWhere('marketing_stage', $stage);
-                });
-        }
-
-        // Paginate always
-        $data = $query->paginate(config('services.pagination.limit'));
-
-        return ProjectListingResource::collection($data)->additional([
-            'success' => true,
-            'message' => 'Successfully fetched.',
-        ]);
     }
 
     public function replicate(ReplicateProjectRequest $request)

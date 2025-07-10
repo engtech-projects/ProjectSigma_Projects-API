@@ -26,8 +26,8 @@ class ProjectListingResource extends JsonResource
             'ntp_date' => $this->ntp_date,
             'license' => $this->license,
             'stage' => $this->tss_stage === TssStage::PENDING->value
-                ? $this->marketing_stage
-                : $this->tss_stage,
+                ? $this->tss_stage
+                : $this->marketing_stage,
             'status' => $this->status,
             'is_original' => $this->is_original,
             'version' => $this->version,
