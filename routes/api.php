@@ -71,7 +71,6 @@ Route::middleware('auth:api')->group(function () {
     // ────── Projects ──────
     Route::prefix('projects')->group(function () {
         Route::resource('resource', ProjectController::class);
-        Route::get('stage', [ProjectController::class, 'filterByStage']);
         Route::patch('{project}/status', [ProjectStatusController::class, 'updateStatus']);
         Route::patch('{id}/update-stage', [ProjectController::class, 'updateStage']);
         Route::post('{project}/archive', [ProjectStatusController::class, 'archive']);

@@ -3,8 +3,9 @@
 namespace App\Http\Requests\Project;
 
 use App\Enums\ProjectStage;
+use App\Enums\ProjectStatus;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\Rule;
 
 class FilterProjectRequest extends FormRequest
 {
@@ -19,7 +20,13 @@ class FilterProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'stage' => ['nullable', new Enum(ProjectStage::class)],
+            'stage' => [
+                'nullable',
+                Rule::in(array_merge(
+                    array_column(ProjectStage::cases(), 'value'),
+                    [ProjectStatus::ONHOLD->value]
+                )),
+            ],
         ];
     }
 }

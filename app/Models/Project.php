@@ -35,7 +35,7 @@ class Project extends Model
     {
         return LogOptions::defaults()
             ->logAll() // List of attributes to log
-            ->setDescriptionForEvent(fn (string $eventName) => "Project has been {$eventName}");
+            ->setDescriptionForEvent(fn(string $eventName) => "Project has been {$eventName}");
     }
 
     protected $fillable = [
@@ -203,6 +203,18 @@ class Project extends Model
         return $query->where(function ($query) use ($keyword) {
             $query->where(DB::raw('LOWER(code)'), 'LIKE', '%' . strtolower($keyword) . '%')
                 ->orWhere(DB::raw('LOWER(name)'), 'LIKE', '%' . strtolower($keyword) . '%');
+        });
+    }
+
+    public function scopeFilterByStage($query, ?string $stage)
+    {
+        return $query->when($stage, function ($q) use ($stage) {
+            if ($stage === 'on-hold') {
+                $q->where('status', 'on-hold');
+            } else {
+                $q->where('marketing_stage', $stage)
+                    ->orWhere('tss_stage', $stage);
+            }
         });
     }
 
