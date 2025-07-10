@@ -8,8 +8,6 @@ use App\Http\Controllers\Actions\Approvals\DisapproveApproval;
 use App\Http\Controllers\Api\V1\Accessibility\PermissionController;
 use App\Http\Controllers\Api\V1\Accessibility\RoleController;
 use App\Http\Controllers\Api\V1\Assignment\ProjectAssignmentController;
-use App\Http\Controllers\Api\V1\Employee\GetAllEmployees;
-use App\Http\Controllers\Api\V1\Employee\ShowEmployee;
 use App\Http\Controllers\Api\V1\Logs\LogController;
 use App\Http\Controllers\Api\V1\Phase\PhaseController;
 use App\Http\Controllers\Api\V1\Position\PositionController;
@@ -52,14 +50,14 @@ Route::get('nature-of-works', function () {
 Route::middleware('auth:api')->group(function () {
 
     // ────── User Info ──────
-    Route::get('/user', fn() => response()->json(new UserCollection(Auth::user()), 200));
+    Route::get('/user', fn () => response()->json(new UserCollection(Auth::user()), 200));
 
     // ────── Lookups ──────
     Route::prefix('lookups')->group(function () {
-        Route::get('/project-status', fn() => response()->json(ProjectStatus::cases(), 200));
-        Route::get('/project-stage', fn() => response()->json(ProjectStage::cases(), 200));
-        Route::get('/resource-names', fn() => response()->json(ResourceName::all(), 200));
-        Route::get('/uom', fn() => response()->json(Uom::all(), 200));
+        Route::get('/project-status', fn () => response()->json(ProjectStatus::cases(), 200));
+        Route::get('/project-stage', fn () => response()->json(ProjectStage::cases(), 200));
+        Route::get('/resource-names', fn () => response()->json(ResourceName::all(), 200));
+        Route::get('/uom', fn () => response()->json(Uom::all(), 200));
         Route::resource('positions', PositionController::class);
         Route::get('/all-position', [PositionController::class, 'all']);
     });
@@ -72,7 +70,7 @@ Route::middleware('auth:api')->group(function () {
 
     // ────── Projects ──────
     Route::prefix('projects')->group(function () {
-        Route::resource('/', ProjectController::class)->parameters(['' => 'project']);
+        Route::resource('resource', ProjectController::class);
         Route::patch('{project}/status', [ProjectStatusController::class, 'updateStatus']);
         Route::patch('{id}/update-stage', [ProjectController::class, 'updateStage']);
         Route::post('{project}/archive', [ProjectStatusController::class, 'archive']);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Project;
 
 use App\Enums\ProjectStage;
+use App\Enums\TssStage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Project\FilterProjectRequest;
 use App\Http\Requests\Project\ReplicateProjectRequest;
@@ -10,9 +11,11 @@ use App\Http\Requests\Project\StoreProjectRequest;
 use App\Http\Requests\Project\UpdateProjectRequest;
 use App\Http\Requests\SummaryRate\SummaryRateRequest;
 use App\Http\Requests\UpdateProjectStageRequest;
-use App\Http\Resources\Project\ProjectCollection;
+use App\Http\Resources\Project\ProjectDetailResource;
+use App\Http\Resources\Project\ProjectListingResource;
 use App\Models\Project;
 use App\Services\ProjectService;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 // use Illuminate\Support\Facades\Gate;
@@ -31,10 +34,17 @@ class ProjectController extends Controller
      */
     public function index(FilterProjectRequest $request)
     {
-        $validatedData = $request->validated();
-        $projects = $this->projectService->withPagination($validatedData);
+        $validate = $request->validated();
 
-        return response()->json($projects, 200);
+        $data = Project::with('revisions')->when(!empty($validate['stage']), function ($query) use ($validate) {
+            $query->filterByStage($validate['stage']);
+        })->paginate(config('services.pagination.limit'));
+
+        return ProjectListingResource::collection($data)
+            ->additional([
+                'success' => true,
+                'message' => 'Successfully fetched.',
+            ]);
     }
 
     public function replicate(ReplicateProjectRequest $request)
@@ -67,7 +77,12 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        return response()->json(new ProjectCollection($project->load('phases.tasks')), 200);
+        $data = $project->load('phases.tasks');
+        return new JsonResponse([
+            'success' => true,
+            'message' => "Successfully fetched.",
+            'data' => new ProjectDetailResource($data),
+        ], JsonResponse::HTTP_OK);
     }
 
     /**

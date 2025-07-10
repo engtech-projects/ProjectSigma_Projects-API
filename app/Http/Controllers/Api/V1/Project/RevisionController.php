@@ -11,8 +11,8 @@ use App\Http\Resources\Revision\RevisionCollection;
 use App\Models\Project;
 use App\Models\Revision;
 use App\Services\ProjectService;
-use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RevisionController extends Controller
 {
