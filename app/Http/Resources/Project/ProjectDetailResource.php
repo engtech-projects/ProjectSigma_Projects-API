@@ -21,7 +21,7 @@ class ProjectDetailResource extends JsonResource
             'contract_date' => $this->contract_date,
             'duration' => $this->duration,
             'license' => $this->license,
-            'stage' => $this->tss_stage === TssStage::Pending->value
+            'stage' => $this->tss_stage === TssStage::PENDING->value
                 ? $this->marketing_stage
                 : $this->tss_stage,
             'status' => $this->status,

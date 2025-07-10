@@ -25,7 +25,7 @@ class ProjectResource extends JsonResource
             'noa_date' => $this->noa_date,
             'ntp_date' => $this->ntp_date,
             'license' => $this->license,
-            'stage' => $this->tss_stage === TssStage::Pending->value
+            'stage' => $this->tss_stage === TssStage::PENDING->value
                 ? $this->marketing_stage
                 : $this->tss_stage,
             'status' => $this->status,

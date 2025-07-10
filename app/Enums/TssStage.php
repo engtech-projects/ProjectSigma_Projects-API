@@ -4,16 +4,16 @@ namespace App\Enums;
 
 enum TssStage: string
 {
-    case Pending = 'pending';
-    case Awarded = 'awarded';
-    case Archived = 'archived';
+    case PENDING = 'pending';
+    case AWARDED = 'awarded';
+    case ARCHIVED = 'archived';
 
     public static function flow(): array
     {
         return [
-            self::Pending,
-            self::Awarded,
-            self::Archived,
+            self::PENDING,
+            self::AWARDED,
+            self::ARCHIVED,
         ];
     }
 

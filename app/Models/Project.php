@@ -217,10 +217,10 @@ class Project extends Model
     public function scopeAwarded(Builder $query)
     {
         return $query->where(function ($q) {
-            $q->where('tss_stage', '!=', TssStage::Pending->value)
+            $q->where('tss_stage', '!=', TssStage::PENDING->value)
                 ->where('tss_stage', ProjectStage::AWARDED->value);
         })->orWhere(function ($q) {
-            $q->where('tss_stage', TssStage::Pending->value)
+            $q->where('tss_stage', TssStage::PENDING->value)
                 ->where('marketing_stage', ProjectStage::AWARDED->value);
         });
     }
@@ -245,27 +245,27 @@ class Project extends Model
     public function completeRequestStatus()
     {
         // Handle marketing stage flow
-        if ($this->tss_stage === TssStage::Pending->value) {
+        if ($this->tss_stage === TssStage::PENDING->value) {
             switch ($this->marketing_stage) {
-                case MarketingStage::Draft->value:
-                    $this->marketing_stage = MarketingStage::Proposal->value;
+                case MarketingStage::DRAFT->value:
+                    $this->marketing_stage = MarketingStage::PROPOSAL->value;
                     break;
 
-                case MarketingStage::Proposal->value:
-                    $this->marketing_stage = MarketingStage::Bidding->value;
+                case MarketingStage::PROPOSAL->value:
+                    $this->marketing_stage = MarketingStage::BIDDING->value;
                     break;
 
-                case MarketingStage::Bidding->value:
-                    $this->marketing_stage = MarketingStage::Awarded->value;
+                case MarketingStage::BIDDING->value:
+                    $this->marketing_stage = MarketingStage::AWARDED->value;
                     // Transition TSS to awarded when marketing is done
-                    $this->tss_stage = TssStage::Awarded->value;
+                    $this->tss_stage = TssStage::AWARDED->value;
                     break;
             }
         } else {
             // Handle TSS flow
             switch ($this->tss_stage) {
-                case TssStage::Awarded->value:
-                    $this->tss_stage = TssStage::Archived->value;
+                case TssStage::AWARDED->value:
+                    $this->tss_stage = TssStage::ARCHIVED->value;
                     break;
             }
         }
@@ -279,14 +279,14 @@ class Project extends Model
     public function denyRequestStatus()
     {
         // Only allow marketing to backtrack if still pending in TSS
-        if ($this->tss_stage === TssStage::Pending->value) {
+        if ($this->tss_stage === TssStage::PENDING->value) {
             switch ($this->marketing_stage) {
-                case MarketingStage::Bidding->value:
-                    $this->marketing_stage = MarketingStage::Proposal->value;
+                case MarketingStage::BIDDING->value:
+                    $this->marketing_stage = MarketingStage::PROPOSAL->value;
                     break;
 
-                case MarketingStage::Proposal->value:
-                    $this->marketing_stage = MarketingStage::Draft->value;
+                case MarketingStage::PROPOSAL->value:
+                    $this->marketing_stage = MarketingStage::DRAFT->value;
                     break;
             }
         }
@@ -345,7 +345,7 @@ class Project extends Model
     public function updateStage(ProjectStage $newStage)
     {
         // Determine if this is a TSS stage update
-        $isTssUpdate = $this->tss_stage !== TssStage::Pending->value;
+        $isTssUpdate = $this->tss_stage !== TssStage::PENDING->value;
 
         // Only require approval for TSS stage updates
         if ($isTssUpdate && $this->status !== 'approved') {
@@ -377,9 +377,9 @@ class Project extends Model
         if (!$isTssUpdate) {
             $this->marketing_stage = $newStage->value;
 
-            if ($newStage === MarketingStage::Awarded) {
+            if ($newStage === MarketingStage::AWARDED) {
                 // Automatically promote TSS to 'awarded' when marketing hits 'awarded'
-                $this->tss_stage = TssStage::Awarded->value;
+                $this->tss_stage = TssStage::AWARDED->value;
             }
         } else {
             $this->tss_stage = $newStage->value;

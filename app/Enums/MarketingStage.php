@@ -4,10 +4,10 @@ namespace App\Enums;
 
 enum MarketingStage: string
 {
-    case Draft = 'draft';
-    case Proposal = 'proposal';
-    case Bidding = 'bidding';
-    case Awarded = 'awarded';
+    case DRAFT = 'draft';
+    case PROPOSAL = 'proposal';
+    case BIDDING = 'bidding';
+    case AWARDED = 'awarded';
 
     /**
      * Ordered flow of statuses.
@@ -15,10 +15,10 @@ enum MarketingStage: string
     public static function flow(): array
     {
         return [
-            self::Draft,
-            self::Proposal,
-            self::Bidding,
-            self::Awarded,
+            self::DRAFT,
+            self::PROPOSAL,
+            self::BIDDING,
+            self::AWARDED,
         ];
     }
 

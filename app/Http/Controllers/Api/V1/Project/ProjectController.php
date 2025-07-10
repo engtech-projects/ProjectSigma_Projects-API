@@ -52,7 +52,7 @@ class ProjectController extends Controller
 
         // If stage is provided and not empty, apply filtering
         if (!empty($stage)) {
-            $query->where('tss_stage', '!=', TssStage::Pending->value)
+            $query->where('tss_stage', '!=', TssStage::PENDING->value)
                 ->where(function ($q) use ($stage) {
                     $q->where('tss_stage', $stage)
                         ->orWhere('marketing_stage', $stage);

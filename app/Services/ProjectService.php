@@ -27,8 +27,8 @@ class ProjectService
     {
         return DB::transaction(function () use ($attr) {
             // Replace legacy stage column with new structure
-            $attr['marketing_stage'] = MarketingStage::Draft->value;
-            $attr['tss_stage'] = TssStage::Pending->value;
+            $attr['marketing_stage'] = MarketingStage::DRAFT->value;
+            $attr['tss_stage'] = TssStage::PENDING->value;
 
             $attr['status'] = ProjectStatus::OPEN->value;
             $attr['amount'] = $attr['amount'] ?? 0;

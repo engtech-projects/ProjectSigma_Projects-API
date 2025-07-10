@@ -26,21 +26,21 @@ return new class () extends Migration {
                 $tss_stage = null;
 
                 switch ($project->stage) {
-                    case MarketingStage::Draft->value:
-                    case MarketingStage::Proposal->value:
-                    case MarketingStage::Bidding->value:
+                    case MarketingStage::DRAFT->value:
+                    case MarketingStage::PROPOSAL->value:
+                    case MarketingStage::BIDDING->value:
                         $marketing_stage = $project->stage;
-                        $tss_stage = TssStage::Pending->value;
+                        $tss_stage = TssStage::PENDING->value;
                         break;
 
-                    case MarketingStage::Awarded->value:
-                        $marketing_stage = MarketingStage::Awarded->value;
-                        $tss_stage = TssStage::Awarded->value;
+                    case MarketingStage::AWARDED->value:
+                        $marketing_stage = MarketingStage::AWARDED->value;
+                        $tss_stage = TssStage::AWARDED->value;
                         break;
 
-                    case TssStage::Archived->value:
-                        $marketing_stage = MarketingStage::Awarded->value;
-                        $tss_stage = TssStage::Archived->value;
+                    case TssStage::ARCHIVED->value:
+                        $marketing_stage = MarketingStage::AWARDED->value;
+                        $tss_stage = TssStage::ARCHIVED->value;
                         break;
                 }
 
@@ -81,16 +81,16 @@ return new class () extends Migration {
                 $stage = null;
 
                 switch ($project->marketing_stage) {
-                    case MarketingStage::Draft->value:
-                    case MarketingStage::Proposal->value:
-                    case MarketingStage::Bidding->value:
+                    case MarketingStage::DRAFT->value:
+                    case MarketingStage::PROPOSAL->value:
+                    case MarketingStage::BIDDING->value:
                         $stage = $project->marketing_stage;
                         break;
 
-                    case MarketingStage::Awarded->value:
-                        $stage = $project->tss_stage === TssStage::Archived->value
-                            ? TssStage::Archived->value
-                            : MarketingStage::Awarded->value;
+                    case MarketingStage::AWARDED->value:
+                        $stage = $project->tss_stage === TssStage::ARCHIVED->value
+                            ? TssStage::ARCHIVED->value
+                            : MarketingStage::AWARDED->value;
                         break;
                 }
 
