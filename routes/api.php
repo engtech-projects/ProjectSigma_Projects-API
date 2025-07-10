@@ -81,6 +81,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('{project}/attachments', [ProjectAttachmentController::class, 'store']);
         Route::get('{project}/document-viewer', [ProjectAttachmentController::class, 'generateUrl']);
         Route::post('change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
+        Route::get('/filter', [ProjectController::class, 'searchProjects']);
     });
 
     // ────── Attachments ──────
@@ -116,11 +117,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('{project_assignment}', [ProjectAssignmentController::class, 'show']);
         Route::post('/', [ProjectAssignmentController::class, 'store']);
     });
-});
-
-// SEARCH ROUTES
-Route::prefix('search')->group(function () {
-    Route::get('projects', [ProjectController::class, 'searchProjects']);
 });
 
 // SECRET API KEY ROUTES
