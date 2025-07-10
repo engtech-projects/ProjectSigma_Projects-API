@@ -49,38 +49,6 @@ class ProjectAttachmentController extends Controller
      *
      * @return JsonResponse JSON response containing success status, message, and the list of encrypted filenames.
      */
-    public function uploadAttachment(Request $request)
-    {
-        $request->validate([
-            'attachment_files' => 'required|array',
-            'attachment_files.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png',
-        ]);
-
-        $encryptedFileNames = [];
-
-        try {
-            if ($request->hasFile('attachment_files')) {
-                foreach ($request->file('attachment_files') as $file) {
-                    $encryptedFileName = Str::random(40) . '.' . $file->getClientOriginalExtension();
-                    $file->storeAs('temp/', $encryptedFileName);
-                    $encryptedFileNames[] = $encryptedFileName;
-                }
-            }
-        } catch (\Exception $e) {
-            // Clean up any partially uploaded files
-            foreach ($encryptedFileNames as $filename) {
-                Storage::delete('temp/' . $filename);
-            }
-            throw $e;
-        }
-
-        return new JsonResponse([
-            'success' => true,
-            'message' => 'Attachments uploaded successfully',
-            'data' => $encryptedFileNames,
-        ], 200);
-
-    }
 
     public function generateUrl(Request $request, Project $project)
     {
