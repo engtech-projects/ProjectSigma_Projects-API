@@ -7,7 +7,7 @@ use App\Http\Resources\Approvals\ApprovalAttributeCollection;
 use App\Http\Resources\Phase\PhaseCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProjectResource extends JsonResource
+class ProjectListingResource extends JsonResource
 {
     public function toArray($request)
     {

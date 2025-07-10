@@ -12,7 +12,7 @@ use App\Http\Requests\Project\UpdateProjectRequest;
 use App\Http\Requests\SummaryRate\SummaryRateRequest;
 use App\Http\Requests\UpdateProjectStageRequest;
 use App\Http\Resources\Project\ProjectDetailResource;
-use App\Http\Resources\Project\ProjectResource;
+use App\Http\Resources\Project\ProjectListingResource;
 use App\Models\Project;
 use App\Services\ProjectService;
 use Illuminate\Http\Request;
@@ -35,7 +35,7 @@ class ProjectController extends Controller
     public function index(Request $request)
     {
         $data = Project::with('revisions')->where('created_by', auth()->user()->id)->paginate(config('services.pagination.limit'));
-        return ProjectResource::collection($data)
+        return ProjectListingResource::collection($data)
             ->additional([
                 'success' => true,
                 'message' => 'Successfully fetched.',
@@ -62,7 +62,7 @@ class ProjectController extends Controller
         // Paginate always
         $data = $query->paginate(config('services.pagination.limit'));
 
-        return ProjectResource::collection($data)->additional([
+        return ProjectListingResource::collection($data)->additional([
             'success' => true,
             'message' => 'Successfully fetched.',
         ]);
