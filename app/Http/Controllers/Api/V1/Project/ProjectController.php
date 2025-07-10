@@ -124,10 +124,21 @@ class ProjectController extends Controller
 
     public function searchProjects(FilterProjectRequest $request)
     {
+        $validatedData = $request->validated();
+
+        $data = Project::query()
+            ->when(!empty($validatedData['key']), function ($query) use ($validatedData) {
+                $query->where('name', 'like', '%' . $validatedData['key'] . '%');
+            })
+            ->when(!empty($validatedData['status']), function ($query) use ($validatedData) {
+                $query->where('stage', 'like', '%' . $validatedData['status'] . '%');
+            })
+            ->get();
+
         return new JsonResponse([
             'success' => true,
             'message' => 'Projects found.',
-            'data' => $this->projectService->searchProjects($request->validated())
+            'data' => $data
         ], 200);
     }
 }
