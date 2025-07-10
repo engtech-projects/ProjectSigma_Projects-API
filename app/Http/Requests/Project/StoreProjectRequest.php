@@ -2,10 +2,7 @@
 
 namespace App\Http\Requests\Project;
 
-use App\Enums\ProjectStage;
-use App\Enums\ProjectStatus;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreProjectRequest extends FormRequest
 {
@@ -38,8 +35,6 @@ class StoreProjectRequest extends FormRequest
             'designation' => 'nullable|string',
             'nature_of_work' => 'nullable|string',
             'position' => 'required',
-            'stage' => [Rule::enum(ProjectStage::class)],
-            'status' => [Rule::enum(ProjectStatus::class)],
         ];
     }
 }

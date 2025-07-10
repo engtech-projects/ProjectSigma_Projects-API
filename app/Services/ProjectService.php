@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Enums\MarketingStage;
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
+use App\Enums\TssStage;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Models\Phase;
 use App\Models\Project;
@@ -24,16 +26,21 @@ class ProjectService
     public function create(array $attr)
     {
         return DB::transaction(function () use ($attr) {
-            $attr['stage'] = ProjectStage::DRAFT->value;
+            // Replace legacy stage column with new structure
+            $attr['marketing_stage'] = MarketingStage::DRAFT->value;
+            $attr['tss_stage'] = TssStage::PENDING->value;
+
             $attr['status'] = ProjectStatus::OPEN->value;
             $attr['amount'] = $attr['amount'] ?? 0;
             $attr['created_by'] = auth()->user()->id;
+
             $attr['cash_flow'] = json_encode(array_fill_keys(['wtax', 'q1', 'q2', 'q3', 'q4'], [
                 'accomplishment' => 0,
                 'cashflow' => 0,
                 'culmutative_accomplishment' => 0,
                 'culmutative_cashflow' => 0,
             ]));
+
             $data = Project::create($attr);
 
             return new JsonResponse([

@@ -5,17 +5,11 @@ namespace App\Http\Resources\Project;
 use App\Enums\TssStage;
 use App\Http\Resources\Approvals\ApprovalAttributeCollection;
 use App\Http\Resources\Phase\PhaseCollection;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProjectCollection extends JsonResource
+class ProjectListingResource extends JsonResource
 {
-    /**
-     * Transform the resource collection into an array.
-     *
-     * @return array<int|string, mixed>
-     */
-    public function toArray(Request $request): array
+    public function toArray($request)
     {
         return [
             'id' => $this->id,
