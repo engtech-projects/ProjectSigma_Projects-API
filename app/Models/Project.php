@@ -357,34 +357,34 @@ class Project extends Model
     public function updateStage(ProjectStage $newStage)
     {
         // Determine if this is a TSS stage update
-        $isTssUpdate = $this->tss_stage !== TssStage::PENDING->value;
+        $isTssUpdate = $this->marketing_stage->value === MarketingStage::AWARDED->value
+            && in_array($newStage->value, array_map(fn($stage) => $stage->value, TssStage::cases()), true);
 
-        // Only require approval for TSS stage updates
-        if ($isTssUpdate && $this->status !== 'approved') {
+        // Only require approval if marketing is AWARDED and we're updating TSS
+        if ($isTssUpdate && $this->marketing_stage === MarketingStage::AWARDED->value && $this->status !== 'approved') {
             throw ValidationException::withMessages([
-                'status' => 'Project must be approved to update TSS stage.',
+                'status' => 'Project must be approved to update TSS stage after marketing is awarded.',
             ]);
         }
-
-        if (! $isTssUpdate) {
+        if (!$isTssUpdate) {
             // Handle marketing stage flow
-            $flow = MarketingStage::flow();
-            $current = $this->marketing_stage;
+            $flow = array_map(fn($stage) => $stage->value, MarketingStage::flow());
+            $current = $this->marketing_stage->value;
         } else {
             // Handle TSS stage flow
-            $flow = TssStage::flow();
-            $current = $this->tss_stage;
+            $flow = array_map(fn($stage) => $stage->value, TssStage::flow());
+            $current = $this->tss_stage->value;
         }
 
         $currentIndex = array_search($current, $flow);
         $newIndex = array_search($newStage->value, $flow);
 
+        // Allow only forward step-by-step transitions (e.g., index + 1)
         if ($newIndex === false || $currentIndex === false || $newIndex !== $currentIndex + 1) {
             throw ValidationException::withMessages([
                 'stage' => 'Invalid stage transition.',
             ]);
         }
-
         // Save the new stage
         if (!$isTssUpdate) {
             $this->marketing_stage = $newStage->value;
