@@ -249,4 +249,11 @@ class ProjectService
             ], 201);
         });
     }
+
+    public function searchProjects(array $validatedData)
+    {
+        return Project::where('name', 'like', '%' . $validatedData['key'] . '%')
+            ->orWhere('stage', 'like', '%' . $validatedData['status'] . '%')
+            ->get();
+    }
 }

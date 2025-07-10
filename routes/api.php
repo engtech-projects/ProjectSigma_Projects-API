@@ -118,6 +118,11 @@ Route::middleware('auth:api')->group(function () {
     });
 });
 
+// SEARCH ROUTES
+Route::prefix('search')->group(function () {
+    Route::get('projects', [ProjectController::class, 'searchProjects']);
+});
+
 // SECRET API KEY ROUTES
 Route::middleware("secret_api")->group(function () {
     // SIGMA SERVICES ROUTES

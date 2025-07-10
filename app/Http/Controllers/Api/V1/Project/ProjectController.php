@@ -121,4 +121,13 @@ class ProjectController extends Controller
             'message' => "Successfully updated stage from {$oldStage} to {$newStage->value}.",
         ], JsonResponse::HTTP_OK);
     }
+
+    public function searchProjects(FilterProjectRequest $request)
+    {
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Projects found.',
+            'data' => $this->projectService->searchProjects($request->validated())
+        ], 200);
+    }
 }
