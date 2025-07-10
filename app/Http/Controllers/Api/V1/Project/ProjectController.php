@@ -17,6 +17,7 @@ use App\Models\Project;
 use App\Services\ProjectService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\Rule;
 
 // use Illuminate\Support\Facades\Gate;
 
@@ -137,23 +138,29 @@ class ProjectController extends Controller
         ], JsonResponse::HTTP_OK);
     }
 
-    public function searchProjects(FilterProjectRequest $request)
+    public function searchProjects(Request $request)
     {
-        $validatedData = $request->validated();
+        $validated = $request->validate([
+            'project_key' => ['required', 'string'],
+            'stage_status' => ['nullable', 'string', Rule::in(array_map(fn ($stage) => $stage->value, ProjectStage::cases()))],
+        ]);
 
-        $data = Project::query()
-            ->when(!empty($validatedData['key']), function ($query) use ($validatedData) {
-                $query->where('name', 'like', '%' . $validatedData['key'] . '%');
+        $projectKey = strtolower($validated['project_key']);
+        $status = strtolower($validated['stage_status']);
+
+        $projects = Project::query()
+            ->where(function ($query) use ($projectKey){
+                $query->where('name', 'like','%' . $projectKey . '%')
+                    ->orWhere('code', 'like','%' . $projectKey . '%');
             })
-            ->when(!empty($validatedData['status']), function ($query) use ($validatedData) {
-                $query->where('stage', 'like', '%' . $validatedData['status'] . '%');
-            })
+            ->where('marketing_stage', $status)
+            ->where('tss_stage', $status)
             ->get();
 
-        return new JsonResponse([
+        return response()->json([
             'success' => true,
             'message' => 'Projects found.',
-            'data' => $data
+            'data' => $projects,
         ], 200);
     }
 }
