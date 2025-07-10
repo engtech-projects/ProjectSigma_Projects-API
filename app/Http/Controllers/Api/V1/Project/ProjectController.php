@@ -145,16 +145,18 @@ class ProjectController extends Controller
             'stage_status' => ['nullable', 'string', Rule::in(array_map(fn ($stage) => $stage->value, ProjectStage::cases()))],
         ]);
 
-        $projectKey = strtolower($validated['project_key']);
-        $status = strtolower($validated['stage_status']);
+        $projectKey = $validated['project_key'];
+        $status = $validated['stage_status'];
 
         $projects = Project::query()
             ->where(function ($query) use ($projectKey){
                 $query->where('name', 'like','%' . $projectKey . '%')
                     ->orWhere('code', 'like','%' . $projectKey . '%');
             })
-            ->where('marketing_stage', $status)
-            ->where('tss_stage', $status)
+            ->when($status, function ($query) use ($status) {
+                $query->where('marketing_stage', $status)
+                    ->orWhere('tss_stage', $status);
+            })
             ->get();
 
         return response()->json([
