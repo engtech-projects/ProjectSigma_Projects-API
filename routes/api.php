@@ -83,7 +83,6 @@ Route::middleware('auth:api')->group(function () {
 
     // ────── Attachments ──────
     Route::prefix('attachments')->group(function () {
-        Route::post('upload', [ProjectAttachmentController::class, 'uploadAttachment']);
         Route::delete('{attachment}/remove', [ProjectAttachmentController::class, 'destroy']);
     });
 
