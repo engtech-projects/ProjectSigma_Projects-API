@@ -138,7 +138,6 @@ class ProjectController extends Controller
     public function filterProjects(FilterProjectRequest $request)
     {
         $validated = $request->validated();
-
         $projectKey = $validated['project_key'];
         $status = $validated['stage_status'] ?? null;
 
