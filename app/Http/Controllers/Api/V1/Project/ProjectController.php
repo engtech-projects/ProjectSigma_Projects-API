@@ -34,11 +34,9 @@ class ProjectController extends Controller
     public function index(FilterProjectRequest $request)
     {
         $validate = $request->validated();
-
         $data = Project::with('revisions')->when(!empty($validate['stage']), function ($query) use ($validate) {
             $query->filterByStage($validate['stage']);
         })->paginate(config('services.pagination.limit'));
-
         return ProjectListingResource::collection($data)
             ->additional([
                 'success' => true,
@@ -77,7 +75,6 @@ class ProjectController extends Controller
     public function show(Project $resource)
     {
         $data = $resource->load('phases.tasks');
-
         return new JsonResponse([
             'success' => true,
             'message' => "Successfully fetched.",
@@ -141,10 +138,8 @@ class ProjectController extends Controller
     {
         $validated = $request->validated();
         $project = Project::findOrFail($validated['project_id']);
-
         $project->cash_flow = $validated['cash_flow'];
         $project->save();
-
         return response()->json([
             'success' => true,
             'message' => 'Cash flow updated successfully.',
