@@ -33,11 +33,9 @@ class ProjectController extends Controller
     public function index(FilterProjectRequest $request)
     {
         $validate = $request->validated();
-
         $data = Project::with('revisions')->when(!empty($validate['stage']), function ($query) use ($validate) {
             $query->filterByStage($validate['stage']);
         })->paginate(config('services.pagination.limit'));
-
         return ProjectListingResource::collection($data)
             ->additional([
                 'success' => true,
@@ -49,7 +47,6 @@ class ProjectController extends Controller
     {
         $validatedData = $request->validated();
         $result = ProjectService::replicate($validatedData);
-
         return response()->json([
             'message' => 'Project replicated successfully.',
             'data' => $result,
@@ -61,9 +58,7 @@ class ProjectController extends Controller
     public function store(StoreProjectRequest $request)
     {
         $validated = $request->validated();
-
         $result = $this->projectService->create($validated);
-
         return response()->json([
             'message' => 'Project created successfully.',
             'data' => $result,
@@ -89,16 +84,13 @@ class ProjectController extends Controller
     public function update(UpdateProjectRequest $request, Project $project)
     {
         $validated = $request->validated();
-
         $result = $this->projectService->update($project, $validated);
-
         if (isset($result['error'])) {
             return response()->json([
                 'message' => 'Failed to update the project.',
                 'error' => $result['error'],
             ], 500);
         }
-
         return response()->json([
             'message' => 'Project has been updated.',
             'data' => $result,
@@ -109,7 +101,6 @@ class ProjectController extends Controller
     {
         $validated = $request->validated();
         $summaryOfRates = $this->projectService->changeSummaryRates($validated);
-
         return $summaryOfRates;
     }
 
@@ -119,7 +110,6 @@ class ProjectController extends Controller
         $project = Project::findOrFail($id);
         $newStage = ProjectStage::from($valid['stage']);
         $oldStage = $project->stage;
-
         try {
             $project->updateStage($newStage);
             return new JsonResponse([
@@ -140,7 +130,6 @@ class ProjectController extends Controller
         $validated = $request->validated();
         $projectKey = $validated['project_key'];
         $status = $validated['stage_status'] ?? null;
-
         $projects = Project::query()
             ->where(function ($query) use ($projectKey) {
                 $query->where('name', 'like', '%' . $projectKey . '%')
@@ -151,7 +140,6 @@ class ProjectController extends Controller
                     ->orWhere('tss_stage', $status);
             })
             ->paginate(config('services.pagination.limit'));
-
         return response()->json([
             'success' => true,
             'message' => 'Projects found.',
