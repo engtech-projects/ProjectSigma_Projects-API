@@ -35,7 +35,7 @@ class Project extends Model
     {
         return LogOptions::defaults()
             ->logAll() // List of attributes to log
-            ->setDescriptionForEvent(fn(string $eventName) => "Project has been {$eventName}");
+            ->setDescriptionForEvent(fn (string $eventName) => "Project has been {$eventName}");
     }
 
     protected $fillable = [
@@ -358,7 +358,7 @@ class Project extends Model
     {
         // Determine if this is a TSS stage update
         $isTssUpdate = $this->marketing_stage->value === MarketingStage::AWARDED->value
-            && in_array($newStage->value, array_map(fn($stage) => $stage->value, TssStage::cases()), true);
+            && in_array($newStage->value, array_map(fn ($stage) => $stage->value, TssStage::cases()), true);
 
         // Only require approval if marketing is AWARDED and we're updating TSS
         if ($isTssUpdate && $this->marketing_stage === MarketingStage::AWARDED->value && $this->status !== 'approved') {
@@ -368,11 +368,11 @@ class Project extends Model
         }
         if (!$isTssUpdate) {
             // Handle marketing stage flow
-            $flow = array_map(fn($stage) => $stage->value, MarketingStage::flow());
+            $flow = array_map(fn ($stage) => $stage->value, MarketingStage::flow());
             $current = $this->marketing_stage->value;
         } else {
             // Handle TSS stage flow
-            $flow = array_map(fn($stage) => $stage->value, TssStage::flow());
+            $flow = array_map(fn ($stage) => $stage->value, TssStage::flow());
             $current = $this->tss_stage->value;
         }
 
