@@ -35,7 +35,7 @@ class Project extends Model
     {
         return LogOptions::defaults()
             ->logAll() // List of attributes to log
-            ->setDescriptionForEvent(fn(string $eventName) => "Project has been {$eventName}");
+            ->setDescriptionForEvent(fn (string $eventName) => "Project has been {$eventName}");
     }
 
     protected $fillable = [
