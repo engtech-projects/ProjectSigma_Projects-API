@@ -60,9 +60,7 @@ class ProjectController extends Controller
     public function store(StoreProjectRequest $request)
     {
         $validated = $request->validated();
-
         $result = $this->projectService->create($validated);
-
         return response()->json([
             'message' => 'Project created successfully.',
             'data' => $result,
@@ -88,16 +86,13 @@ class ProjectController extends Controller
     public function update(UpdateProjectRequest $request, Project $project)
     {
         $validated = $request->validated();
-
         $result = $this->projectService->update($project, $validated);
-
         if (isset($result['error'])) {
             return response()->json([
                 'message' => 'Failed to update the project.',
                 'error' => $result['error'],
             ], 500);
         }
-
         return response()->json([
             'message' => 'Project has been updated.',
             'data' => $result,
@@ -108,7 +103,6 @@ class ProjectController extends Controller
     {
         $validated = $request->validated();
         $summaryOfRates = $this->projectService->changeSummaryRates($validated);
-
         return $summaryOfRates;
     }
 
@@ -118,7 +112,6 @@ class ProjectController extends Controller
         $project = Project::findOrFail($id);
         $newStage = ProjectStage::from($valid['stage']);
         $oldStage = $project->stage;
-
         try {
             $project->updateStage($newStage);
             return new JsonResponse([
