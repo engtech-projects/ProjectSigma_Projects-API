@@ -73,9 +73,9 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Project $project)
+    public function show(Project $resource)
     {
-        $data = $project->load('phases.tasks');
+        $data = $resource->load('phases.tasks');
         return new JsonResponse([
             'success' => true,
             'message' => "Successfully fetched.",
@@ -115,12 +115,17 @@ class ProjectController extends Controller
 
     public function updateStage(UpdateProjectStageRequest $request, $id)
     {
-        $valid = $request->validate();
+        $valid = $request->validated();
         $project = Project::findOrFail($id);
         $newStage = ProjectStage::from($valid['stage']);
+        $oldStage = $project->stage;
 
         try {
-            $oldStage = $project->updateStage($newStage);
+            $project->updateStage($newStage);
+            return new JsonResponse([
+                'success' => true,
+                'message' => "Successfully updated stage from {$oldStage} to {$newStage->value}.",
+            ], JsonResponse::HTTP_OK);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -128,11 +133,6 @@ class ProjectController extends Controller
                 'errors' => $e->errors(),
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
-
-        return new JsonResponse([
-            'success' => true,
-            'message' => "Successfully updated stage from {$oldStage} to {$newStage->value}.",
-        ], JsonResponse::HTTP_OK);
     }
 
     public function filterProjects(FilterProjectRequest $request)
