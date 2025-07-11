@@ -79,7 +79,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('{project}/attachments', [ProjectAttachmentController::class, 'store']);
         Route::get('{project}/document-viewer', [ProjectAttachmentController::class, 'generateUrl']);
         Route::post('change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
-        Route::get('/filter', [ProjectController::class, 'searchProjects']);
+        Route::get('/filter', [ProjectController::class, 'filterProjects']);
     });
 
     // ────── Attachments ──────
