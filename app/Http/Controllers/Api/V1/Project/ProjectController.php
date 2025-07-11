@@ -3,19 +3,18 @@
 namespace App\Http\Controllers\Api\V1\Project;
 
 use App\Enums\ProjectStage;
-use App\Enums\TssStage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Project\FilterProjectRequest;
 use App\Http\Requests\Project\ReplicateProjectRequest;
 use App\Http\Requests\Project\StoreProjectRequest;
 use App\Http\Requests\Project\UpdateProjectRequest;
 use App\Http\Requests\SummaryRate\SummaryRateRequest;
+use App\Http\Requests\UpdateCashFlowRequest;
 use App\Http\Requests\UpdateProjectStageRequest;
 use App\Http\Resources\Project\ProjectDetailResource;
 use App\Http\Resources\Project\ProjectListingResource;
 use App\Models\Project;
 use App\Services\ProjectService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 // use Illuminate\Support\Facades\Gate;
@@ -35,11 +34,9 @@ class ProjectController extends Controller
     public function index(FilterProjectRequest $request)
     {
         $validate = $request->validated();
-
         $data = Project::with('revisions')->when(!empty($validate['stage']), function ($query) use ($validate) {
             $query->filterByStage($validate['stage']);
         })->paginate(config('services.pagination.limit'));
-
         return ProjectListingResource::collection($data)
             ->additional([
                 'success' => true,
@@ -63,9 +60,7 @@ class ProjectController extends Controller
     public function store(StoreProjectRequest $request)
     {
         $validated = $request->validated();
-
         $result = $this->projectService->create($validated);
-
         return response()->json([
             'message' => 'Project created successfully.',
             'data' => $result,
@@ -91,16 +86,13 @@ class ProjectController extends Controller
     public function update(UpdateProjectRequest $request, Project $project)
     {
         $validated = $request->validated();
-
         $result = $this->projectService->update($project, $validated);
-
         if (isset($result['error'])) {
             return response()->json([
                 'message' => 'Failed to update the project.',
                 'error' => $result['error'],
             ], 500);
         }
-
         return response()->json([
             'message' => 'Project has been updated.',
             'data' => $result,
@@ -111,7 +103,6 @@ class ProjectController extends Controller
     {
         $validated = $request->validated();
         $summaryOfRates = $this->projectService->changeSummaryRates($validated);
-
         return $summaryOfRates;
     }
 
@@ -121,7 +112,6 @@ class ProjectController extends Controller
         $project = Project::findOrFail($id);
         $newStage = ProjectStage::from($valid['stage']);
         $oldStage = $project->stage;
-
         try {
             $project->updateStage($newStage);
             return new JsonResponse([
@@ -135,5 +125,18 @@ class ProjectController extends Controller
                 'errors' => $e->errors(),
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
+    }
+
+    public function updateCashFlow(UpdateCashFlowRequest $request)
+    {
+        $validated = $request->validated();
+        $project = Project::findOrFail($validated['project_id']);
+        $project->cash_flow = $validated['cash_flow'];
+        $project->save();
+        return response()->json([
+            'success' => true,
+            'message' => 'Cash flow updated successfully.',
+            'data' => $project,
+        ], 200);
     }
 }
