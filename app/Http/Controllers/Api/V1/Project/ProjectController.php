@@ -140,10 +140,10 @@ class ProjectController extends Controller
                     ->orWhere('tss_stage', $status);
             })
             ->paginate(config('services.pagination.limit'));
-        return response()->json([
-            'success' => true,
-            'message' => 'Projects found.',
-            'data' => $projects,
-        ], 200);
+        return ProjectListingResource::collection($projects)
+            ->additional([
+                'success' => true,
+                'message' => 'Successfully fetched.',
+            ]);
     }
 }
