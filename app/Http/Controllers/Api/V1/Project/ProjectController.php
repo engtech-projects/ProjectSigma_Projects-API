@@ -3,19 +3,18 @@
 namespace App\Http\Controllers\Api\V1\Project;
 
 use App\Enums\ProjectStage;
-use App\Enums\TssStage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Project\FilterProjectRequest;
 use App\Http\Requests\Project\ReplicateProjectRequest;
 use App\Http\Requests\Project\StoreProjectRequest;
 use App\Http\Requests\Project\UpdateProjectRequest;
 use App\Http\Requests\SummaryRate\SummaryRateRequest;
+use App\Http\Requests\UpdateCashFlowRequest;
 use App\Http\Requests\UpdateProjectStageRequest;
 use App\Http\Resources\Project\ProjectDetailResource;
 use App\Http\Resources\Project\ProjectListingResource;
 use App\Models\Project;
 use App\Services\ProjectService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 // use Illuminate\Support\Facades\Gate;
@@ -39,6 +38,8 @@ class ProjectController extends Controller
         $data = Project::with('revisions')->when(!empty($validate['stage']), function ($query) use ($validate) {
             $query->filterByStage($validate['stage']);
         })->paginate(config('services.pagination.limit'));
+
+        dd($data->cash_flow);
 
         return ProjectListingResource::collection($data)
             ->additional([
@@ -78,6 +79,9 @@ class ProjectController extends Controller
     public function show(Project $resource)
     {
         $data = $resource->load('phases.tasks');
+
+        dd($data->cash_flow);
+
         return new JsonResponse([
             'success' => true,
             'message' => "Successfully fetched.",
@@ -135,5 +139,21 @@ class ProjectController extends Controller
                 'errors' => $e->errors(),
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
+    }
+
+    public function updateCashFlow(UpdateCashFlowRequest $request)
+    {
+        $validated = $request->validated();
+
+        $project = Project::findOrFail($validated['project_id']);
+
+        $project->cash_flow = $validated['cash_flow'];
+        $project->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cash flow updated successfully.',
+            'data' => $project,
+        ], 200);
     }
 }
