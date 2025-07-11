@@ -126,7 +126,7 @@ class ProjectController extends Controller
         }
     }
 
-    public function filterProjects(FilterProjectRequest $request)
+    public function filterProjects(\App\Http\Requests\FilterProjectRequest $request)
     {
         $validated = $request->validated();
         $projectKey = $validated['project_key'];
