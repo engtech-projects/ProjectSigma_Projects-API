@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Project;
 
 use App\Enums\ProjectStage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FilterProjectRequest as RequestsFilterProjectRequest;
 use App\Http\Requests\Project\FilterProjectRequest;
 use App\Http\Requests\Project\ReplicateProjectRequest;
 use App\Http\Requests\Project\StoreProjectRequest;
@@ -126,7 +127,7 @@ class ProjectController extends Controller
         }
     }
 
-    public function filterProjects(FilterProjectRequest $request)
+    public function filterProjects(RequestsFilterProjectRequest $request)
     {
         $validated = $request->validated();
         $projectKey = $validated['project_key'];
