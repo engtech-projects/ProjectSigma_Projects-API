@@ -48,7 +48,6 @@ class ProjectController extends Controller
     {
         $validatedData = $request->validated();
         $result = ProjectService::replicate($validatedData);
-
         return response()->json([
             'message' => 'Project replicated successfully.',
             'data' => $result,
@@ -125,6 +124,28 @@ class ProjectController extends Controller
                 'errors' => $e->errors(),
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
+    }
+
+    public function filterProjects(FilterProjectRequest $request)
+    {
+        $validated = $request->validated();
+        $projectKey = $validated['project_key'];
+        $status = $validated['stage_status'] ?? null;
+        $projects = Project::query()
+            ->where(function ($query) use ($projectKey) {
+                $query->where('name', 'like', '%' . $projectKey . '%')
+                    ->orWhere('code', 'like', '%' . $projectKey . '%');
+            })
+            ->when($status, function ($query) use ($status) {
+                $query->where('marketing_stage', $status)
+                    ->orWhere('tss_stage', $status);
+            })
+            ->paginate(config('services.pagination.limit'));
+        return ProjectListingResource::collection($projects)
+            ->additional([
+                'success' => true,
+                'message' => 'Successfully fetched.',
+            ]);
     }
 
     public function updateCashFlow(UpdateCashFlowRequest $request)
