@@ -39,8 +39,6 @@ class ProjectController extends Controller
             $query->filterByStage($validate['stage']);
         })->paginate(config('services.pagination.limit'));
 
-        dd($data->cash_flow);
-
         return ProjectListingResource::collection($data)
             ->additional([
                 'success' => true,
@@ -79,8 +77,6 @@ class ProjectController extends Controller
     public function show(Project $resource)
     {
         $data = $resource->load('phases.tasks');
-
-        dd($data->cash_flow);
 
         return new JsonResponse([
             'success' => true,
@@ -144,7 +140,6 @@ class ProjectController extends Controller
     public function updateCashFlow(UpdateCashFlowRequest $request)
     {
         $validated = $request->validated();
-
         $project = Project::findOrFail($validated['project_id']);
 
         $project->cash_flow = $validated['cash_flow'];
