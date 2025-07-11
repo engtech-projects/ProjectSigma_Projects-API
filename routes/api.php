@@ -79,6 +79,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('{project}/attachments', [ProjectAttachmentController::class, 'store']);
         Route::get('{project}/document-viewer', [ProjectAttachmentController::class, 'generateUrl']);
         Route::post('change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
+        Route::patch('cashflow/update', [ProjectController::class, 'updateCashFlow']);
     });
 
     // ────── Attachments ──────
