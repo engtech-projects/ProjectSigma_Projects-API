@@ -80,6 +80,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('{project}/document-viewer', [ProjectAttachmentController::class, 'generateUrl']);
         Route::post('change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
         Route::get('filter', [ProjectController::class, 'filterProjects']);
+        Route::patch('cashflow/update', [ProjectController::class, 'updateCashFlow']);
     });
 
     // ────── Attachments ──────

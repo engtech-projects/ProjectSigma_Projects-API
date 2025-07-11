@@ -9,6 +9,7 @@ use App\Http\Requests\Project\ReplicateProjectRequest;
 use App\Http\Requests\Project\StoreProjectRequest;
 use App\Http\Requests\Project\UpdateProjectRequest;
 use App\Http\Requests\SummaryRate\SummaryRateRequest;
+use App\Http\Requests\UpdateCashFlowRequest;
 use App\Http\Requests\UpdateProjectStageRequest;
 use App\Http\Resources\Project\ProjectDetailResource;
 use App\Http\Resources\Project\ProjectListingResource;
@@ -145,5 +146,18 @@ class ProjectController extends Controller
                 'success' => true,
                 'message' => 'Successfully fetched.',
             ]);
+    }
+
+    public function updateCashFlow(UpdateCashFlowRequest $request)
+    {
+        $validated = $request->validated();
+        $project = Project::findOrFail($validated['project_id']);
+        $project->cash_flow = $validated['cash_flow'];
+        $project->save();
+        return response()->json([
+            'success' => true,
+            'message' => 'Cash flow updated successfully.',
+            'data' => $project,
+        ], 200);
     }
 }
