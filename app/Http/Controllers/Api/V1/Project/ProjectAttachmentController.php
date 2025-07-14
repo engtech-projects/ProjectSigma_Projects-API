@@ -94,7 +94,7 @@ class ProjectAttachmentController extends Controller
     public function showAttachments(Project $project)
     {
         $project = Project::with('attachments.uploader')->find($project->id);
-        $attachments = $project->attachments->map(function ($attachment){
+        $attachments = $project->attachments->map(function (Attachment $attachment){
             return [
                 'uploader' => $attachment->uploader->name ?? 'N/A',
                 'filename' => $attachment->name,
