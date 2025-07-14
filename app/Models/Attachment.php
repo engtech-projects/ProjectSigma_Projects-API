@@ -37,4 +37,9 @@ class Attachment extends Model
     {
         return $this->belongsTo(Project::class);
     }
+
+    public function uploader(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'uploader_id');
+    }
 }

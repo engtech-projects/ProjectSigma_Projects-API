@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
+use Js;
 
 class ProjectAttachmentController extends Controller
 {
@@ -88,5 +89,37 @@ class ProjectAttachmentController extends Controller
         $attachment->delete();
 
         return response()->json('deleted', 200);
+    }
+
+    public function showAttachments(Project $project)
+    {
+        $project = Project::with('attachments.uploader')->find($project->id);
+        $attachments = $project->attachments->map(function ($attachment){
+            return [
+                'uploader' => $attachment->uploader->name ?? 'N/A',
+                'filename' => $attachment->name,
+                'type' => $attachment->mime_type,
+                'download_url' => Storage::url($attachment->path),
+            ];
+        });
+        if (!$project) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Project not found',
+                'data' => [],
+            ], 404);
+        }
+        if ($project->attachments->isEmpty()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'No attachments found for this project',
+                'data' => [],
+            ], 404);
+        }
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Attachments retrieved successfully',
+            'data' => $attachments,
+        ], 200);
     }
 }
