@@ -102,7 +102,7 @@ class ProjectAttachmentController extends Controller
                 'download_url' => Storage::url($attachment->path),
             ];
         });
-        if (!$project) {
+        if (!$project->id) {
             return new JsonResponse([
                 'success' => false,
                 'message' => 'Project not found',
