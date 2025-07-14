@@ -72,7 +72,7 @@ class ProjectController extends Controller
      */
     public function show(Project $resource)
     {
-        $data = $resource->load('phases.tasks');
+        $data = $resource->load('phases.tasks', 'attachments');
         return new JsonResponse([
             'success' => true,
             'message' => "Successfully fetched.",
