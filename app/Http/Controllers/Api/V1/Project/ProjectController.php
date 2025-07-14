@@ -37,7 +37,9 @@ class ProjectController extends Controller
         $validate = $request->validated();
         $data = Project::with('revisions')->when(!empty($validate['stage']), function ($query) use ($validate) {
             $query->filterByStage($validate['stage']);
-        })->paginate(config('services.pagination.limit'));
+        })
+            ->latestFirst()
+            ->paginate(config('services.pagination.limit'));
         return ProjectListingResource::collection($data)
             ->additional([
                 'success' => true,
@@ -141,6 +143,7 @@ class ProjectController extends Controller
                 $query->where('marketing_stage', $status)
                     ->orWhere('tss_stage', $status);
             })
+            ->latestFirst()
             ->paginate(config('services.pagination.limit'));
         return ProjectListingResource::collection($projects)
             ->additional([
