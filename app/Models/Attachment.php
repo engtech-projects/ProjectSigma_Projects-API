@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,6 +23,10 @@ class Attachment extends Model
         'mime_type',
     ];
 
+    protected $appends = [
+        'created_at_formatted',
+    ];
+
     protected static function boot()
     {
         parent::boot();
@@ -36,5 +41,10 @@ class Attachment extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function getCreatedAtFormattedAttribute()
+    {
+        return Carbon::parse($this->created_at)->format('F j, Y h:i A');
     }
 }
