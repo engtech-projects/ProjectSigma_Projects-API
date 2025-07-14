@@ -20,6 +20,7 @@ class ResourceItem extends Model
         'task_id',
         'name_id',
         'description',
+        'unit_count',
         'quantity',
         'unit',
         'unit_cost',

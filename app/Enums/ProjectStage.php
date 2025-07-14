@@ -13,4 +13,14 @@ enum ProjectStage: string
     case ARCHIVED = 'archived';
     case BIDDING = 'bidding';
 
+    public static function flow(): array
+    {
+        return [
+            self::DRAFT,
+            self::PROPOSAL,
+            self::BIDDING,
+            self::AWARDED,
+            self::ARCHIVED,
+        ];
+    }
 }

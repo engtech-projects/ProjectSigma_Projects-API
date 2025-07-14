@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests\Project;
 
+use App\Enums\ProjectStage;
+use App\Enums\ProjectStatus;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class FilterProjectRequest extends FormRequest
 {
@@ -11,19 +14,19 @@ class FilterProjectRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return true; // Allow all users or add logic here
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            'key' => 'nullable|string',
-            'status' => 'nullable|string',
+            'stage' => [
+                'nullable',
+                Rule::in(array_merge(
+                    array_column(ProjectStage::cases(), 'value'),
+                    [ProjectStatus::ONHOLD->value]
+                )),
+            ],
         ];
     }
 }

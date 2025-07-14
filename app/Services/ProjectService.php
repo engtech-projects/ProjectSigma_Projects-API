@@ -2,8 +2,11 @@
 
 namespace App\Services;
 
+use App\Enums\MarketingStage;
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
+use App\Enums\TssStage;
+use App\Http\Resources\Project\ProjectCollection;
 use App\Models\Phase;
 use App\Models\Project;
 use App\Models\ResourceItem;
@@ -23,15 +26,21 @@ class ProjectService
     public function create(array $attr)
     {
         return DB::transaction(function () use ($attr) {
-            $attr['stage'] = ProjectStage::DRAFT->value;
+            // Replace legacy stage column with new structure
+            $attr['marketing_stage'] = MarketingStage::DRAFT->value;
+            $attr['tss_stage'] = TssStage::PENDING->value;
+
             $attr['status'] = ProjectStatus::OPEN->value;
+            $attr['amount'] = $attr['amount'] ?? 0;
             $attr['created_by'] = auth()->user()->id;
+
             $attr['cash_flow'] = json_encode(array_fill_keys(['wtax', 'q1', 'q2', 'q3', 'q4'], [
                 'accomplishment' => 0,
                 'cashflow' => 0,
                 'culmutative_accomplishment' => 0,
                 'culmutative_cashflow' => 0,
             ]));
+
             $data = Project::create($attr);
 
             return new JsonResponse([
@@ -49,11 +58,19 @@ class ProjectService
                 ->update(['unit_cost' => $attr['unit_cost']]);
 
             return new JsonResponse([
-                'message' => 'Summary rates updated successfully, Number of Direct Cost Affected: '.count($attr['ids']),
+                'message' => 'Summary rates updated successfully, Number of Direct Cost Affected: ' . count($attr['ids']),
             ], 200);
         });
     }
 
+    /**
+     * Retrieves a paginated list of projects with optional filtering by stage or status.
+     *
+     * Applies filters based on provided attributes, including limiting results to projects created by the authenticated user for certain statuses. Eager loads the latest revision for each project.
+     *
+     * @param array $attr Optional filters such as 'key' for stage or 'status' for project status.
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator Paginated list of projects.
+     */
     public function withPagination(array $attr)
     {
         $query = Project::query();
@@ -74,8 +91,7 @@ class ProjectService
         $query->with('revisions', function ($query) {
             return $query->latestRevision();
         });
-
-        return $query->paginate(config('services.pagination.limit'));
+        return ProjectCollection::collection($query->paginate(config('services.pagination.limit')))->response()->getData(true);
     }
 
     public function update(Project $project, array $attr)
@@ -172,7 +188,7 @@ class ProjectService
             $project = Project::findOrFail($id)->load('phases.tasks.resources');
             $newProjectData = [
                 'parent_project_id' => $id,
-                'contract_id' => $project->contract_id.'-COPY',
+                'contract_id' => $project->contract_id . '-COPY',
                 'code' => null,
                 'name' => $project->name . '-COPY',
                 'location' => $project->location,
@@ -225,6 +241,7 @@ class ProjectService
                             'quantity' => $resource->quantity,
                             'unit' => $resource->unit,
                             'unit_cost' => $resource->unit_cost,
+                            'unit_count' => $resource->unit_count,
                             'resource_count' => $resource->resource_count,
                             'total_cost' => $resource->total_cost,
                         ];

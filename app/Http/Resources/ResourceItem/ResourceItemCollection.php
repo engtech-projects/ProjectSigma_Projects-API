@@ -23,6 +23,7 @@ class ResourceItemCollection extends JsonResource
                 return new ResourceNameCollection($resourceName);
             }),
             'description' => $this->description,
+            'unit_count' => $this->unit_count,
             'quantity' => $this->quantity,
             'unit' => $this->unit,
             'unit_cost' => $this->unit_cost,

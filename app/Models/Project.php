@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Enums\MarketingStage;
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Enums\RequestStatuses;
+use App\Enums\TssStage;
 use App\Traits\Filterable;
-use App\Traits\HasApproval;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
@@ -24,7 +27,6 @@ class Project extends Model
     use HasFactory;
     use LogsActivity;
     use SoftDeletes;
-    use HasApproval;
 
     protected $table = 'projects';
 
@@ -49,17 +51,18 @@ class Project extends Model
         'noa_date',
         'ntp_date',
         'license',
-        'stage',
+        'marketing_stage',
+        'tss_stage',
         'status',
         'is_original',
         'version',
         'project_identifier',
         'implementing_office',
         'current_revision_id',
+        'position',
+        'designation',
         'created_by',
         'cash_flow',
-        'approvals',
-        'request_status',
     ];
 
     protected $casts = [
@@ -68,13 +71,15 @@ class Project extends Model
         'noa_date' => 'datetime:Y-m-d',
         'ntp_date' => 'datetime:Y-m-d',
         'amount' => 'decimal:2',
-        'approvals' => 'array',
+        'marketing_stage' => MarketingStage::class,
+        'tss_stage' => TssStage::class,
     ];
-
 
     protected $appends = [
         'summary_of_rates',
         'summary_of_bid',
+        'created_at_formatted',
+        'updated_at_formatted',
     ];
 
     protected static function boot()
@@ -196,8 +201,22 @@ class Project extends Model
     public function scopeSearch(Builder $query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::raw('LOWER(code)'), 'LIKE', '%'.strtolower($keyword).'%')
-                ->orWhere(DB::raw('LOWER(name)'), 'LIKE', '%'.strtolower($keyword).'%');
+            $query->where('code', 'LIKE', '%' . $keyword . '%')
+                ->orWhere('name', 'LIKE', '%' . $keyword . '%');
+        });
+    }
+
+    public function scopeFilterByStage($query, ?string $stage)
+    {
+        return $query->when($stage, function ($q) use ($stage) {
+            if ($stage === 'on-hold') {
+                $q->where('status', 'on-hold');
+            } else {
+                $q->where(function ($query) use ($stage) {
+                    $query->where('marketing_stage', $stage)
+                        ->orWhere('tss_stage', $stage);
+                });
+            }
         });
     }
 
@@ -207,6 +226,16 @@ class Project extends Model
     public function scopeArchived(Builder $query)
     {
         return $query->onlyTrashed();
+    }
+
+    public function scopeAwarded(Builder $query)
+    {
+        return $query->where('marketing_stage', ProjectStage::AWARDED->value);
+    }
+
+    public function scopeLatestFirst($query)
+    {
+        return $query->orderBy('created_at', 'desc');
     }
 
     public function getSummaryOfBidAttribute()
@@ -228,36 +257,58 @@ class Project extends Model
 
     public function completeRequestStatus()
     {
-        switch ($this->stage) {
-            case ProjectStage::PROPOSAL->value:
-                $this->status = ProjectStage::BIDDING->value;
-                break;
-            case ProjectStage::BIDDING->value:
-                $this->status = ProjectStage::AWARDED->value;
-                break;
-            default:
-                break;
+        // Handle marketing stage flow
+        if ($this->tss_stage === TssStage::PENDING->value) {
+            switch ($this->marketing_stage) {
+                case MarketingStage::DRAFT->value:
+                    $this->marketing_stage = MarketingStage::PROPOSAL->value;
+                    break;
+
+                case MarketingStage::PROPOSAL->value:
+                    $this->marketing_stage = MarketingStage::BIDDING->value;
+                    break;
+
+                case MarketingStage::BIDDING->value:
+                    $this->marketing_stage = MarketingStage::AWARDED->value;
+                    // Transition TSS to awarded when marketing is done
+                    $this->tss_stage = TssStage::AWARDED->value;
+                    break;
+            }
+        } else {
+            // Handle TSS flow
+            switch ($this->tss_stage) {
+                case TssStage::AWARDED->value:
+                    $this->tss_stage = TssStage::ARCHIVED->value;
+                    break;
+            }
         }
+
+        // Set request status and persist
         $this->request_status = RequestStatuses::APPROVED->value;
         $this->save();
         $this->refresh();
     }
+
     public function denyRequestStatus()
     {
-        switch ($this->stage) {
-            case ProjectStage::BIDDING->value:
-                $this->status = ProjectStage::PROPOSAL->value;
-                break;
-            case ProjectStage::PROPOSAL->value:
-                $this->status = ProjectStage::DRAFT->value;
-                break;
-            default:
-                break;
+        // Only allow marketing to backtrack if still pending in TSS
+        if ($this->tss_stage === TssStage::PENDING->value) {
+            switch ($this->marketing_stage) {
+                case MarketingStage::BIDDING->value:
+                    $this->marketing_stage = MarketingStage::PROPOSAL->value;
+                    break;
+
+                case MarketingStage::PROPOSAL->value:
+                    $this->marketing_stage = MarketingStage::DRAFT->value;
+                    break;
+            }
         }
+
         $this->request_status = RequestStatuses::DENIED->value;
         $this->save();
         $this->refresh();
     }
+
     public function getSummaryOfRatesAttribute()
     {
         $summary_of_rates = [];
@@ -285,7 +336,7 @@ class Project extends Model
                             'description' => $value->description,
                             'unit_cost' => $value->unit_cost,
                             'unit' => $value->unit,
-                            'resource_name' => $value->unit_cost.' / '.$value->unit,
+                            'resource_name' => $value->unit_cost . ' / ' . $value->unit,
                             'total_cost' => $value->total_cost,
                             'ids' => [$value->id],
                         ];
@@ -293,7 +344,60 @@ class Project extends Model
                 }
             }
         }
-
         return $summary_of_rates;
+    }
+    public function getCreatedAtFormattedAttribute()
+    {
+        return Carbon::parse($this->created_at)->format('F j, Y h:i A');
+    }
+    public function getUpdatedAtFormattedAttribute()
+    {
+        return Carbon::parse($this->updated_at)->format('F j, Y h:i A');
+    }
+
+    public function updateStage(ProjectStage $newStage)
+    {
+        // Determine if this is a TSS stage update
+        $isTssUpdate = $this->marketing_stage->value === MarketingStage::AWARDED->value
+            && in_array($newStage->value, array_map(fn ($stage) => $stage->value, TssStage::cases()), true);
+
+        // Only require approval if marketing is AWARDED and we're updating TSS
+        if ($isTssUpdate && $this->marketing_stage === MarketingStage::AWARDED->value && $this->status !== 'approved') {
+            throw ValidationException::withMessages([
+                'status' => 'Project must be approved to update TSS stage after marketing is awarded.',
+            ]);
+        }
+        if (!$isTssUpdate) {
+            // Handle marketing stage flow
+            $flow = array_map(fn ($stage) => $stage->value, MarketingStage::flow());
+            $current = $this->marketing_stage->value;
+        } else {
+            // Handle TSS stage flow
+            $flow = array_map(fn ($stage) => $stage->value, TssStage::flow());
+            $current = $this->tss_stage->value;
+        }
+
+        $currentIndex = array_search($current, $flow);
+        $newIndex = array_search($newStage->value, $flow);
+
+        // Allow only forward step-by-step transitions (e.g., index + 1)
+        if ($newIndex === false || $currentIndex === false || $newIndex !== $currentIndex + 1) {
+            throw ValidationException::withMessages([
+                'stage' => 'Invalid stage transition.',
+            ]);
+        }
+        // Save the new stage
+        if (!$isTssUpdate) {
+            $this->marketing_stage = $newStage->value;
+
+            if ($newStage === MarketingStage::AWARDED) {
+                // Automatically promote TSS to 'awarded' when marketing hits 'awarded'
+                $this->tss_stage = TssStage::AWARDED->value;
+            }
+        } else {
+            $this->tss_stage = $newStage->value;
+        }
+
+        $this->save();
     }
 }

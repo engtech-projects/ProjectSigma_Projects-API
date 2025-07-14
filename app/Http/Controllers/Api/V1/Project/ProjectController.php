@@ -2,15 +2,21 @@
 
 namespace App\Http\Controllers\Api\V1\Project;
 
+use App\Enums\ProjectStage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FilterProjectRequest as RequestsFilterProjectRequest;
 use App\Http\Requests\Project\FilterProjectRequest;
 use App\Http\Requests\Project\ReplicateProjectRequest;
 use App\Http\Requests\Project\StoreProjectRequest;
 use App\Http\Requests\Project\UpdateProjectRequest;
 use App\Http\Requests\SummaryRate\SummaryRateRequest;
-use App\Http\Resources\Project\ProjectCollection;
+use App\Http\Requests\UpdateCashFlowRequest;
+use App\Http\Requests\UpdateProjectStageRequest;
+use App\Http\Resources\Project\ProjectDetailResource;
+use App\Http\Resources\Project\ProjectListingResource;
 use App\Models\Project;
 use App\Services\ProjectService;
+use Illuminate\Http\JsonResponse;
 
 // use Illuminate\Support\Facades\Gate;
 
@@ -28,17 +34,23 @@ class ProjectController extends Controller
      */
     public function index(FilterProjectRequest $request)
     {
-        $validatedData = $request->validated();
-        $projects = $this->projectService->withPagination($validatedData);
-
-        return response()->json($projects, 200);
+        $validate = $request->validated();
+        $data = Project::with('revisions')->when(!empty($validate['stage']), function ($query) use ($validate) {
+            $query->filterByStage($validate['stage']);
+        })
+            ->latestFirst()
+            ->paginate(config('services.pagination.limit'));
+        return ProjectListingResource::collection($data)
+            ->additional([
+                'success' => true,
+                'message' => 'Successfully fetched.',
+            ]);
     }
 
     public function replicate(ReplicateProjectRequest $request)
     {
         $validatedData = $request->validated();
         $result = ProjectService::replicate($validatedData);
-
         return response()->json([
             'message' => 'Project replicated successfully.',
             'data' => $result,
@@ -50,9 +62,7 @@ class ProjectController extends Controller
     public function store(StoreProjectRequest $request)
     {
         $validated = $request->validated();
-
         $result = $this->projectService->create($validated);
-
         return response()->json([
             'message' => 'Project created successfully.',
             'data' => $result,
@@ -62,9 +72,14 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Project $project)
+    public function show(Project $resource)
     {
-        return response()->json(new ProjectCollection($project->load('phases.tasks')), 200);
+        $data = $resource->load('phases.tasks', 'attachments');
+        return new JsonResponse([
+            'success' => true,
+            'message' => "Successfully fetched.",
+            'data' => new ProjectDetailResource($data),
+        ], JsonResponse::HTTP_OK);
     }
 
     /**
@@ -73,16 +88,13 @@ class ProjectController extends Controller
     public function update(UpdateProjectRequest $request, Project $project)
     {
         $validated = $request->validated();
-
         $result = $this->projectService->update($project, $validated);
-
         if (isset($result['error'])) {
             return response()->json([
                 'message' => 'Failed to update the project.',
                 'error' => $result['error'],
             ], 500);
         }
-
         return response()->json([
             'message' => 'Project has been updated.',
             'data' => $result,
@@ -93,15 +105,63 @@ class ProjectController extends Controller
     {
         $validated = $request->validated();
         $summaryOfRates = $this->projectService->changeSummaryRates($validated);
-
         return $summaryOfRates;
     }
 
-    public function archive(Project $project)
+    public function updateStage(UpdateProjectStageRequest $request, $id)
     {
+        $valid = $request->validated();
+        $project = Project::findOrFail($id);
+        $newStage = ProjectStage::from($valid['stage']);
+        $oldStage = $project->stage;
+        try {
+            $project->updateStage($newStage);
+            return new JsonResponse([
+                'success' => true,
+                'message' => "Successfully updated stage from {$oldStage} to {$newStage->value}.",
+            ], JsonResponse::HTTP_OK);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => "Failed to update stage from {$oldStage} to {$newStage->value}.",
+                'errors' => $e->errors(),
+            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        }
     }
 
-    public function destroy(Project $project)
+    public function filterProjects(RequestsFilterProjectRequest $request)
     {
+        $validated = $request->validated();
+        $projectKey = $validated['project_key'];
+        $status = $validated['stage_status'] ?? null;
+        $projects = Project::query()
+            ->where(function ($query) use ($projectKey) {
+                $query->where('name', 'like', '%' . $projectKey . '%')
+                    ->orWhere('code', 'like', '%' . $projectKey . '%');
+            })
+            ->when($status, function ($query) use ($status) {
+                $query->where('marketing_stage', $status)
+                    ->orWhere('tss_stage', $status);
+            })
+            ->latestFirst()
+            ->paginate(config('services.pagination.limit'));
+        return ProjectListingResource::collection($projects)
+            ->additional([
+                'success' => true,
+                'message' => 'Successfully fetched.',
+            ]);
+    }
+
+    public function updateCashFlow(UpdateCashFlowRequest $request)
+    {
+        $validated = $request->validated();
+        $project = Project::findOrFail($validated['project_id']);
+        $project->cash_flow = $validated['cash_flow'];
+        $project->save();
+        return response()->json([
+            'success' => true,
+            'message' => 'Cash flow updated successfully.',
+            'data' => $project,
+        ], 200);
     }
 }
