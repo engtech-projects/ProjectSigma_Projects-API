@@ -32,9 +32,9 @@ class StoreProjectRequest extends FormRequest
             'noa_date' => 'nullable|date|date_format:Y-m-d',
             'ntp_date' => 'nullable|date|date_format:Y-m-d',
             'license' => 'nullable|string',
-            'designation' => 'nullable|string',
+            'designation' => 'nullable|string|max:255',
             'nature_of_work' => 'nullable|string',
-            'position' => 'required',
+            'position' => 'required|string',
         ];
     }
 }

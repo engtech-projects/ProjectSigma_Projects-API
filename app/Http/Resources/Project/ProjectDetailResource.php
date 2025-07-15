@@ -4,7 +4,7 @@ namespace App\Http\Resources\Project;
 
 use App\Enums\TssStage;
 use App\Http\Resources\Approvals\ApprovalAttributeCollection;
-use App\Models\Attachment;
+use App\Http\Resources\AttachmentResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProjectDetailResource extends JsonResource
@@ -36,7 +36,7 @@ class ProjectDetailResource extends JsonResource
             'cash_flow' => $this->cash_flow ? $this->cash_flow : null,
             'approvals' => new ApprovalAttributeCollection(['approvals' => $this?->approvals]),
             'phases' => PhaseResource::collection($this->whenLoaded('phases')),
-            'attachments' => Attachment::collection($this->whenLoaded('attachments')),
+            'attachments' => AttachmentResource::collection($this->whenLoaded('attachments')),
         ];
     }
 }
