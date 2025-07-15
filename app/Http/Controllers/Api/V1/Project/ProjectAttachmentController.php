@@ -10,7 +10,6 @@ use App\Traits\Upload;
 use Cache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 
 class ProjectAttachmentController extends Controller
