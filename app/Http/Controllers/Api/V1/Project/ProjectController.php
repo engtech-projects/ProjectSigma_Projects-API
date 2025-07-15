@@ -152,10 +152,9 @@ class ProjectController extends Controller
             ]);
     }
 
-    public function updateCashFlow(UpdateCashFlowRequest $request)
+    public function updateCashFlow(UpdateCashFlowRequest $request, Project $project)
     {
         $validated = $request->validated();
-        $project = Project::findOrFail($validated['project_id']);
         $project->cash_flow = $validated['cash_flow'];
         $project->save();
         return response()->json([
