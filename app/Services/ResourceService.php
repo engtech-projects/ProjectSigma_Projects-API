@@ -39,7 +39,7 @@ class ResourceService
     {
         return DB::transaction(function () use ($request) {
             if (isset($request['unit_count'])) {
-                $request['total_cost'] = ($request['unit_cost'] * $request['unit_count']) * $request['unit_count'];
+                $request['total_cost'] = ($request['quantity'] * $request['unit_cost']) * $request['unit_count'];
             } else {
                 $request['total_cost'] = $request['quantity'] * $request['unit_cost'];
             }
@@ -59,7 +59,7 @@ class ResourceService
         return DB::transaction(function () use ($request, $id) {
             $data = ResourceItem::findOrFail($id);
             if (isset($request['unit_count'])) {
-                $request['total_cost'] = ($request['unit_cost'] * $request['unit_count']) * $request['unit_count'];
+                $request['total_cost'] = ($request['quantity'] * $request['unit_cost']) * $request['unit_count'];
             } else {
                 $request['total_cost'] = $request['quantity'] * $request['unit_cost'];
             }
