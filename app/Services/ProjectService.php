@@ -94,7 +94,7 @@ class ProjectService
         return ProjectCollection::collection($query->paginate(config('services.pagination.limit')))->response()->getData(true);
     }
 
-    public function update(Project $project, array $attr)
+    public function updateAt(Project $project, array $attr)
     {
         return DB::transaction(function () use ($project, $attr) {
             $project->fill($attr)->save();
