@@ -10,7 +10,6 @@ use App\Traits\Upload;
 use Cache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 
 class ProjectAttachmentController extends Controller
@@ -42,19 +41,11 @@ class ProjectAttachmentController extends Controller
         return response()->json($project->attachments()->get(), 201);
     }
 
-    /**
-     * Handles the upload of multiple attachment files to a temporary directory.
-     *
-     * Validates that the request contains an array of files under 'attachment_files', stores each file in the 'temp/' directory with a randomly generated encrypted filename, and returns a JSON response with the list of encrypted filenames.
-     *
-     * @return JsonResponse JSON response containing success status, message, and the list of encrypted filenames.
-     */
-
     public function generateUrl(Request $request, Project $project)
     {
         $attachments = $project->attachments()->get();
 
-        if (empty($attachments) || count($attachments) === 0) {
+        if ($attachments->isEmpty()) {
             return response()->json([
                 'success' => false,
                 'message' => 'No attachments found',

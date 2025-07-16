@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Spatie\Activitylog\LogOptions;
@@ -201,8 +200,8 @@ class Project extends Model
     public function scopeSearch(Builder $query, $keyword)
     {
         return $query->where(function ($query) use ($keyword) {
-            $query->where(DB::raw('LOWER(code)'), 'LIKE', '%' . strtolower($keyword) . '%')
-                ->orWhere(DB::raw('LOWER(name)'), 'LIKE', '%' . strtolower($keyword) . '%');
+            $query->where('code', 'LIKE', '%' . $keyword . '%')
+                ->orWhere('name', 'LIKE', '%' . $keyword . '%');
         });
     }
 
@@ -212,8 +211,10 @@ class Project extends Model
             if ($stage === 'on-hold') {
                 $q->where('status', 'on-hold');
             } else {
-                $q->where('marketing_stage', $stage)
-                    ->orWhere('tss_stage', $stage);
+                $q->where(function ($query) use ($stage) {
+                    $query->where('marketing_stage', $stage)
+                        ->orWhere('tss_stage', $stage);
+                });
             }
         });
     }
@@ -228,13 +229,7 @@ class Project extends Model
 
     public function scopeAwarded(Builder $query)
     {
-        return $query->where(function ($q) {
-            $q->where('tss_stage', '!=', TssStage::PENDING->value)
-                ->where('tss_stage', ProjectStage::AWARDED->value);
-        })->orWhere(function ($q) {
-            $q->where('tss_stage', TssStage::PENDING->value)
-                ->where('marketing_stage', ProjectStage::AWARDED->value);
-        });
+        return $query->where('marketing_stage', ProjectStage::AWARDED->value);
     }
 
     public function scopeLatestFirst($query)

@@ -14,6 +14,15 @@ class UpdateCashFlowRequest extends FormRequest
         return true;
     }
 
+    public function prepareForValidation()
+    {
+        if (gettype($this->cash_flow) == "string") {
+            $this->merge([
+                "cash_flow" => json_decode($this->cash_flow, true)
+            ]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -22,8 +31,27 @@ class UpdateCashFlowRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'project_id' => 'required|exists:projects,id',
-            'cash_flow' => 'required|array'
+            'cash_flow' => 'required|array',
+            'cash_flow.q1.accomplishment' => 'nullable|numeric',
+            'cash_flow.q1.cash_flow' => 'nullable|numeric',
+            'cash_flow.q1.cumulative_accomplishment' => 'nullable|numeric',
+            'cash_flow.q1.cumulative_cash_flow' => 'nullable|numeric',
+            'cash_flow.q2.accomplishment' => 'nullable|numeric',
+            'cash_flow.q2.cash_flow' => 'nullable|numeric',
+            'cash_flow.q2.cumulative_accomplishment' => 'nullable|numeric',
+            'cash_flow.q2.cumulative_cash_flow' => 'nullable|numeric',
+            'cash_flow.q3.accomplishment' => 'nullable|numeric',
+            'cash_flow.q3.cash_flow' => 'nullable|numeric',
+            'cash_flow.q3.cumulative_accomplishment' => 'nullable|numeric',
+            'cash_flow.q3.cumulative_cash_flow' => 'nullable|numeric',
+            'cash_flow.q4.accomplishment' => 'nullable|numeric',
+            'cash_flow.q4.cash_flow' => 'nullable|numeric',
+            'cash_flow.q4.cumulative_accomplishment' => 'nullable|numeric',
+            'cash_flow.q4.cumulative_cash_flow' => 'nullable|numeric',
+            'cash_flow.wtax.accomplishment' => 'nullable|numeric',
+            'cash_flow.wtax.cash_flow' => 'nullable|numeric',
+            'cash_flow.wtax.cumulative_accomplishment' => 'nullable|numeric',
+            'cash_flow.wtax.cumulative_cash_flow' => 'nullable|numeric',
         ];
     }
 }

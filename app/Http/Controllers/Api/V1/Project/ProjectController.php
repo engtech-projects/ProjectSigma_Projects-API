@@ -74,7 +74,7 @@ class ProjectController extends Controller
      */
     public function show(Project $resource)
     {
-        $data = $resource->load('phases.tasks');
+        $data = $resource->load('phases.tasks', 'attachments');
         return new JsonResponse([
             'success' => true,
             'message' => "Successfully fetched.",
@@ -152,10 +152,9 @@ class ProjectController extends Controller
             ]);
     }
 
-    public function updateCashFlow(UpdateCashFlowRequest $request)
+    public function updateCashFlow(UpdateCashFlowRequest $request, Project $project)
     {
         $validated = $request->validated();
-        $project = Project::findOrFail($validated['project_id']);
         $project->cash_flow = $validated['cash_flow'];
         $project->save();
         return response()->json([
