@@ -133,21 +133,11 @@ class ProjectController extends Controller
     public function filterProjects(RequestsFilterProjectRequest $request)
     {
         $validated = $request->validated();
-        $projectKey = $validated['project_key'];
+        $projectKey = $validated['project_key'] ?? null;
         $status = $validated['stage_status'] ?? null;
         $projects = Project::query()
-            ->when($status, function ($query) use ($status){
-                $query->where(function ($q) use ($status){
-                    $q->where('marketing_stage', 'awarded')
-                        ->orWhere('tss_stage', $status);
-                });
-            })
-            ->when($projectKey, function ($query) use ($projectKey){
-                $query->where(function($q) use ($projectKey) {
-                    $q->where('name', 'like', "%{$projectKey}%")
-                        ->orWhere('code', 'like', "%{$projectKey}%");
-                });
-            })
+            ->when($status, fn($query) => $query->awarded()->withTssStage($status))
+            ->when($projectKey, fn($query) => $query->projectKey($projectKey))
             ->latestFirst()
             ->paginate(config('services.pagination.limit'));
         return ProjectListingResource::collection($projects)
