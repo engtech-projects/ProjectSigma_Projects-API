@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Project;
 
+use App\Enums\MarketingStage;
 use App\Enums\ProjectStage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterProjectRequest as RequestsFilterProjectRequest;
@@ -137,7 +138,7 @@ class ProjectController extends Controller
         $projects = Project::query()
             ->when($status, function ($query) use ($status){
                 $query->where(function ($q) use ($status){
-                    $q->where('awarded', $status)
+                    $q->where('marketing_stage', 'awarded')
                         ->orWhere('tss_stage', $status);
                 });
             })
