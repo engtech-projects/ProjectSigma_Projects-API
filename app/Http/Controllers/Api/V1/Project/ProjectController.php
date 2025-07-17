@@ -137,7 +137,7 @@ class ProjectController extends Controller
         $projects = Project::query()
             ->when($status, function ($query) use ($status){
                 $query->where(function ($q) use ($status){
-                    $q->where('marketing_stage', $status)
+                    $q->where('awarded', $status)
                         ->orWhere('tss_stage', $status);
                 });
             })
