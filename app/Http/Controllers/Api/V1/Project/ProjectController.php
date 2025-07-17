@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Project;
 
+use App\Enums\MarketingStage;
 use App\Enums\ProjectStage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterProjectRequest as RequestsFilterProjectRequest;
@@ -132,23 +133,17 @@ class ProjectController extends Controller
     public function filterProjects(RequestsFilterProjectRequest $request)
     {
         $validated = $request->validated();
-        $projectKey = $validated['project_key'];
+        $projectKey = $validated['project_key'] ?? null;
         $status = $validated['stage_status'] ?? null;
         $projects = Project::query()
-            ->where(function ($query) use ($projectKey) {
-                $query->where('name', 'like', '%' . $projectKey . '%')
-                    ->orWhere('code', 'like', '%' . $projectKey . '%');
-            })
-            ->when($status, function ($query) use ($status) {
-                $query->where('marketing_stage', $status)
-                    ->orWhere('tss_stage', $status);
-            })
+            ->when($status, fn($query) => $query->awarded()->withTssStage($status))
+            ->when($projectKey, fn($query) => $query->projectKey($projectKey))
             ->latestFirst()
             ->paginate(config('services.pagination.limit'));
         return ProjectListingResource::collection($projects)
             ->additional([
                 'success' => true,
-                'message' => 'Successfully fetched.',
+                'message' => 'Successfully fetched.'
             ]);
     }
 
