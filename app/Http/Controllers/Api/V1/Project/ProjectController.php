@@ -135,20 +135,24 @@ class ProjectController extends Controller
         $projectKey = $validated['project_key'];
         $status = $validated['stage_status'] ?? null;
         $projects = Project::query()
-            ->where(function ($query) use ($projectKey) {
-                $query->where('name', 'like', '%' . $projectKey . '%')
-                    ->orWhere('code', 'like', '%' . $projectKey . '%');
+            ->when($status, function ($query) use ($status){
+                $query->where(function ($q) use ($status){
+                    $q->where('marketing_stage', $status)
+                        ->orWhere('tss_stage', $status);
+                });
             })
-            ->when($status, function ($query) use ($status) {
-                $query->where('marketing_stage', $status)
-                    ->orWhere('tss_stage', $status);
+            ->when($projectKey, function ($query) use ($projectKey){
+                $query->where(function($q) use ($projectKey) {
+                    $q->where('name', 'like', "%{$projectKey}%")
+                        ->orWhere('code', 'like', "%{$projectKey}%");
+                });
             })
             ->latestFirst()
             ->paginate(config('services.pagination.limit'));
         return ProjectListingResource::collection($projects)
             ->additional([
                 'success' => true,
-                'message' => 'Successfully fetched.',
+                'message' => 'Successfully fetched.'
             ]);
     }
 
