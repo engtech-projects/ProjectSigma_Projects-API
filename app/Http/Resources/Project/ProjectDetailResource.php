@@ -5,6 +5,7 @@ namespace App\Http\Resources\Project;
 use App\Enums\TssStage;
 use App\Http\Resources\Approvals\ApprovalAttributeCollection;
 use App\Http\Resources\AttachmentResource;
+use App\Http\Resources\BOQPartResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProjectDetailResource extends JsonResource
@@ -35,7 +36,7 @@ class ProjectDetailResource extends JsonResource
             'created_at' => $this->created_at_formatted,
             'cash_flow' => $this->cash_flow ? $this->cash_flow : null,
             'approvals' => new ApprovalAttributeCollection(['approvals' => $this?->approvals]),
-            'phases' => PhaseResource::collection($this->whenLoaded('phases')),
+            'phases' => BOQPartResource::collection($this->whenLoaded('phases')),
             'attachments' => AttachmentResource::collection($this->whenLoaded('attachments')),
         ];
     }
