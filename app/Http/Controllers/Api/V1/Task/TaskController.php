@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Task;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Task\StoreTaskRequest;
+use App\Http\Requests\Task\UpdateTaskRequest;
 use App\Http\Resources\Task\TaskCollection;
 use App\Models\Phase;
 use App\Models\Task;
@@ -63,9 +64,15 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateTaskRequest $request, Task $task)
     {
-        //
+        $validated = $request->validated();
+        $task->update($validated);
+
+        return response()->json([
+            'message' => 'Project item has been updated',
+            'data' => $task,
+        ], 200);
     }
 
     /**

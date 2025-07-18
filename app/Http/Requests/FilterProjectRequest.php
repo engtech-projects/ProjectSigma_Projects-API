@@ -25,12 +25,12 @@ class FilterProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'project_key' => ['required', 'string'],
+            'project_key' => ['nullable', 'string'],
             'stage_status' => ['nullable', 'string', Rule::in(
                 array_unique(
                     array_merge(
-                        array_map(fn ($stage) => $stage->value, ProjectStage::cases()),
-                        array_map(fn ($stage) => $stage->value, TssStage::cases())
+                        array_map(fn($stage) => $stage->value, ProjectStage::cases()),
+                        array_map(fn($stage) => $stage->value, TssStage::cases())
                     )
                 )
             )],

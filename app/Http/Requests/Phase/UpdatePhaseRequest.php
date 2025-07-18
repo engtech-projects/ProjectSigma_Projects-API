@@ -22,10 +22,8 @@ class UpdatePhaseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'project_id' => 'required|exists:projects,id',
             'name' => 'required|string',
             'description' => 'required|string',
-            'total_cost' => 'required|regex:/^\d+(\.\d{1,2})?$/',
         ];
     }
 }

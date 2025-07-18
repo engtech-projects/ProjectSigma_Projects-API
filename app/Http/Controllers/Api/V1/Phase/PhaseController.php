@@ -54,7 +54,6 @@ class PhaseController extends Controller
      */
     public function update(UpdatePhaseRequest $request, Phase $phase)
     {
-
         $validated = $request->validated();
         $phase->update($validated);
 

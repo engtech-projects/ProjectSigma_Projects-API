@@ -32,9 +32,8 @@ class AuthTokenGuard implements Guard
 
         $token = $this->request->bearerToken();
 
-        $response = Http::acceptJson()->withToken($token)->get($this->hrmsApiUrl.'/api/session');
+        $response = Http::acceptJson()->withToken($token)->get($this->hrmsApiUrl . '/api/session');
 
-        Log::info($response);
         if (! $response->successful()) {
             return null;
         }
@@ -54,7 +53,5 @@ class AuthTokenGuard implements Guard
         return $this->user;
     }
 
-    public function validate(array $credentials = [])
-    {
-    }
+    public function validate(array $credentials = []) {}
 }
