@@ -7,7 +7,6 @@ use Illuminate\Auth\GuardHelpers;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class AuthTokenGuard implements Guard
 {
@@ -53,5 +52,7 @@ class AuthTokenGuard implements Guard
         return $this->user;
     }
 
-    public function validate(array $credentials = []) {}
+    public function validate(array $credentials = [])
+    {
+    }
 }

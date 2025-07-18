@@ -29,8 +29,8 @@ class FilterProjectRequest extends FormRequest
             'stage_status' => ['nullable', 'string', Rule::in(
                 array_unique(
                     array_merge(
-                        array_map(fn($stage) => $stage->value, ProjectStage::cases()),
-                        array_map(fn($stage) => $stage->value, TssStage::cases())
+                        array_map(fn ($stage) => $stage->value, ProjectStage::cases()),
+                        array_map(fn ($stage) => $stage->value, TssStage::cases())
                     )
                 )
             )],
