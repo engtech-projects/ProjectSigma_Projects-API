@@ -140,7 +140,6 @@ class ProjectController extends Controller
             ->latestFirst()
             ->paginate(config('services.pagination.limit'));
 
-
         return ProjectListingResource::collection($projects)
             ->additional([
                 'success' => true,
