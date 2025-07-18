@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\V1\Phase;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterPhraseRequest;
-use App\Http\Requests\Phase\StorePhaseRequest;
+use App\Http\Requests\Phase\StoreBOQPartRequest;
 use App\Http\Requests\Phase\UpdatePhaseRequest;
 use App\Models\BOQPart;
 use App\Models\Project;
@@ -29,7 +29,7 @@ class BOQPartController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePhaseRequest $request, ProjectService $projectService)
+    public function store(StoreBOQPartRequest $request, ProjectService $projectService)
     {
         $validated = $request->validated();
         $project = Project::find($validated['project_id']);
