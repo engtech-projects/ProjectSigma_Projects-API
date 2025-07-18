@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Phase;
 use Illuminate\Support\Facades\DB;
 
-class PhaseService
+class BOQPartService
 {
     public static function withPagination($request)
     {
