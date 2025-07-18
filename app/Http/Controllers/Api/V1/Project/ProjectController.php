@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\V1\Project;
 
-use App\Enums\MarketingStage;
 use App\Enums\ProjectStage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterProjectRequest as RequestsFilterProjectRequest;

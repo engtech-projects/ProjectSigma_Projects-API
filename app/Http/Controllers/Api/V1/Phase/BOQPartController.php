@@ -54,7 +54,6 @@ class BOQPartController extends Controller
      */
     public function update(UpdatePhaseRequest $request, BOQPart $phase)
     {
-
         $validated = $request->validated();
         $phase->update($validated);
 

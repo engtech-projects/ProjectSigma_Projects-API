@@ -4,7 +4,7 @@ namespace App\Http\Resources\Project;
 
 use App\Enums\TssStage;
 use App\Http\Resources\Approvals\ApprovalAttributeCollection;
-use App\Http\Resources\Phase\BOQPartCollection;
+use App\Http\Resources\Phase\BoqPartCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProjectListingResource extends JsonResource
@@ -13,18 +13,14 @@ class ProjectListingResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'parent_project_id' => $this->parent_project_id,
-            'contract_id' => $this->contract_id,
-            'code' => $this->code,
             'name' => $this->name,
             'location' => $this->location,
-            'nature_of_work' => $this->nature_of_work,
             'amount' => $this->amount,
-            'contract_date' => $this->contract_date,
-            'duration' => $this->duration,
-            'noa_date' => $this->noa_date,
-            'ntp_date' => $this->ntp_date,
-            'license' => $this->license,
+            'code' => $this->code,
+            'contract_id' => $this->contract_id,
+            'created_by' => $this->created_by,
+            'created_at' => $this->created_at_formatted,
+            'updated_at' => $this->updated_at_formatted,
             'stage' => $this->tss_stage === TssStage::PENDING->value
                 ? $this->tss_stage
                 : $this->marketing_stage,
