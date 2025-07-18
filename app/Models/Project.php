@@ -232,9 +232,22 @@ class Project extends Model
         return $query->where('marketing_stage', ProjectStage::AWARDED->value);
     }
 
+    public function scopeWithTssStage($query, $status)
+    {
+        return $query->where('tss_stage', $status);
+    }
+
+    public function scopeProjectKey($query, $key)
+    {
+        return $query->where(function($q) use ($key){
+            $q->where('name', 'like', "%{$key}%")
+                ->orWhere('code', 'like', "{$key}");
+        });
+    }
+
     public function scopeLatestFirst($query)
     {
-        return $query->orderBy('created_at', 'desc');
+        return $query->orderBy('updated_at', 'desc');
     }
 
     public function getSummaryOfBidAttribute()
