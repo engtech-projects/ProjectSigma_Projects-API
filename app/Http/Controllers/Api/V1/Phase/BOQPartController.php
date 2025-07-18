@@ -11,7 +11,7 @@ use App\Models\Project;
 use App\Services\BOQPartService;
 use App\Services\ProjectService;
 
-class PhaseController extends Controller
+class BOQPartController extends Controller
 {
     /**
      * Display a listing of the resource.

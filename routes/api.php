@@ -9,7 +9,7 @@ use App\Http\Controllers\Api\V1\Accessibility\PermissionController;
 use App\Http\Controllers\Api\V1\Accessibility\RoleController;
 use App\Http\Controllers\Api\V1\Assignment\ProjectAssignmentController;
 use App\Http\Controllers\Api\V1\Logs\LogController;
-use App\Http\Controllers\Api\V1\Phase\PhaseController;
+use App\Http\Controllers\Api\V1\Phase\BOQPartController;
 use App\Http\Controllers\Api\V1\Position\PositionController;
 use App\Http\Controllers\Api\V1\Project\ProjectAttachmentController;
 use App\Http\Controllers\Api\V1\Project\ProjectController;
@@ -89,7 +89,7 @@ Route::middleware('auth:api')->group(function () {
     });
 
     // ────── Phases, Tasks, Resources ──────
-    Route::resource('phases', PhaseController::class);
+    Route::resource('phases', BOQPartController::class);
     Route::resource('tasks', TaskController::class);
     Route::resource('resource-items', ResourceItemController::class);
 
