@@ -6,7 +6,7 @@ use App\Http\Resources\Task\TaskCollection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class BOQPartCollection extends JsonResource
+class BoqPartCollection extends JsonResource
 {
     public static $wrap = 'phases';
 

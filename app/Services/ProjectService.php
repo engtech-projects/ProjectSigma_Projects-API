@@ -7,7 +7,7 @@ use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Enums\TssStage;
 use App\Http\Resources\Project\ProjectCollection;
-use App\Models\BOQPart;
+use App\Models\BoqPart;
 use App\Models\Project;
 use App\Models\ResourceItem;
 use App\Models\Task;
@@ -219,7 +219,7 @@ class ProjectService
                     'description' => $phase->description,
                     'total_cost' => $phase->total_cost,
                 ];
-                $newPhase = BOQPart::create($newPhaseData);
+                $newPhase = BoqPart::create($newPhaseData);
 
                 foreach ($phase->tasks as $task) {
                     $newTaskData = [

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Task\StoreTaskRequest;
 use App\Http\Requests\Task\UpdateTaskRequest;
 use App\Http\Resources\Task\TaskCollection;
-use App\Models\BOQPart;
+use App\Models\BoqPart;
 use App\Models\Task;
 use App\Services\TaskService;
 use Illuminate\Http\Request;

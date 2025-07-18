@@ -106,7 +106,7 @@ class Project extends Model
 
     public function phases(): HasMany
     {
-        return $this->hasMany(BOQPart::class);
+        return $this->hasMany(BoqPart::class);
     }
 
     public function attachments(): HasMany

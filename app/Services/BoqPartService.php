@@ -2,14 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\BOQPart;
+use App\Models\BoqPart;
 use Illuminate\Support\Facades\DB;
 
 class BoqPartService
 {
     public static function withPagination($request)
     {
-        $query = BOQPart::query();
+        $query = BoqPart::query();
         $query = $query->when(isset($request['key']), function ($query) use ($request) {
             return $query->where('name', 'LIKE', "%{$request['key']}%");
         });
@@ -23,7 +23,7 @@ class BoqPartService
 
     public static function withProjects($request)
     {
-        $query = BOQPart::query();
+        $query = BoqPart::query();
         $query = $query->when(isset($request['key']), function ($query) use ($request) {
             return $query->where('name', 'LIKE', "%{$request['key']}%");
         });
@@ -36,13 +36,13 @@ class BoqPartService
 
     public static function all()
     {
-        return BOQPart::all();
+        return BoqPart::all();
     }
 
     public static function create($request)
     {
         return DB::transaction(function () use ($request) {
-            $data = BOQPart::create($request);
+            $data = BoqPart::create($request);
 
             return $data;
         });
@@ -51,7 +51,7 @@ class BoqPartService
     public static function update($request, $id)
     {
         return DB::transaction(function () use ($request, $id) {
-            $data = BOQPart::findOrFail($id);
+            $data = BoqPart::findOrFail($id);
             $data->fill($request)->save();
 
             return $data;
@@ -61,7 +61,7 @@ class BoqPartService
     public static function delete($id)
     {
         return DB::transaction(function () use ($id) {
-            $data = BOQPart::findOrFail($id);
+            $data = BoqPart::findOrFail($id);
             $data->delete();
 
             return $data;
@@ -70,6 +70,6 @@ class BoqPartService
 
     public static function show($id)
     {
-        return BOQPart::findOrFail($id);
+        return BoqPart::findOrFail($id);
     }
 }

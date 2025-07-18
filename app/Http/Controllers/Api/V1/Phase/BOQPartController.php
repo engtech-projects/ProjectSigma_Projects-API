@@ -4,14 +4,14 @@ namespace App\Http\Controllers\Api\V1\Phase;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterPhraseRequest;
-use App\Http\Requests\Phase\StoreBOQPartRequest;
+use App\Http\Requests\Phase\StoreBoqPartRequest;
 use App\Http\Requests\Phase\UpdatePhaseRequest;
-use App\Models\BOQPart;
+use App\Models\BoqPart;
 use App\Models\Project;
 use App\Services\BoqPartService;
 use App\Services\ProjectService;
 
-class BOQPartController extends Controller
+class BoqPartController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -29,7 +29,7 @@ class BOQPartController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreBOQPartRequest $request, ProjectService $projectService)
+    public function store(StoreBoqPartRequest $request, ProjectService $projectService)
     {
         $validated = $request->validated();
         $project = Project::find($validated['project_id']);
@@ -44,7 +44,7 @@ class BOQPartController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(BOQPart $phase)
+    public function show(BoqPart $phase)
     {
         return response()->json($phase->load('tasks'), 200);
     }
@@ -52,7 +52,7 @@ class BOQPartController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePhaseRequest $request, BOQPart $phase)
+    public function update(UpdatePhaseRequest $request, BoqPart $phase)
     {
         $validated = $request->validated();
         $phase->update($validated);
@@ -66,7 +66,7 @@ class BOQPartController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(BOQPart $phase)
+    public function destroy(BoqPart $phase)
     {
         $phase->delete();
 

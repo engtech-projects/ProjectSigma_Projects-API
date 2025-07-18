@@ -37,7 +37,7 @@ class ProjectListingResource extends JsonResource
             'updated_at' => $this->updated_at_formatted,
             'cash_flow' => $this->cash_flow ? $this->cash_flow : null,
             'approvals' => new ApprovalAttributeCollection(['approvals' => $this?->approvals]),
-            'phases' => $this->whenLoaded('phases', fn () => BOQPartCollection::collection($this->phases)),
+            'phases' => $this->whenLoaded('phases', fn () => BoqPartCollection::collection($this->phases)),
         ];
     }
 }
