@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Task;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Task\StoreTaskRequest;
+use App\Http\Requests\Task\UpdateTaskRequest;
 use App\Http\Resources\Task\TaskCollection;
 use App\Models\Phase;
 use App\Models\Task;
@@ -19,10 +20,8 @@ class TaskController extends Controller
     {
         if ($request->has('phase_id')) {
             $phase = Phase::find($request->phase_id);
-
             return response()->json($phase->load('tasks.resources.resourceName'), 200);
         }
-
         return response()->json(Task::all()->load('resources.resourceName'), 200);
     }
 
@@ -32,7 +31,6 @@ class TaskController extends Controller
     public function store(StoreTaskRequest $request)
     {
         $validated = $request->validated();
-
         return response()->json([
             'message' => 'Project tasks added successfully.',
             'data' => TaskService::create($validated),
@@ -45,7 +43,6 @@ class TaskController extends Controller
     public function show(string $id)
     {
         $task = TaskService::show($id);
-
         return response()->json([
             'message' => 'Project tasks fetched successfully.',
             'data' => new TaskCollection($task),
@@ -53,19 +50,16 @@ class TaskController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateTaskRequest $request, Task $task)
     {
-        //
+        $validated = $request->validated();
+        $task->update($validated);
+        return response()->json([
+            'message' => 'Project item has been updated',
+            'data' => $task,
+        ], 200);
     }
 
     /**
@@ -74,7 +68,6 @@ class TaskController extends Controller
     public function destroy(Task $task)
     {
         $task->delete();
-
         return response()->json([
             'message' => 'Project Task has been deleted',
             'data' => $task,

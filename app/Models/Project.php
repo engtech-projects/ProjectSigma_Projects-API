@@ -239,7 +239,7 @@ class Project extends Model
 
     public function scopeProjectKey($query, $key)
     {
-        return $query->where(function($q) use ($key){
+        return $query->where(function ($q) use ($key) {
             $q->where('name', 'like', "%{$key}%")
                 ->orWhere('code', 'like', "{$key}");
         });
