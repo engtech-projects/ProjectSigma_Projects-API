@@ -8,7 +8,7 @@ use App\Http\Requests\Phase\StoreBOQPartRequest;
 use App\Http\Requests\Phase\UpdatePhaseRequest;
 use App\Models\BOQPart;
 use App\Models\Project;
-use App\Services\BOQPartService;
+use App\Services\BoqPartService;
 use App\Services\ProjectService;
 
 class BOQPartController extends Controller
@@ -18,7 +18,7 @@ class BOQPartController extends Controller
      */
     public function index(FilterPhraseRequest $request)
     {
-        $phases = BOQPartService::withPagination($request->validated());
+        $phases = BoqPartService::withPagination($request->validated());
 
         return response()->json([
             'message' => 'Phases retrieved successfully.',
@@ -33,7 +33,7 @@ class BOQPartController extends Controller
     {
         $validated = $request->validated();
         $project = Project::find($validated['project_id']);
-        $result = BOQPartService::create($validated);
+        $result = BoqPartService::create($validated);
 
         return response()->json([
             'message' => 'Project Item added successfully.',
