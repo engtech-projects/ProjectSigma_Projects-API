@@ -4,7 +4,7 @@ namespace App\Http\Requests\Phase;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdatePhaseRequest extends FormRequest
+class UpdateBoqPartRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

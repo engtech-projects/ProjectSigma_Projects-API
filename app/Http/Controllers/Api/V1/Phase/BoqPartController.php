@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\V1\Phase;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterPhraseRequest;
 use App\Http\Requests\Phase\StoreBoqPartRequest;
-use App\Http\Requests\Phase\UpdatePhaseRequest;
+use App\Http\Requests\Phase\UpdateBoqPartRequest;
 use App\Models\BoqPart;
 use App\Models\Project;
 use App\Services\BoqPartService;
@@ -52,7 +52,7 @@ class BoqPartController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePhaseRequest $request, BoqPart $phase)
+    public function update(UpdateBoqPartRequest $request, BoqPart $phase)
     {
         $validated = $request->validated();
         $phase->update($validated);
