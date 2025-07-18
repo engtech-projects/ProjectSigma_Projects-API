@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterPhraseRequest;
 use App\Http\Requests\Phase\StorePhaseRequest;
 use App\Http\Requests\Phase\UpdatePhaseRequest;
-use App\Models\Phase;
+use App\Models\BOQPart;
 use App\Models\Project;
 use App\Services\BOQPartService;
 use App\Services\ProjectService;
@@ -44,7 +44,7 @@ class BOQPartController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Phase $phase)
+    public function show(BOQPart $phase)
     {
         return response()->json($phase->load('tasks'), 200);
     }
@@ -52,7 +52,7 @@ class BOQPartController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePhaseRequest $request, Phase $phase)
+    public function update(UpdatePhaseRequest $request, BOQPart $phase)
     {
 
         $validated = $request->validated();
@@ -67,7 +67,7 @@ class BOQPartController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Phase $phase)
+    public function destroy(BOQPart $phase)
     {
         $phase->delete();
 
