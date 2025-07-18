@@ -50,7 +50,7 @@ class Task extends Model
 
     public function phase(): BelongsTo
     {
-        return $this->belongsTo(BOQPart::class);
+        return $this->belongsTo(BoqPart::class);
     }
 
     public function resources(): HasMany
