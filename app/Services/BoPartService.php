@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\BOQPart;
 use Illuminate\Support\Facades\DB;
 
-class BOQPartService
+class BoqPartService
 {
     public static function withPagination($request)
     {
