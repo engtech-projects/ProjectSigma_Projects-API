@@ -6,7 +6,7 @@ use App\Http\Resources\ResourceItem\ResourceItemCollection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TaskCollection extends JsonResource
+class BoqItemCollection extends JsonResource
 {
     /**
      * Transform the resource collection into an array.

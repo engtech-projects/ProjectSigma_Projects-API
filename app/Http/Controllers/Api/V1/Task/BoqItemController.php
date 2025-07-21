@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\V1\Task;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Task\StoreTaskRequest;
 use App\Http\Requests\Task\UpdateTaskRequest;
-use App\Http\Resources\Task\TaskCollection;
+use App\Http\Resources\Task\BoqItemCollection;
 use App\Models\Phase;
 use App\Models\BoqItem;
 use App\Services\BoqItemService;
@@ -45,7 +45,7 @@ class BoqItemController extends Controller
         $task = BoqItemService::show($id);
         return response()->json([
             'message' => 'Project tasks fetched successfully.',
-            'data' => new TaskCollection($task),
+            'data' => new BoqItemCollection($task),
         ], 200);
     }
 

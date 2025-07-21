@@ -41,6 +41,6 @@ class Phase extends Model
 
     public function tasks(): HasMany
     {
-        return $this->hasMany(Task::class);
+        return $this->hasMany(BoqItem::class, 'phase_id', 'id');
     }
 }
