@@ -5,7 +5,7 @@ namespace App\Http\Resources\Project;
 use App\Http\Resources\Project\BoqItemResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PhaseResource extends JsonResource
+class BoqPartResource extends JsonResource
 {
     public function toArray($request)
     {

@@ -19,7 +19,7 @@ class BoqItemController extends Controller
     public function index(Request $request)
     {
         if ($request->has('phase_id')) {
-            $phase = Phase::find($request->phase_id);
+            $phase = BoqPart::find($request->phase_id);
             return response()->json($phase->load('tasks.resources.resourceName'), 200);
         }
         return response()->json(BoqItem::all()->load('resources.resourceName'), 200);

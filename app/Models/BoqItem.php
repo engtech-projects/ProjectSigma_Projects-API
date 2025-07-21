@@ -50,7 +50,7 @@ class BoqItem extends Model
 
     public function phase(): BelongsTo
     {
-        return $this->belongsTo(Phase::class);
+        return $this->belongsTo(BoqPart::class, 'phase_id', 'id');
     }
 
     public function resources(): HasMany
