@@ -16,7 +16,7 @@ use App\Http\Controllers\Api\V1\Project\ProjectController;
 use App\Http\Controllers\Api\V1\Project\ProjectStatusController;
 use App\Http\Controllers\Api\V1\Project\RevisionController;
 use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
-use App\Http\Controllers\Api\V1\Task\TaskController;
+use App\Http\Controllers\Api\V1\BoqItem\BoqItemController;
 use App\Http\Controllers\APiSyncController;
 use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\EmployeeController;
@@ -90,7 +90,7 @@ Route::middleware('auth:api')->group(function () {
 
     // ────── Phases, Tasks, Resources ──────
     Route::resource('phases', BoqPartController::class);
-    Route::resource('tasks', TaskController::class);
+    Route::resource('tasks', BoqItemController::class);
     Route::resource('resource-items', ResourceItemController::class);
 
     // ────── Revisions ──────

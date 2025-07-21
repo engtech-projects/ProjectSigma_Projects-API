@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Project;
 
+use App\Http\Resources\Project\BoqItemResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class BoqPartResource extends JsonResource
@@ -12,7 +13,7 @@ class BoqPartResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
-            'tasks' => TaskResource::collection($this->whenLoaded('tasks')),
+            'tasks' => BoqItemResource::collection($this->whenLoaded('tasks')),
         ];
     }
 }

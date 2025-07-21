@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Task;
+namespace App\Http\Requests\BoqItem;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateTaskRequest extends FormRequest
+class StoreBoqItemRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,12 +22,12 @@ class UpdateTaskRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'phase_id' => 'required|exists:phases,id',
             'name' => 'required|string',
             'description' => 'required|string',
             'quantity' => 'required|numeric',
             'unit' => 'required|string',
             'unit_price' => 'required|numeric',
-            'amount' => 'required|numeric',
         ];
     }
 }

@@ -41,6 +41,6 @@ class BoqPart extends Model
 
     public function tasks(): HasMany
     {
-        return $this->hasMany(Task::class, 'phase_id', 'id');
+        return $this->hasMany(BoqItem::class, 'phase_id', 'id');
     }
 }

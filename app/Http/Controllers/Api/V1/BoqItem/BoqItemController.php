@@ -1,17 +1,19 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Task;
+namespace App\Http\Controllers\Api\V1\BoqItem;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Task\StoreTaskRequest;
-use App\Http\Requests\Task\UpdateTaskRequest;
-use App\Http\Resources\Task\TaskCollection;
+use App\Http\Requests\BoqItem\StoreBoqItemRequest;
+use App\Http\Requests\BoqItem\UpdateBoqItemRequest;
+use App\Http\Resources\BoqItem\BoqItemCollection;
+use App\Http\Resources\Project\BoqItemResource;
 use App\Models\BoqPart;
-use App\Models\Task;
-use App\Services\TaskService;
+use App\Models\Phase;
+use App\Models\BoqItem;
+use App\Services\BoqItemService;
 use Illuminate\Http\Request;
 
-class TaskController extends Controller
+class BoqItemController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -22,18 +24,18 @@ class TaskController extends Controller
             $phase = BoqPart::find($request->phase_id);
             return response()->json($phase->load('tasks.resources.resourceName'), 200);
         }
-        return response()->json(Task::all()->load('resources.resourceName'), 200);
+        return response()->json(BoqItem::all()->load('resources.resourceName'), 200);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTaskRequest $request)
+    public function store(StoreBoqItemRequest $request)
     {
         $validated = $request->validated();
         return response()->json([
             'message' => 'Project tasks added successfully.',
-            'data' => TaskService::create($validated),
+            'data' => BoqItemService::create($validated),
         ], 201);
     }
 
@@ -42,17 +44,17 @@ class TaskController extends Controller
      */
     public function show(string $id)
     {
-        $task = TaskService::show($id);
+        $task = BoqItemService::show($id);
         return response()->json([
             'message' => 'Project tasks fetched successfully.',
-            'data' => new TaskCollection($task),
+            'data' => new BoqItemResource($task),
         ], 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTaskRequest $request, Task $task)
+    public function update(UpdateBoqItemRequest $request, BoqItem $task)
     {
         $validated = $request->validated();
         $task->update($validated);
@@ -65,7 +67,7 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Task $task)
+    public function destroy(BoqItem $task)
     {
         $task->delete();
         return response()->json([
