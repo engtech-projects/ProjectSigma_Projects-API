@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\Project;
 use App\Models\ResourceItem;
-use App\Models\Task;
+use App\Models\BoqItem;
 use Illuminate\Support\Facades\DB;
 
 class ResourceService
@@ -45,7 +45,7 @@ class ResourceService
             }
 
             $data = ResourceItem::create($request);
-            $task = Task::findOrFail($request['task_id'])->load(['resources', 'phase']);
+            $task = BoqItem::findOrFail($request['task_id'])->load(['resources', 'phase']);
             $task->update([
                 'amount' => $task->resources->sum('total_cost'),
             ]);
@@ -64,7 +64,7 @@ class ResourceService
                 $request['total_cost'] = $request['quantity'] * $request['unit_cost'];
             }
             $data->fill($request)->save();
-            $task = Task::findOrFail($request['task_id'])->load('resources');
+            $task = BoqItem::findOrFail($request['task_id'])->load('resources');
             $task->update([
                 'amount' => $task->resources->sum('total_cost'),
             ]);
@@ -77,7 +77,7 @@ class ResourceService
         return DB::transaction(function () use ($id) {
             $data = ResourceItem::findOrFail($id);
             $data->delete();
-            $task = Task::findOrFail($data->task_id)->load('resources');
+            $task = BoqItem::findOrFail($data->task_id)->load('resources');
             $task->update([
                 'amount' => $task->resources->sum('total_cost'),
             ]);
@@ -94,7 +94,7 @@ class ResourceService
     {
         $project = Project::where('id', $project_id)->first();
         if ($project) {
-            $totalAmount = Task::whereHas('phase', function ($query) use ($project) {
+            $totalAmount = BoqItem::whereHas('phase', function ($query) use ($project) {
                 $query->where('project_id', $project->id);
             })->sum('amount');
 

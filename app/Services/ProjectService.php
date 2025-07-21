@@ -10,7 +10,7 @@ use App\Http\Resources\Project\ProjectCollection;
 use App\Models\BoqPart;
 use App\Models\Project;
 use App\Models\ResourceItem;
-use App\Models\Task;
+use App\Models\BoqItem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -231,7 +231,7 @@ class ProjectService
                         'unit_price' => $task->unit_price,
                         'amount' => $task->amount,
                     ];
-                    $newTask = Task::create($newTaskData);
+                    $newTask = BoqItem::create($newTaskData);
 
                     foreach ($task->resources as $resource) {
                         $newResourceData = [

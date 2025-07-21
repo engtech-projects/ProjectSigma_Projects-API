@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
-class Task extends Model
+class BoqItem extends Model
 {
     use HasFactory;
     use SoftDeletes;
@@ -55,7 +55,7 @@ class Task extends Model
 
     public function resources(): HasMany
     {
-        return $this->hasMany(ResourceItem::class);
+        return $this->hasMany(ResourceItem::class, 'task_id', 'id');
     }
 
     public function getUnitPriceWithQuantityAttribute()
