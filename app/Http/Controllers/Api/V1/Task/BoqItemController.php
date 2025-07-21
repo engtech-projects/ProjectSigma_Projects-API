@@ -11,7 +11,7 @@ use App\Models\Task;
 use App\Services\BoqItemService;
 use Illuminate\Http\Request;
 
-class TaskController extends Controller
+class BoqItemController extends Controller
 {
     /**
      * Display a listing of the resource.
