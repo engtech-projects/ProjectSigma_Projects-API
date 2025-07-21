@@ -4,7 +4,7 @@ namespace App\Http\Requests\Task;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class FilterTaskRequest extends FormRequest
+class FilterBoqItemRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
