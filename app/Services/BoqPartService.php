@@ -9,16 +9,11 @@ class BoqPartService
 {
     public static function withPagination($request)
     {
-        $query = BoqPart::query();
-        $query = $query->when(isset($request['key']), function ($query) use ($request) {
-            return $query->where('name', 'LIKE', "%{$request['key']}%");
-        });
-        $query = $query->when(isset($request['project_id']), function ($query) use ($request) {
-            return $query->where('project_id', $request['project_id']);
-        });
-        $query->with('tasks');
-
-        return $query->paginate(config('services.pagination.limit'));
+        return BoqPart::query()
+            ->when(isset($request['key']), fn($q) => $q->where('name', 'LIKE', "%{$request['key']}%"))
+            ->when(isset($request['project_id']), fn($q) => $q->where('project_id', $request['project_id']))
+            ->with('tasks')
+            ->paginate(config('services.pagination.limit'));
     }
 
     public static function withProjects($request)
