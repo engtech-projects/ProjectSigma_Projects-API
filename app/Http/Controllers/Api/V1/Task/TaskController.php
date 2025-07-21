@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Task\StoreTaskRequest;
 use App\Http\Requests\Task\UpdateTaskRequest;
 use App\Http\Resources\Task\TaskCollection;
-use App\Models\Phase;
+use App\Models\BoqPart;
 use App\Models\Task;
 use App\Services\TaskService;
 use Illuminate\Http\Request;
@@ -19,7 +19,7 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         if ($request->has('phase_id')) {
-            $phase = Phase::find($request->phase_id);
+            $phase = BoqPart::find($request->phase_id);
             return response()->json($phase->load('tasks.resources.resourceName'), 200);
         }
         return response()->json(Task::all()->load('resources.resourceName'), 200);

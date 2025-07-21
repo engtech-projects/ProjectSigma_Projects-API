@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Phase;
+namespace App\Http\Requests\BoqPart;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StorePhaseRequest extends FormRequest
+class FilterBoqPartRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,8 @@ class StorePhaseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'project_id' => 'required|exists:projects,id',
-            'name' => 'required|string',
-            'description' => 'required|string',
+            'key' => 'nullable|string',
+            'project_id' => 'nullable|exists:projects,id',
         ];
     }
 }
