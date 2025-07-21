@@ -2,14 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\Task;
+use App\Models\BoqItem;
 use DB;
 
 class BoqItemService
 {
     protected $task;
 
-    public function __construct(Task $task)
+    public function __construct(BoqItem $task)
     {
         $this->task = $task;
     }
@@ -34,13 +34,13 @@ class BoqItemService
         $attr['amount'] = $attr['quantity'] * $attr['unit_price'];
 
         return DB::transaction(function () use ($attr) {
-            $data = Task::create($attr);
+            $data = BoqItem::create($attr);
 
             return $data;
         });
     }
 
-    public function update(Task $task, array $attr)
+    public function update(BoqItem $task, array $attr)
     {
         return DB::transaction(function () use ($task, $attr) {
             $task->fill($attr)->save();
@@ -51,10 +51,10 @@ class BoqItemService
 
     public static function show($id)
     {
-        return Task::find($id)->load('resources.resourceName');
+        return BoqItem::find($id)->load('resources.resourceName');
     }
 
-    public function delete(Task $task)
+    public function delete(BoqItem $task)
     {
         return DB::transaction(function () use ($task) {
             $task->delete();

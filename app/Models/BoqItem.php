@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
-class Task extends Model
+class BoqItem extends Model
 {
     use HasFactory;
     use SoftDeletes;

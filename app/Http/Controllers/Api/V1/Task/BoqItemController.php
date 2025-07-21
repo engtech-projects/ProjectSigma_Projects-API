@@ -7,7 +7,7 @@ use App\Http\Requests\Task\StoreTaskRequest;
 use App\Http\Requests\Task\UpdateTaskRequest;
 use App\Http\Resources\Task\TaskCollection;
 use App\Models\Phase;
-use App\Models\Task;
+use App\Models\BoqItem;
 use App\Services\BoqItemService;
 use Illuminate\Http\Request;
 
@@ -22,7 +22,7 @@ class BoqItemController extends Controller
             $phase = Phase::find($request->phase_id);
             return response()->json($phase->load('tasks.resources.resourceName'), 200);
         }
-        return response()->json(Task::all()->load('resources.resourceName'), 200);
+        return response()->json(BoqItem::all()->load('resources.resourceName'), 200);
     }
 
     /**
@@ -52,7 +52,7 @@ class BoqItemController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTaskRequest $request, Task $task)
+    public function update(UpdateTaskRequest $request, BoqItem $task)
     {
         $validated = $request->validated();
         $task->update($validated);
@@ -65,7 +65,7 @@ class BoqItemController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Task $task)
+    public function destroy(BoqItem $task)
     {
         $task->delete();
         return response()->json([
