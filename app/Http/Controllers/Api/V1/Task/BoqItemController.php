@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\V1\Task;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Task\StoreTaskRequest;
-use App\Http\Requests\Task\UpdateTaskRequest;
+use App\Http\Requests\Task\UpdateBoqItemRequest;
 use App\Http\Resources\Task\BoqItemCollection;
 use App\Models\Phase;
 use App\Models\BoqItem;
@@ -52,7 +52,7 @@ class BoqItemController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTaskRequest $request, BoqItem $task)
+    public function update(UpdateBoqItemRequest $request, BoqItem $task)
     {
         $validated = $request->validated();
         $task->update($validated);
