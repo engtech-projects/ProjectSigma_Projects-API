@@ -55,7 +55,7 @@ class BoqItem extends Model
 
     public function resources(): HasMany
     {
-        return $this->hasMany(ResourceItem::class);
+        return $this->hasMany(ResourceItem::class, 'task_id', 'id');
     }
 
     public function getUnitPriceWithQuantityAttribute()
