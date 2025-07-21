@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Phase;
+namespace App\Http\Requests\BoqPart;
 
 use Illuminate\Foundation\Http\FormRequest;
 

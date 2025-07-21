@@ -4,7 +4,7 @@ namespace App\Http\Resources\Project;
 
 use App\Enums\TssStage;
 use App\Http\Resources\Approvals\ApprovalAttributeCollection;
-use App\Http\Resources\Phase\BoqPartCollection;
+use App\Http\Resources\BoqPart\BoqPartCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProjectListingResource extends JsonResource

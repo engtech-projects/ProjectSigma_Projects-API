@@ -9,7 +9,7 @@ use App\Http\Controllers\Api\V1\Accessibility\PermissionController;
 use App\Http\Controllers\Api\V1\Accessibility\RoleController;
 use App\Http\Controllers\Api\V1\Assignment\ProjectAssignmentController;
 use App\Http\Controllers\Api\V1\Logs\LogController;
-use App\Http\Controllers\Api\V1\Phase\BoqPartController;
+use App\Http\Controllers\Api\V1\BoqPart\BoqPartController;
 use App\Http\Controllers\Api\V1\Position\PositionController;
 use App\Http\Controllers\Api\V1\Project\ProjectAttachmentController;
 use App\Http\Controllers\Api\V1\Project\ProjectController;

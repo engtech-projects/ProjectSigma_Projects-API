@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Phase;
+namespace App\Http\Controllers\Api\V1\BoqPart;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterPhraseRequest;
-use App\Http\Requests\Phase\StoreBoqPartRequest;
-use App\Http\Requests\Phase\UpdateBoqPartRequest;
+use App\Http\Requests\BoqPart\StoreBoqPartRequest;
+use App\Http\Requests\BoqPart\UpdateBoqPartRequest;
 use App\Models\BoqPart;
 use App\Models\Project;
 use App\Services\BoqPartService;

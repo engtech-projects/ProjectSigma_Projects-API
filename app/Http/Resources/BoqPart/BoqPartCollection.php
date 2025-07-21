@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\Phase;
+namespace App\Http\Resources\BoqPart;
 
 use App\Http\Resources\Task\TaskCollection;
 use Illuminate\Http\Request;
