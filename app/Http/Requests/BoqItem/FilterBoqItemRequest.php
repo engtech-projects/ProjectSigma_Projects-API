@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Task;
+namespace App\Http\Requests\BoqItem;
 
 use Illuminate\Foundation\Http\FormRequest;
 

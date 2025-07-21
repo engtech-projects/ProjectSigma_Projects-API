@@ -16,7 +16,7 @@ use App\Http\Controllers\Api\V1\Project\ProjectController;
 use App\Http\Controllers\Api\V1\Project\ProjectStatusController;
 use App\Http\Controllers\Api\V1\Project\RevisionController;
 use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
-use App\Http\Controllers\Api\V1\Task\BoqItemController;
+use App\Http\Controllers\Api\V1\BoqItem\BoqItemController;
 use App\Http\Controllers\APiSyncController;
 use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\EmployeeController;

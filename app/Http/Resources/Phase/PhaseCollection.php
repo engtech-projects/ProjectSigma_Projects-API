@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Phase;
 
-use App\Http\Resources\Task\BoqItemCollection;
+use App\Http\Resources\BoqItem\BoqItemCollection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

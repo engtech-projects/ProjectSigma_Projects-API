@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\Task;
+namespace App\Http\Resources\BoqItem;
 
 use App\Http\Resources\ResourceItem\ResourceItemCollection;
 use Illuminate\Http\Request;

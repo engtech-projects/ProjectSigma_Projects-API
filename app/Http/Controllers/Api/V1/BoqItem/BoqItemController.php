@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Task;
+namespace App\Http\Controllers\Api\V1\BoqItem;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Task\StoreTaskRequest;
-use App\Http\Requests\Task\UpdateBoqItemRequest;
-use App\Http\Resources\Task\BoqItemCollection;
+use App\Http\Requests\BoqItem\StoreBoqItemRequest;
+use App\Http\Requests\BoqItem\UpdateBoqItemRequest;
+use App\Http\Resources\BoqItem\BoqItemCollection;
 use App\Models\Phase;
 use App\Models\BoqItem;
 use App\Services\BoqItemService;
@@ -28,7 +28,7 @@ class BoqItemController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTaskRequest $request)
+    public function store(StoreBoqItemRequest $request)
     {
         $validated = $request->validated();
         return response()->json([
