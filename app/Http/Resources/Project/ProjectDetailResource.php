@@ -37,6 +37,7 @@ class ProjectDetailResource extends JsonResource
             'approvals' => new ApprovalAttributeCollection(['approvals' => $this?->approvals]),
             'phases' => BoqPartResource::collection($this->whenLoaded('phases')),
             'attachments' => AttachmentResource::collection($this->whenLoaded('attachments')),
+            'total_cost' => $this->phases->flatMap->tasks->sum('amount')
         ];
     }
 }
