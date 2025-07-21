@@ -5,7 +5,6 @@ namespace App\Http\Resources\Project;
 use App\Enums\TssStage;
 use App\Http\Resources\Approvals\ApprovalAttributeCollection;
 use App\Http\Resources\AttachmentResource;
-use App\Http\Resources\Project\BoqPartResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProjectDetailResource extends JsonResource
