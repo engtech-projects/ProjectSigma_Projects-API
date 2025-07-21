@@ -25,19 +25,6 @@ class ProjectListingResource extends JsonResource
                 ? $this->tss_stage
                 : $this->marketing_stage,
             'status' => $this->status,
-            'is_original' => $this->is_original,
-            'version' => $this->version,
-            'summary_of_rates' => $this->summary_of_rates,
-            'summary_of_bid' => $this->summary_of_bid,
-            'project_identifier' => $this->project_identifier,
-            'implementing_office' => $this->implementing_office,
-            'current_revision_id' => $this->current_revision_id,
-            'created_by' => $this->created_by,
-            'created_at' => $this->created_at_formatted,
-            'updated_at' => $this->updated_at_formatted,
-            'cash_flow' => $this->cash_flow ? $this->cash_flow : null,
-            'approvals' => new ApprovalAttributeCollection(['approvals' => $this?->approvals]),
-            'phases' => $this->whenLoaded('phases', fn () => BoqPartCollection::collection($this->phases)),
         ];
     }
 }
