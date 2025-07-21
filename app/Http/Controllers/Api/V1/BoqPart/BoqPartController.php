@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterPhraseRequest;
 use App\Http\Requests\BoqPart\StoreBoqPartRequest;
 use App\Http\Requests\BoqPart\UpdateBoqPartRequest;
+use App\Http\Resources\Project\BoqPartResource;
 use App\Models\BoqPart;
 use App\Models\Project;
 use App\Services\BoqPartService;
@@ -22,7 +23,7 @@ class BoqPartController extends Controller
 
         return response()->json([
             'message' => 'Phases retrieved successfully.',
-            'data' => $phases,
+            'data' => BoqPartResource::collection($phases),
         ], 200);
     }
 
