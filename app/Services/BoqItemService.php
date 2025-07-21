@@ -51,7 +51,7 @@ class BoqItemService
 
     public static function show($id)
     {
-        return BoqItem::find($id)->load('resources.resourceName');
+        return BoqItem::findOrFail($id)->load('resources');
     }
 
     public function delete(BoqItem $task)
