@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Task;
 use DB;
 
-class TaskService
+class BoqItemService
 {
     protected $task;
 

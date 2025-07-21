@@ -8,7 +8,7 @@ use App\Http\Requests\Task\UpdateTaskRequest;
 use App\Http\Resources\Task\TaskCollection;
 use App\Models\Phase;
 use App\Models\Task;
-use App\Services\TaskService;
+use App\Services\BoqItemService;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
@@ -33,7 +33,7 @@ class TaskController extends Controller
         $validated = $request->validated();
         return response()->json([
             'message' => 'Project tasks added successfully.',
-            'data' => TaskService::create($validated),
+            'data' => BoqItemService::create($validated),
         ], 201);
     }
 
@@ -42,7 +42,7 @@ class TaskController extends Controller
      */
     public function show(string $id)
     {
-        $task = TaskService::show($id);
+        $task = BoqItemService::show($id);
         return response()->json([
             'message' => 'Project tasks fetched successfully.',
             'data' => new TaskCollection($task),
