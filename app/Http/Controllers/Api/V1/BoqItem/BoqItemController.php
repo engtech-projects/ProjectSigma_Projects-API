@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\V1\BoqItem;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BoqItem\StoreBoqItemRequest;
 use App\Http\Requests\BoqItem\UpdateBoqItemRequest;
-use App\Http\Resources\BoqItem\BoqItemCollection;
 use App\Http\Resources\Project\BoqItemResource;
 use App\Models\BoqPart;
 use App\Models\Phase;
