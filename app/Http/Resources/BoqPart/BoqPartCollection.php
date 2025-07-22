@@ -23,7 +23,7 @@ class BoqPartCollection extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'total_cost' => $this->total_cost,
-            'tasks' => $this->whenLoaded('tasks', fn () => BoqItemResource::collection($this->tasks)),
+            'tasks' => BoqItemResource::collection($this->whenLoaded('tasks')),
         ];
     }
 }
