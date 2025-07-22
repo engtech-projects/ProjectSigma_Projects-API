@@ -14,6 +14,7 @@ class BoqPartResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'tasks' => BoqItemResource::collection($this->whenLoaded('tasks')),
+            'total_cost' => $this->tasks->sum('amount'),
         ];
     }
 }
