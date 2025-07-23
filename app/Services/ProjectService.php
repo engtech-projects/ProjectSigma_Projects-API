@@ -186,11 +186,12 @@ class ProjectService
         $id = $attribute['id'];
         return DB::transaction(function () use ($id) {
             $project = Project::findOrFail($id)->load('phases.tasks.resources');
+            $maxVersion = Project::where('parent_project_id', $id)->max('version');
             $newProjectData = [
                 'parent_project_id' => $id,
                 'contract_id' => $project->contract_id . '-COPY',
                 'code' => null,
-                'name' => $project->name . '-COPY',
+                'name' => $project->name . '-COPY' . '-v' . ($maxVersion + 1),
                 'location' => $project->location,
                 'nature_of_work' => $project->nature_of_work,
                 'amount' => $project->amount,
@@ -202,7 +203,7 @@ class ProjectService
                 'stage' => ProjectStage::DRAFT->value,
                 'status' => ProjectStatus::DRAFT->value,
                 'is_original' => 0,
-                'version' => $project->version,
+                'version' => $maxVersion + 1,
                 'project_identifier' => $project->project_identifier,
                 'implementing_office' => $project->implementing_office,
                 'current_revision_id' => $project->current_revision_id,
@@ -251,7 +252,7 @@ class ProjectService
             }
 
             return response()->json([
-                'message' => 'Project replicated successfully.',
+                'message' => 'Project replicated as version ' . ($maxVersion + 1) . '.',
                 'data' => $newProject->load('phases.tasks.resources'),
             ], 201);
         });
