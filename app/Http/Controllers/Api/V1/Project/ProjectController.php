@@ -116,6 +116,10 @@ class ProjectController extends Controller
         $oldStage = $project->stage;
         try {
             $project->updateStage($newStage);
+            if ($newStage === ProjectStage::AWARDED) {
+                $project->refresh();
+                $project->marketingDraftAutoCreation();
+            }
             return new JsonResponse([
                 'success' => true,
                 'message' => "Successfully updated stage from {$oldStage} to {$newStage->value}.",

@@ -7,6 +7,7 @@ use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Enums\RequestStatuses;
 use App\Enums\TssStage;
+use App\Http\Resources\Project\ProjectDetailResource;
 use App\Traits\Filterable;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -411,5 +412,23 @@ class Project extends Model
         }
 
         $this->save();
+    }
+
+    public function marketingDraftAutoCreation()
+    {
+       if ($this->revisions()->where('type', 'marketing_draft')->exists()) {
+            return;
+       }
+       $type = 'marketing_draft';
+       $this->loadMissing(['phases.tasks.resources', 'attachments']);
+        Revision::create([
+            'project_id'   => $this->id,
+            'project_uuid' => $this->uuid,
+            'type'         => $type,
+            'data'         => json_encode(ProjectDetailResource::make($this)->toArray(request())),
+            'comments'     => $this->comments,
+            'status'       => $this->status,
+            'version'      => $this->version,
+        ]);
     }
 }
