@@ -427,7 +427,7 @@ class Project extends Model
             'project_uuid' => $this->uuid,
             'type'         => $type,
             'data'         => json_encode(ProjectDetailResource::make($this)->toArray(request())),
-            'comments'     => $null,
+            'comments'     => null,
             'status'       => $this->status,
             'version'      => $this->version,
         ]);
