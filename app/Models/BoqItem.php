@@ -60,7 +60,7 @@ class BoqItem extends Model
 
     public function getUnitPriceWithQuantityAttribute()
     {
-        return $this->unit_price.' / '.$this->unit;
+        return $this->unit_price . ' / ' . $this->unit;
     }
 
     public function getTotalPriceAttribute()
