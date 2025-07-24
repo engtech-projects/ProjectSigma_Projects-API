@@ -7,7 +7,6 @@ use App\Http\Requests\BoqItem\StoreBoqItemRequest;
 use App\Http\Requests\BoqItem\UpdateBoqItemRequest;
 use App\Http\Resources\Project\BoqItemResource;
 use App\Models\BoqPart;
-use App\Models\Phase;
 use App\Models\BoqItem;
 use App\Services\BoqItemService;
 use Illuminate\Http\Request;
@@ -41,15 +40,14 @@ class BoqItemController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(BoqItem $task)
     {
-        $task = BoqItemService::show($id);
+        $task->load('resources.resourceName');
         return response()->json([
-            'message' => 'Project tasks fetched successfully.',
+            'message' => 'Project Item fetched successfully.',
             'data' => new BoqItemResource($task),
         ], 200);
     }
-
     /**
      * Update the specified resource in storage.
      */
