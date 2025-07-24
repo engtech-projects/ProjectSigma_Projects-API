@@ -3,7 +3,6 @@
 namespace App\Http\Resources\Project;
 
 use App\Http\Resources\DupaDetailedResource;
-use App\Http\Resources\ResourceItem\ResourceItemCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class BoqItemResource extends JsonResource

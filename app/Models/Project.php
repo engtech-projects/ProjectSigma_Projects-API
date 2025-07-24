@@ -417,11 +417,11 @@ class Project extends Model
 
     public function marketingDraftAutoCreation()
     {
-       if ($this->revisions()->where('type', 'marketing_draft')->exists()) {
+        if ($this->revisions()->where('type', 'marketing_draft')->exists()) {
             return;
-       }
-       $type = 'marketing_draft';
-       $this->loadMissing(['phases.tasks.resources', 'attachments']);
+        }
+        $type = 'marketing_draft';
+        $this->loadMissing(['phases.tasks.resources', 'attachments']);
         Revision::create([
             'project_id'   => $this->id,
             'project_uuid' => $this->uuid,
