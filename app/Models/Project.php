@@ -420,12 +420,10 @@ class Project extends Model
         if ($this->revisions()->where('type', 'marketing_draft')->exists()) {
             return;
         }
-        $type = 'marketing_draft';
         $this->loadMissing(['phases.tasks.resources', 'attachments']);
         Revision::create([
             'project_id'   => $this->id,
             'project_uuid' => $this->uuid,
-            'type'         => $type,
             'data'         => json_encode(ProjectDetailResource::make($this)->toArray(request())),
             'comments'     => null,
             'status'       => $this->status,
