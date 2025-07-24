@@ -191,7 +191,7 @@ class ProjectService
                 'parent_project_id' => $id,
                 'contract_id' => $project->contract_id . '-COPY',
                 'code' => null,
-                'name' => $project->name . '-COPY' . '-v' . ($maxVersion + 1),
+                'name' => $project->name,
                 'location' => $project->location,
                 'nature_of_work' => $project->nature_of_work,
                 'amount' => $project->amount,
