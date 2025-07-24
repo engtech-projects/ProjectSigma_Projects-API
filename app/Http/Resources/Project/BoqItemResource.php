@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Project;
 
-use App\Http\Resources\DupaDetailedResource;
+use App\Http\Resources\DetailedEstimateResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class BoqItemResource extends JsonResource
@@ -19,8 +19,8 @@ class BoqItemResource extends JsonResource
             'unit_price' => $this->unit_price,
             'amount' => $this->amount,
             'total_price' => $this->total_price,
-            'unit_price_with_quantity' => $this->unit_price_with_quantity,
-            'resources' => DupaDetailedResource::collection($this->whenLoaded('resources')),
+            'unit_price_with_unit' => $this->unit_price_with_unit,
+            'resources' => DetailedEstimateResource::collection($this->whenLoaded('resources')),
         ];
     }
 }
