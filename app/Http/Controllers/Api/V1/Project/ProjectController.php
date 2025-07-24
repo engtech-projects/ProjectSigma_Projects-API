@@ -139,7 +139,7 @@ class ProjectController extends Controller
         $projectKey = $validated['project_key'] ?? null;
         $status = $validated['stage_status'] ?? null;
         $projects = Project::query()
-            ->when($status, fn ($query) => $query->awarded()->withTssStage($status))
+            ->when($status, fn ($query) => $query->awarded())
             ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
             ->latestFirst()
             ->paginate(config('services.pagination.limit'));

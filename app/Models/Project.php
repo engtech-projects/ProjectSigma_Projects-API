@@ -228,9 +228,10 @@ class Project extends Model
         return $query->onlyTrashed();
     }
 
-    public function scopeAwarded(Builder $query)
+    public function scopeAwarded($query)
     {
-        return $query->where('marketing_stage', ProjectStage::AWARDED->value);
+        return $query->where('marketing_stage', 'awarded')
+                        ->orWhere('tss_stage', 'awarded');
     }
 
     public function scopeWithTssStage($query, $status)
@@ -242,7 +243,7 @@ class Project extends Model
     {
         return $query->where(function ($q) use ($key) {
             $q->where('name', 'like', "%{$key}%")
-                ->orWhere('code', 'like', "{$key}");
+                ->orWhere('code', 'like', "%{$key}%");
         });
     }
 
