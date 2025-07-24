@@ -41,15 +41,14 @@ class BoqItemController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(BoqItem $task)
     {
-        $task = BoqItemService::show($id)->load('resources.resourceName');
+        $task->load('resources.resourceName');
         return response()->json([
-            'message' => 'Project tasks fetched successfully.',
+            'message' => 'Project Item fetched successfully.',
             'data' => new BoqItemResource($task),
         ], 200);
     }
-
     /**
      * Update the specified resource in storage.
      */
