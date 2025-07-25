@@ -404,7 +404,7 @@ class Project extends Model
         if (!$isTssUpdate) {
             $this->marketing_stage = $newStage->value;
 
-            if ($newStage === MarketingStage::AWARDED) {
+            if ($newStage->value === MarketingStage::AWARDED->value) {
                 // Automatically promote TSS to 'awarded' when marketing hits 'awarded'
                 $this->tss_stage = TssStage::AWARDED->value;
             }
