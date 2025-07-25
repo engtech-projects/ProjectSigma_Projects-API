@@ -17,6 +17,7 @@ use App\Http\Resources\Project\ProjectListingResource;
 use App\Models\Project;
 use App\Services\ProjectService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
 
 // use Illuminate\Support\Facades\Gate;
 
@@ -120,7 +121,7 @@ class ProjectController extends Controller
                 'success' => true,
                 'message' => "Successfully updated stage from {$oldStage} to {$newStage->value}.",
             ], JsonResponse::HTTP_OK);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'message' => "Failed to update stage from {$oldStage} to {$newStage->value}.",
