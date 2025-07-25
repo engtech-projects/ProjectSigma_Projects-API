@@ -7,12 +7,15 @@ use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Enums\TssStage;
 use App\Http\Resources\Project\ProjectCollection;
+use App\Http\Resources\Project\ProjectDetailResource;
 use App\Models\BoqPart;
 use App\Models\Project;
 use App\Models\ResourceItem;
 use App\Models\BoqItem;
+use App\Models\Revision;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+
 
 class ProjectService
 {
@@ -256,5 +259,18 @@ class ProjectService
                 'data' => $newProject->load('phases.tasks.resources'),
             ], 201);
         });
+    }
+
+    public function createProjectRevision(Project $project, ProjectStatus $status)
+    {
+        $project->loadMissing(['phases.tasks.resources', 'attachments']);
+        Revision::create([
+            'project_id'   => $project->id,
+            'project_uuid' => $project->uuid,
+            'data'         => json_encode(ProjectDetailResource::make($project)->toArray(request())),
+            'comments'     => null,
+            'status'       => $status->value,
+            'version'      => $project->version,
+        ]);
     }
 }
