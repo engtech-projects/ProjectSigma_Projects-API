@@ -27,7 +27,7 @@ class BoqItem extends Model
     ];
 
     protected $appends = [
-        'unit_price_with_quantity',
+        'unit_price_with_unit',
         'total_price',
         'resource_item_total',
         'ocm',
