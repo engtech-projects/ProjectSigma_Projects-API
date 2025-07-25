@@ -303,7 +303,8 @@ class ProjectService
         }
         $project->save();
     }
-    public function createProjectRevision(Project $project, ProjectStatus $status)
+
+    public function createProjectRevision($project, $status)
     {
         $project->loadMissing(['phases.tasks.resources', 'attachments']);
         Revision::create([
@@ -311,7 +312,7 @@ class ProjectService
             'project_uuid' => $project->uuid,
             'data'         => json_encode(ProjectDetailResource::make($project)->toArray(request())),
             'comments'     => null,
-            'status'       => $status->value,
+            'status'       => $status,
             'version'      => $project->version,
         ]);
     }
