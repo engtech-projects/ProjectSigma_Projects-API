@@ -261,6 +261,48 @@ class ProjectService
         });
     }
 
+    public function updateStage($project, ProjectStage $newStage)
+    {
+        // Determine if this is a TSS stage update
+        $isTssUpdate = $project->marketing_stage->value === MarketingStage::AWARDED->value
+            && in_array($newStage->value, array_map(fn ($stage) => $stage->value, TssStage::cases()), true);
+        // Only require approval if marketing is AWARDED and we're updating TSS
+        if ($isTssUpdate && $project->marketing_stage === MarketingStage::AWARDED->value && $project->status !== 'approved') {
+            throw ValidationException::withMessages([
+                'status' => 'Project must be approved to update TSS stage after marketing is awarded.',
+            ]);
+        }
+        if (!$isTssUpdate) {
+            // Handle marketing stage flow
+            $flow = array_map(fn ($stage) => $stage->value, MarketingStage::flow());
+            $current = $project->marketing_stage->value;
+        } else {
+            // Handle TSS stage flow
+            $flow = array_map(fn ($stage) => $stage->value, TssStage::flow());
+            $current = $project->tss_stage->value;
+        }
+        $currentIndex = array_search($current, $flow);
+        $newIndex = array_search($newStage->value, $flow);
+        // Allow only forward step-by-step transitions (e.g., index + 1)
+        if ($newIndex === false || $currentIndex === false || $newIndex !== $currentIndex + 1) {
+            throw ValidationException::withMessages([
+                'stage' => 'Invalid stage transition.',
+            ]);
+        }
+        // Save the new stage
+        if (!$isTssUpdate) {
+            $project->marketing_stage = $newStage->value;
+            if ($newStage->value === MarketingStage::AWARDED->value) {
+                // Automatically promote TSS to 'awarded' when marketing hits 'awarded'
+                $project->tss_stage = TssStage::AWARDED->value;
+                // Create revision when marketing hits 'awarded'
+                $this->createProjectRevision($project, $project->status);
+            }
+        } else {
+            $project->tss_stage = $newStage->value;
+        }
+        $project->save();
+    }
     public function createProjectRevision(Project $project, ProjectStatus $status)
     {
         $project->loadMissing(['phases.tasks.resources', 'attachments']);
