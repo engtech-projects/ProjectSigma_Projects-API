@@ -241,13 +241,19 @@ class Project extends Model
     {
         return $query->where(function ($q) use ($key) {
             $q->where('name', 'like', "%{$key}%")
-                ->orWhere('code', 'like', "{$key}");
+                ->orWhere('code', 'like', "%{$key}%");
         });
     }
 
     public function scopeLatestFirst($query)
     {
         return $query->orderBy('updated_at', 'desc');
+    }
+
+    public function scopeCreatedByAuth(Builder $query): Builder
+    {
+        $userId = auth()->user()->id;
+        return $query->where('created_by', $userId);
     }
 
     public function getSummaryOfBidAttribute()
