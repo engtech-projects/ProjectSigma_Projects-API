@@ -19,6 +19,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use App\Traits\ModelHelpers;
 
 class Project extends Model
 {
@@ -26,6 +27,7 @@ class Project extends Model
     use HasFactory;
     use LogsActivity;
     use SoftDeletes;
+    use ModelHelpers;
 
     protected $table = 'projects';
 
@@ -241,7 +243,7 @@ class Project extends Model
     {
         return $query->where(function ($q) use ($key) {
             $q->where('name', 'like', "%{$key}%")
-                ->orWhere('code', 'like', "{$key}");
+                ->orWhere('code', 'like', "%{$key}%");
         });
     }
 
