@@ -36,13 +36,11 @@ class ProjectController extends Controller
         $validated = $request->validated();
         $projectKey = $validated['project_key'] ?? null;
         $status = $validated['stage_status'] ?? null;
-
         $data = Project::with('revisions')
             ->when($status, fn ($query) => $query->filterByStage($status))
             ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
             ->latestFirst()
             ->paginate(config('services.pagination.limit'));
-
         return ProjectListingResource::collection($data)
             ->additional([
                 'success' => true,
@@ -61,7 +59,6 @@ class ProjectController extends Controller
             ->latestFirst()
             ->createdByAuth()
             ->paginate(config('services.pagination.limit'));
-
         return ProjectListingResource::collection($data)
             ->additional([
                 'success' => true,

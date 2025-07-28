@@ -21,11 +21,11 @@ trait Filterable
         }
         foreach ($filters as $key => $value) {
             $scopeMethod = Str::title(Str::lower($key));
-            $scope = 'scope'.$scopeMethod;
+            $scope = 'scope' . $scopeMethod;
             $withParams = false;
             if (Str::lower($key) === 'status' && is_string($value)) {
                 $scopeMethod = Str::title(Str::lower($value));
-                $scope = 'scope'.$scopeMethod;
+                $scope = 'scope' . $scopeMethod;
             } else {
                 $withParams = true;
             }

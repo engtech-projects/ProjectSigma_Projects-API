@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Traits;
+namespace App\Traits;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
 trait ModelHelpers
@@ -31,18 +32,22 @@ trait ModelHelpers
     {
         return Carbon::parse($this->created_at)->format('h:i A');
     }
+
     /**
      * ==================================================
      * STATIC SCOPES
      * ==================================================
      */
-
     /**
      * ==================================================
      * DYNAMIC SCOPES
      * ==================================================
      */
-
+    public function scopeCreatedByAuth(Builder $query): Builder
+    {
+        $userId = auth()->user()->id;
+        return $query->where('created_by', $userId);
+    }
     /**
      * ==================================================
      * MODEL FUNCTIONS

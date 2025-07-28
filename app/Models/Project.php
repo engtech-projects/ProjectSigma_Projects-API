@@ -19,6 +19,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use App\Traits\ModelHelpers;
 
 class Project extends Model
 {
@@ -26,6 +27,7 @@ class Project extends Model
     use HasFactory;
     use LogsActivity;
     use SoftDeletes;
+    use ModelHelpers;
 
     protected $table = 'projects';
 
@@ -248,12 +250,6 @@ class Project extends Model
     public function scopeLatestFirst($query)
     {
         return $query->orderBy('updated_at', 'desc');
-    }
-
-    public function scopeCreatedByAuth(Builder $query): Builder
-    {
-        $userId = auth()->user()->id;
-        return $query->where('created_by', $userId);
     }
 
     public function getSummaryOfBidAttribute()
