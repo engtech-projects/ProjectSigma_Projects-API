@@ -148,7 +148,7 @@ class ProjectController extends Controller
         }
     }
 
-    public function filterProjects(FilterProjectRequest $request)
+    public function tssProjects(FilterProjectRequest $request)
     {
         $validated = $request->validated();
         $projectKey = $validated['project_key'] ?? null;
