@@ -109,10 +109,9 @@ class ProjectController extends Controller
         return $summaryOfRates;
     }
 
-    public function updateStage(UpdateProjectStageRequest $request, $id)
+    public function updateStage(UpdateProjectStageRequest $request, Project $project)
     {
         $valid = $request->validated();
-        $project = Project::findOrFail($id);
         $newStage = ProjectStage::from($valid['stage']);
         $oldStage = $project->marketing_stage;
         $projectService = new ProjectService($project);
