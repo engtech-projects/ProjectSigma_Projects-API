@@ -296,7 +296,7 @@ class ProjectService
                 // Automatically promote TSS to 'awarded' when marketing hits 'awarded'
                 $this->project->tss_stage = TssStage::AWARDED->value;
                 // Create revision when marketing hits 'awarded'
-                $this->createProjectRevision($this->project, $this->project->status);
+                $this->createProjectRevision($this->project->status);
             }
         } else {
             $this->project->tss_stage = $newStage->value;
@@ -304,16 +304,16 @@ class ProjectService
         $this->project->save();
     }
 
-    public function createProjectRevision($project, $status)
+    public function createProjectRevision($status)
     {
-        $project->loadMissing(['phases.tasks.resources', 'attachments']);
+        $this->project->loadMissing(['phases.tasks.resources', 'attachments']);
         Revision::create([
-            'project_id'   => $project->id,
-            'project_uuid' => $project->uuid,
-            'data'         => json_encode(ProjectDetailResource::make($project)->toArray(request())),
+            'project_id'   => $this->project->id,
+            'project_uuid' => $this->project->uuid,
+            'data'         => json_encode(ProjectDetailResource::make($this->project)->toArray(request())),
             'comments'     => null,
             'status'       => $status,
-            'version'      => $project->version,
+            'version'      => $this->project->version,
         ]);
     }
 }
