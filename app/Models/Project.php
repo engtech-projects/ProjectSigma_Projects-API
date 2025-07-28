@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use App\Traits\ModelHelpers;
 
 class Project extends Model
 {
@@ -24,6 +25,7 @@ class Project extends Model
     use HasFactory;
     use LogsActivity;
     use SoftDeletes;
+    use ModelHelpers;
 
     protected $table = 'projects';
 

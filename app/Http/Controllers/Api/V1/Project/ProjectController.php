@@ -4,8 +4,7 @@ namespace App\Http\Controllers\Api\V1\Project;
 
 use App\Enums\ProjectStage;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\FilterProjectRequest as RequestsFilterProjectRequest;
-use App\Http\Requests\Project\FilterProjectRequest;
+use App\Http\Requests\FilterProjectRequest;
 use App\Http\Requests\Project\ReplicateProjectRequest;
 use App\Http\Requests\Project\StoreProjectRequest;
 use App\Http\Requests\Project\UpdateProjectRequest;
@@ -35,11 +34,31 @@ class ProjectController extends Controller
      */
     public function index(FilterProjectRequest $request)
     {
-        $validate = $request->validated();
-        $data = Project::with('revisions')->when(!empty($validate['stage']), function ($query) use ($validate) {
-            $query->filterByStage($validate['stage']);
-        })
+        $validated = $request->validated();
+        $projectKey = $validated['project_key'] ?? null;
+        $status = $validated['stage_status'] ?? null;
+        $data = Project::with('revisions')
+            ->when($status, fn ($query) => $query->filterByStage($status))
+            ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
             ->latestFirst()
+            ->paginate(config('services.pagination.limit'));
+        return ProjectListingResource::collection($data)
+            ->additional([
+                'success' => true,
+                'message' => 'Successfully fetched.',
+            ]);
+    }
+
+    public function getOwnedProjects(FilterProjectRequest $request)
+    {
+        $validated = $request->validated();
+        $projectKey = $validated['project_key'] ?? null;
+        $status = $validated['stage_status'] ?? null;
+        $data = Project::with('revisions')
+            ->when($status, fn ($query) => $query->filterByStage($status))
+            ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
+            ->latestFirst()
+            ->createdByAuth()
             ->paginate(config('services.pagination.limit'));
         return ProjectListingResource::collection($data)
             ->additional([
@@ -130,7 +149,7 @@ class ProjectController extends Controller
         }
     }
 
-    public function filterProjects(RequestsFilterProjectRequest $request)
+    public function filterProjects(FilterProjectRequest $request)
     {
         $validated = $request->validated();
         $projectKey = $validated['project_key'] ?? null;
