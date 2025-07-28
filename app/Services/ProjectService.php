@@ -262,13 +262,13 @@ class ProjectService
         });
     }
 
-    public function updateStage($project, ProjectStage $newStage)
+    public function updateStage(ProjectStage $newStage)
     {
         // Determine if this is a TSS stage update
-        $isTssUpdate = $project->marketing_stage->value === MarketingStage::AWARDED->value
+        $isTssUpdate = $this->project->marketing_stage->value === MarketingStage::AWARDED->value
             && in_array($newStage->value, array_map(fn ($stage) => $stage->value, TssStage::cases()), true);
         // Only require approval if marketing is AWARDED and we're updating TSS
-        if ($isTssUpdate && $project->marketing_stage === MarketingStage::AWARDED->value && $project->status !== 'approved') {
+        if ($isTssUpdate && $this->project->marketing_stage === MarketingStage::AWARDED->value && $this->project->status !== 'approved') {
             throw ValidationException::withMessages([
                 'status' => 'Project must be approved to update TSS stage after marketing is awarded.',
             ]);
@@ -276,11 +276,11 @@ class ProjectService
         if (!$isTssUpdate) {
             // Handle marketing stage flow
             $flow = array_map(fn ($stage) => $stage->value, MarketingStage::flow());
-            $current = $project->marketing_stage->value;
+            $current = $this->project->marketing_stage->value;
         } else {
             // Handle TSS stage flow
             $flow = array_map(fn ($stage) => $stage->value, TssStage::flow());
-            $current = $project->tss_stage->value;
+            $current = $this->project->tss_stage->value;
         }
         $currentIndex = array_search($current, $flow);
         $newIndex = array_search($newStage->value, $flow);
@@ -292,17 +292,17 @@ class ProjectService
         }
         // Save the new stage
         if (!$isTssUpdate) {
-            $project->marketing_stage = $newStage->value;
+            $this->project->marketing_stage = $newStage->value;
             if ($newStage->value === MarketingStage::AWARDED->value) {
                 // Automatically promote TSS to 'awarded' when marketing hits 'awarded'
-                $project->tss_stage = TssStage::AWARDED->value;
+                $this->project->tss_stage = TssStage::AWARDED->value;
                 // Create revision when marketing hits 'awarded'
-                $this->createProjectRevision($project, $project->status);
+                $this->createProjectRevision($this->project, $this->project->status);
             }
         } else {
-            $project->tss_stage = $newStage->value;
+            $this->project->tss_stage = $newStage->value;
         }
-        $project->save();
+        $this->project->save();
     }
 
     public function createProjectRevision($project, $status)
