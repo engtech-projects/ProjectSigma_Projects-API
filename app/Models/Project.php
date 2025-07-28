@@ -230,8 +230,8 @@ class Project extends Model
 
     public function scopeAwarded($query)
     {
-        return $query->where('marketing_stage', 'awarded')
-                        ->orWhere('tss_stage', 'awarded');
+        return $query->where('marketing_stage', MarketingStage::AWARDED)
+                        ->orWhere('tss_stage', TssStage::AWARDED);
     }
 
     public function scopeWithTssStage($query, $status)
