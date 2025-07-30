@@ -8,6 +8,7 @@ use App\Http\Requests\Revision\ApproveProposalRequest;
 use App\Http\Requests\Revision\RejectProposalRequest;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Revision\RevisionCollection;
+use App\Http\Resources\RevisionResource;
 use App\Models\Project;
 use App\Models\Revision;
 use App\Services\ProjectService;
@@ -16,11 +17,17 @@ use Illuminate\Support\Facades\DB;
 
 class RevisionController extends Controller
 {
-    public function index(Request $request)
+    public function index(Project $project)
     {
-        $projects = Project::revised()->latest()->with(['revisions'])->paginate(config('services.pagination.limit'));
-
-        return response()->json(new ProjectCollection($projects), 200);
+        $revisions = $project->revisions()
+            ->with('project')
+            ->orderByDesc('created_at')
+            ->get();
+        return response()->json([
+            'success' => true,
+            'message' => 'Revisions retrieved successfully',
+            'data' => new RevisionCollection($revisions),
+        ], 200);
     }
 
     public function addRevision($status, $id)

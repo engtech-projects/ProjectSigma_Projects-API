@@ -2,10 +2,11 @@
 
 namespace App\Http\Resources\Revision;
 
+use App\Http\Resources\RevisionResource;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class RevisionCollection extends JsonResource
+class RevisionCollection extends ResourceCollection
 {
     /**
      * Transform the resource collection into an array.
@@ -14,13 +15,6 @@ class RevisionCollection extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
-            'id' => $this->id,
-            'project_id' => $this->project_id,
-            'data' => $this->data,
-            'comments' => $this->comments,
-            'status' => $this->status,
-            'project' => $this->project,
-        ];
+        return RevisionResource::collection($this->collection)->toArray($request);
     }
 }
