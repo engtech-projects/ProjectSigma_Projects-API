@@ -111,7 +111,7 @@ class Project extends Model
 
     public function attachments(): HasMany
     {
-        return $this->hasMany(Attachment::class);
+        return $this->hasMany(Attachment::class, 'project_id', 'id');
     }
 
     public function team(): HasMany
