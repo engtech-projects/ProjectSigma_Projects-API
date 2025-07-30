@@ -41,7 +41,7 @@ class ResourceItem extends Model
 
     public function task(): BelongsTo
     {
-        return $this->belongsTo(Task::class);
+        return $this->belongsTo(BoqItem::class, 'task_id', 'id');
     }
 
     public function project(): BelongsTo

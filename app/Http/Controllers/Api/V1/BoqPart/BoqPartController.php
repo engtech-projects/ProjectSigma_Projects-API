@@ -1,39 +1,40 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Phase;
+namespace App\Http\Controllers\Api\V1\BoqPart;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterPhraseRequest;
-use App\Http\Requests\Phase\StorePhaseRequest;
-use App\Http\Requests\Phase\UpdatePhaseRequest;
-use App\Models\Phase;
+use App\Http\Requests\BoqPart\StoreBoqPartRequest;
+use App\Http\Requests\BoqPart\UpdateBoqPartRequest;
+use App\Http\Resources\Project\BoqPartResource;
+use App\Models\BoqPart;
 use App\Models\Project;
-use App\Services\PhaseService;
+use App\Services\BoqPartService;
 use App\Services\ProjectService;
 
-class PhaseController extends Controller
+class BoqPartController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index(FilterPhraseRequest $request)
     {
-        $phases = PhaseService::withPagination($request->validated());
+        $phases = BoqPartService::withPagination($request->validated());
 
         return response()->json([
             'message' => 'Phases retrieved successfully.',
-            'data' => $phases,
+            'data' => BoqPartResource::collection($phases),
         ], 200);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePhaseRequest $request, ProjectService $projectService)
+    public function store(StoreBoqPartRequest $request, ProjectService $projectService)
     {
         $validated = $request->validated();
         $project = Project::find($validated['project_id']);
-        $result = PhaseService::create($validated);
+        $result = BoqPartService::create($validated);
 
         return response()->json([
             'message' => 'Project Item added successfully.',
@@ -44,7 +45,7 @@ class PhaseController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Phase $phase)
+    public function show(BoqPart $phase)
     {
         return response()->json($phase->load('tasks'), 200);
     }
@@ -52,9 +53,8 @@ class PhaseController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePhaseRequest $request, Phase $phase)
+    public function update(UpdateBoqPartRequest $request, BoqPart $phase)
     {
-
         $validated = $request->validated();
         $phase->update($validated);
 
@@ -67,7 +67,7 @@ class PhaseController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Phase $phase)
+    public function destroy(BoqPart $phase)
     {
         $phase->delete();
 

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Phase;
+namespace App\Http\Requests\BoqItem;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdatePhaseRequest extends FormRequest
+class StoreBoqItemRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,10 +22,12 @@ class UpdatePhaseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'project_id' => 'required|exists:projects,id',
+            'phase_id' => 'required|exists:phases,id',
             'name' => 'required|string',
             'description' => 'required|string',
-            'total_cost' => 'required|regex:/^\d+(\.\d{1,2})?$/',
+            'quantity' => 'required|numeric',
+            'unit' => 'required|string',
+            'unit_price' => 'required|numeric',
         ];
     }
 }

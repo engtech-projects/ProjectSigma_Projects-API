@@ -4,8 +4,7 @@ namespace App\Http\Controllers\Api\V1\Project;
 
 use App\Enums\ProjectStage;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\FilterProjectRequest as RequestsFilterProjectRequest;
-use App\Http\Requests\Project\FilterProjectRequest;
+use App\Http\Requests\FilterProjectRequest;
 use App\Http\Requests\Project\ReplicateProjectRequest;
 use App\Http\Requests\Project\StoreProjectRequest;
 use App\Http\Requests\Project\UpdateProjectRequest;
@@ -17,6 +16,7 @@ use App\Http\Resources\Project\ProjectListingResource;
 use App\Models\Project;
 use App\Services\ProjectService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
 
 // use Illuminate\Support\Facades\Gate;
 
@@ -34,11 +34,31 @@ class ProjectController extends Controller
      */
     public function index(FilterProjectRequest $request)
     {
-        $validate = $request->validated();
-        $data = Project::with('revisions')->when(!empty($validate['stage']), function ($query) use ($validate) {
-            $query->filterByStage($validate['stage']);
-        })
+        $validated = $request->validated();
+        $projectKey = $validated['project_key'] ?? null;
+        $status = $validated['stage_status'] ?? null;
+        $data = Project::with('revisions')
+            ->when($status, fn ($query) => $query->filterByStage($status))
+            ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
             ->latestFirst()
+            ->paginate(config('services.pagination.limit'));
+        return ProjectListingResource::collection($data)
+            ->additional([
+                'success' => true,
+                'message' => 'Successfully fetched.',
+            ]);
+    }
+
+    public function getOwnedProjects(FilterProjectRequest $request)
+    {
+        $validated = $request->validated();
+        $projectKey = $validated['project_key'] ?? null;
+        $status = $validated['stage_status'] ?? null;
+        $data = Project::with('revisions')
+            ->when($status, fn ($query) => $query->filterByStage($status))
+            ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
+            ->latestFirst()
+            ->createdByAuth()
             ->paginate(config('services.pagination.limit'));
         return ProjectListingResource::collection($data)
             ->additional([
@@ -108,54 +128,47 @@ class ProjectController extends Controller
         return $summaryOfRates;
     }
 
-    public function updateStage(UpdateProjectStageRequest $request, $id)
+    public function updateStage(UpdateProjectStageRequest $request, Project $project)
     {
         $valid = $request->validated();
-        $project = Project::findOrFail($id);
         $newStage = ProjectStage::from($valid['stage']);
-        $oldStage = $project->stage;
+        $oldStage = $project->marketing_stage;
+        $projectService = new ProjectService($project);
         try {
-            $project->updateStage($newStage);
+            $projectService->updateStage($newStage);
             return new JsonResponse([
                 'success' => true,
-                'message' => "Successfully updated stage from {$oldStage} to {$newStage->value}.",
+                'message' => "Successfully updated stage from {$oldStage->value} to {$newStage->value}.",
             ], JsonResponse::HTTP_OK);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
-                'message' => "Failed to update stage from {$oldStage} to {$newStage->value}.",
+                'message' => "Failed to update stage from {$oldStage->value} to {$newStage->value}.",
                 'errors' => $e->errors(),
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 
-    public function filterProjects(RequestsFilterProjectRequest $request)
+    public function tssProjects(FilterProjectRequest $request)
     {
         $validated = $request->validated();
-        $projectKey = $validated['project_key'];
+        $projectKey = $validated['project_key'] ?? null;
         $status = $validated['stage_status'] ?? null;
         $projects = Project::query()
-            ->where(function ($query) use ($projectKey) {
-                $query->where('name', 'like', '%' . $projectKey . '%')
-                    ->orWhere('code', 'like', '%' . $projectKey . '%');
-            })
-            ->when($status, function ($query) use ($status) {
-                $query->where('marketing_stage', $status)
-                    ->orWhere('tss_stage', $status);
-            })
+            ->when($status, fn ($query) => $query->awarded())
+            ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
             ->latestFirst()
             ->paginate(config('services.pagination.limit'));
         return ProjectListingResource::collection($projects)
             ->additional([
                 'success' => true,
-                'message' => 'Successfully fetched.',
+                'message' => 'Successfully fetched.'
             ]);
     }
 
-    public function updateCashFlow(UpdateCashFlowRequest $request)
+    public function updateCashFlow(UpdateCashFlowRequest $request, Project $project)
     {
         $validated = $request->validated();
-        $project = Project::findOrFail($validated['project_id']);
         $project->cash_flow = $validated['cash_flow'];
         $project->save();
         return response()->json([

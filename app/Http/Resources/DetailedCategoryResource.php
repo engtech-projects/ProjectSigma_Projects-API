@@ -1,15 +1,12 @@
 <?php
 
-namespace App\Http\Resources\Phase;
+namespace App\Http\Resources;
 
-use App\Http\Resources\Task\TaskCollection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PhaseCollection extends JsonResource
+class DetailedCategoryResource extends JsonResource
 {
-    public static $wrap = 'phases';
-
     /**
      * Transform the resource collection into an array.
      *
@@ -19,11 +16,8 @@ class PhaseCollection extends JsonResource
     {
         return [
             'id' => $this->id,
-            'project_id' => $this->project_id,
             'name' => $this->name,
             'description' => $this->description,
-            'total_cost' => $this->total_cost,
-            'tasks' => $this->whenLoaded('tasks', fn () => TaskCollection::collection($this->tasks)),
         ];
     }
 }

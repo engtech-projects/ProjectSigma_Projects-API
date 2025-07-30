@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
-class Task extends Model
+class BoqItem extends Model
 {
     use HasFactory;
     use SoftDeletes;
@@ -27,7 +27,7 @@ class Task extends Model
     ];
 
     protected $appends = [
-        'unit_price_with_quantity',
+        'unit_price_with_unit',
         'total_price',
         'resource_item_total',
         'ocm',
@@ -50,17 +50,17 @@ class Task extends Model
 
     public function phase(): BelongsTo
     {
-        return $this->belongsTo(Phase::class);
+        return $this->belongsTo(BoqPart::class, 'phase_id', 'id');
     }
 
     public function resources(): HasMany
     {
-        return $this->hasMany(ResourceItem::class);
+        return $this->hasMany(ResourceItem::class, 'task_id', 'id');
     }
 
-    public function getUnitPriceWithQuantityAttribute()
+    public function getUnitPriceWithUnitAttribute()
     {
-        return $this->unit_price.' / '.$this->unit;
+        return $this->unit_price . ' / ' . $this->unit;
     }
 
     public function getTotalPriceAttribute()

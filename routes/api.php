@@ -9,20 +9,21 @@ use App\Http\Controllers\Api\V1\Accessibility\PermissionController;
 use App\Http\Controllers\Api\V1\Accessibility\RoleController;
 use App\Http\Controllers\Api\V1\Assignment\ProjectAssignmentController;
 use App\Http\Controllers\Api\V1\Logs\LogController;
-use App\Http\Controllers\Api\V1\Phase\PhaseController;
+use App\Http\Controllers\Api\V1\BoqPart\BoqPartController;
 use App\Http\Controllers\Api\V1\Position\PositionController;
 use App\Http\Controllers\Api\V1\Project\ProjectAttachmentController;
 use App\Http\Controllers\Api\V1\Project\ProjectController;
 use App\Http\Controllers\Api\V1\Project\ProjectStatusController;
 use App\Http\Controllers\Api\V1\Project\RevisionController;
 use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
-use App\Http\Controllers\Api\V1\Task\TaskController;
+use App\Http\Controllers\Api\V1\BoqItem\BoqItemController;
 use App\Http\Controllers\APiSyncController;
 use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Resources\User\UserCollection;
 use App\Models\ResourceName;
 use App\Models\Uom;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -71,16 +72,17 @@ Route::middleware('auth:api')->group(function () {
     // ────── Projects ──────
     Route::prefix('projects')->group(function () {
         Route::resource('resource', ProjectController::class);
+        Route::get('owned', [ProjectController::class, 'getOwnedProjects']);
+        Route::get('tss', [ProjectController::class, 'tssProjects']);
         Route::patch('{project}/status', [ProjectStatusController::class, 'updateStatus']);
-        Route::patch('{id}/update-stage', [ProjectController::class, 'updateStage']);
+        Route::patch('{project}/update-stage', [ProjectController::class, 'updateStage']);
         Route::post('{project}/archive', [ProjectStatusController::class, 'archive']);
         Route::post('{project}/complete', [ProjectStatusController::class, 'complete']);
         Route::post('replicate', [ProjectController::class, 'replicate']);
         Route::post('{project}/attachments', [ProjectAttachmentController::class, 'store']);
         Route::get('{project}/document-viewer', [ProjectAttachmentController::class, 'generateUrl']);
         Route::post('change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
-        Route::get('filter', [ProjectController::class, 'filterProjects']);
-        Route::patch('cashflow/update', [ProjectController::class, 'updateCashFlow']);
+        Route::patch('{project}/cash-flow', [ProjectController::class, 'updateCashFlow']);
     });
 
     // ────── Attachments ──────
@@ -89,8 +91,8 @@ Route::middleware('auth:api')->group(function () {
     });
 
     // ────── Phases, Tasks, Resources ──────
-    Route::resource('phases', PhaseController::class);
-    Route::resource('tasks', TaskController::class);
+    Route::resource('phases', BoqPartController::class);
+    Route::resource('tasks', BoqItemController::class);
     Route::resource('resource-items', ResourceItemController::class);
 
     // ────── Revisions ──────
@@ -125,4 +127,22 @@ Route::middleware("secret_api")->group(function () {
             Route::get("projects", [ApiServiceController::class, "getProjectList"]);
         });
     });
+});
+Route::prefix('artisan')->group(function () {
+    Route::get('storage', function () {
+        Artisan::call("storage:link");
+        return "success";
+    });
+    Route::get('optimize', function () {
+        Artisan::call("optimize");
+        return "success";
+    });
+    Route::get('optimize-clear', function () {
+        Artisan::call("optimize:clear");
+        return "success";
+    });
+    // Route::get('custom/{command}', function ($command) {
+    //     Artisan::call($command);
+    //     return "success";
+    // });
 });

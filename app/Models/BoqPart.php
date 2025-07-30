@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
-class Phase extends Model
+class BoqPart extends Model
 {
     use HasFactory;
     use SoftDeletes;
@@ -41,6 +41,6 @@ class Phase extends Model
 
     public function tasks(): HasMany
     {
-        return $this->hasMany(Task::class);
+        return $this->hasMany(BoqItem::class, 'phase_id', 'id');
     }
 }

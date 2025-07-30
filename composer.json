@@ -12,6 +12,7 @@
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "league/csv": "9.7.1",
+        "opcodesio/log-viewer": "^3.18",
         "spatie/laravel-activitylog": "^4.10",
         "spatie/laravel-image-optimizer": "^1.8",
         "spatie/laravel-permission": "^6.10"
