@@ -10,8 +10,11 @@ class ApiServiceController extends Controller
 {
     public function getProjectList()
     {
-        $projectList = Project::orderBy('code')->awarded()->get();
-
+        $projectList = Project::whereNotNull('code')
+            ->where('code', '!=', '')
+            ->awarded()
+            ->orderBy('code')
+            ->get();
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully fetched.',
