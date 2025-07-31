@@ -25,7 +25,7 @@ class RevisionController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Revisions lists retrieved successfully',
-            'data' => $listOfRevisions,
+            'data' => $listOfRevisions->items(),
         ], 200);
     }
 
