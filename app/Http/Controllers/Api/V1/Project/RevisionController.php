@@ -56,14 +56,13 @@ class RevisionController extends Controller
 
     public function showProjectRevisions(Project $project)
     {
-        $revisions = Revision::where('project_id', $project->id)
-            ->with('project')
+        $revisions = $project->revisions()
             ->orderByDesc('created_at')
             ->get();
         return response()->json([
             'success' => true,
             'message' => 'Revisions retrieved successfully',
-            'data' => new RevisionCollection($revisions),
+            'data' => new RevisionResource($revisions),
         ], 200);
     }
 
