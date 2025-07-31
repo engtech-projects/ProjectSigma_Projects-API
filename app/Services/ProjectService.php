@@ -7,12 +7,15 @@ use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Enums\TssStage;
 use App\Http\Resources\Project\ProjectCollection;
+use App\Http\Resources\Project\ProjectDetailResource;
 use App\Models\BoqPart;
 use App\Models\Project;
 use App\Models\ResourceItem;
 use App\Models\BoqItem;
+use App\Models\Revision;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class ProjectService
 {
@@ -186,11 +189,12 @@ class ProjectService
         $id = $attribute['id'];
         return DB::transaction(function () use ($id) {
             $project = Project::findOrFail($id)->load('phases.tasks.resources');
+            $maxVersion = Project::where('parent_project_id', $id)->max('version');
             $newProjectData = [
                 'parent_project_id' => $id,
                 'contract_id' => $project->contract_id . '-COPY',
                 'code' => null,
-                'name' => $project->name . '-COPY',
+                'name' => $project->name,
                 'location' => $project->location,
                 'nature_of_work' => $project->nature_of_work,
                 'amount' => $project->amount,
@@ -202,7 +206,7 @@ class ProjectService
                 'stage' => ProjectStage::DRAFT->value,
                 'status' => ProjectStatus::DRAFT->value,
                 'is_original' => 0,
-                'version' => $project->version,
+                'version' => $maxVersion + 1,
                 'project_identifier' => $project->project_identifier,
                 'implementing_office' => $project->implementing_office,
                 'current_revision_id' => $project->current_revision_id,
@@ -251,9 +255,65 @@ class ProjectService
             }
 
             return response()->json([
-                'message' => 'Project replicated successfully.',
+                'message' => 'Project replicated as version ' . ($maxVersion + 1) . '.',
                 'data' => $newProject->load('phases.tasks.resources'),
             ], 201);
         });
+    }
+
+    public function updateStage(ProjectStage $newStage)
+    {
+        // Determine if this is a TSS stage update
+        $isTssUpdate = $this->project->marketing_stage->value === MarketingStage::AWARDED->value
+            && in_array($newStage->value, array_map(fn ($stage) => $stage->value, TssStage::cases()), true);
+        // Only require approval if marketing is AWARDED and we're updating TSS
+        if ($isTssUpdate && $this->project->marketing_stage === MarketingStage::AWARDED->value && $this->project->status !== 'approved') {
+            throw ValidationException::withMessages([
+                'status' => 'Project must be approved to update TSS stage after marketing is awarded.',
+            ]);
+        }
+        if (!$isTssUpdate) {
+            // Handle marketing stage flow
+            $flow = array_map(fn ($stage) => $stage->value, MarketingStage::flow());
+            $current = $this->project->marketing_stage->value;
+        } else {
+            // Handle TSS stage flow
+            $flow = array_map(fn ($stage) => $stage->value, TssStage::flow());
+            $current = $this->project->tss_stage->value;
+        }
+        $currentIndex = array_search($current, $flow);
+        $newIndex = array_search($newStage->value, $flow);
+        // Allow only forward step-by-step transitions (e.g., index + 1)
+        if ($newIndex === false || $currentIndex === false || $newIndex !== $currentIndex + 1) {
+            throw ValidationException::withMessages([
+                'stage' => 'Invalid stage transition.',
+            ]);
+        }
+        // Save the new stage
+        if (!$isTssUpdate) {
+            $this->project->marketing_stage = $newStage->value;
+            if ($newStage->value === MarketingStage::AWARDED->value) {
+                // Automatically promote TSS to 'awarded' when marketing hits 'awarded'
+                $this->project->tss_stage = TssStage::AWARDED->value;
+                // Create revision when marketing hits 'awarded'
+                $this->createProjectRevision($this->project->status);
+            }
+        } else {
+            $this->project->tss_stage = $newStage->value;
+        }
+        $this->project->save();
+    }
+
+    public function createProjectRevision($status)
+    {
+        $this->project->loadMissing(['phases.tasks.resources', 'attachments']);
+        Revision::create([
+            'project_id'   => $this->project->id,
+            'project_uuid' => $this->project->uuid,
+            'data'         => json_encode(ProjectDetailResource::make($this->project)->toArray(request())),
+            'comments'     => null,
+            'status'       => $status,
+            'version'      => $this->project->version,
+        ]);
     }
 }

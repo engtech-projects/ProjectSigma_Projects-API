@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\MarketingStage;
-use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Enums\RequestStatuses;
 use App\Enums\TssStage;
@@ -16,7 +15,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use App\Traits\ModelHelpers;
@@ -229,9 +227,10 @@ class Project extends Model
         return $query->onlyTrashed();
     }
 
-    public function scopeAwarded(Builder $query)
+    public function scopeAwarded($query)
     {
-        return $query->where('marketing_stage', ProjectStage::AWARDED->value);
+        return $query->where('marketing_stage', MarketingStage::AWARDED)
+                        ->orWhere('tss_stage', TssStage::AWARDED);
     }
 
     public function scopeWithTssStage($query, $status)
@@ -369,49 +368,4 @@ class Project extends Model
         return Carbon::parse($this->updated_at)->format('F j, Y h:i A');
     }
 
-    public function updateStage(ProjectStage $newStage)
-    {
-        // Determine if this is a TSS stage update
-        $isTssUpdate = $this->marketing_stage->value === MarketingStage::AWARDED->value
-            && in_array($newStage->value, array_map(fn ($stage) => $stage->value, TssStage::cases()), true);
-
-        // Only require approval if marketing is AWARDED and we're updating TSS
-        if ($isTssUpdate && $this->marketing_stage === MarketingStage::AWARDED->value && $this->status !== 'approved') {
-            throw ValidationException::withMessages([
-                'status' => 'Project must be approved to update TSS stage after marketing is awarded.',
-            ]);
-        }
-        if (!$isTssUpdate) {
-            // Handle marketing stage flow
-            $flow = array_map(fn ($stage) => $stage->value, MarketingStage::flow());
-            $current = $this->marketing_stage->value;
-        } else {
-            // Handle TSS stage flow
-            $flow = array_map(fn ($stage) => $stage->value, TssStage::flow());
-            $current = $this->tss_stage->value;
-        }
-
-        $currentIndex = array_search($current, $flow);
-        $newIndex = array_search($newStage->value, $flow);
-
-        // Allow only forward step-by-step transitions (e.g., index + 1)
-        if ($newIndex === false || $currentIndex === false || $newIndex !== $currentIndex + 1) {
-            throw ValidationException::withMessages([
-                'stage' => 'Invalid stage transition.',
-            ]);
-        }
-        // Save the new stage
-        if (!$isTssUpdate) {
-            $this->marketing_stage = $newStage->value;
-
-            if ($newStage === MarketingStage::AWARDED) {
-                // Automatically promote TSS to 'awarded' when marketing hits 'awarded'
-                $this->tss_stage = TssStage::AWARDED->value;
-            }
-        } else {
-            $this->tss_stage = $newStage->value;
-        }
-
-        $this->save();
-    }
 }

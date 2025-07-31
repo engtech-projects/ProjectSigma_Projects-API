@@ -16,6 +16,7 @@ use App\Http\Resources\Project\ProjectListingResource;
 use App\Models\Project;
 use App\Services\ProjectService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
 
 // use Illuminate\Support\Facades\Gate;
 
@@ -127,22 +128,22 @@ class ProjectController extends Controller
         return $summaryOfRates;
     }
 
-    public function updateStage(UpdateProjectStageRequest $request, $id)
+    public function updateStage(UpdateProjectStageRequest $request, Project $project)
     {
         $valid = $request->validated();
-        $project = Project::findOrFail($id);
         $newStage = ProjectStage::from($valid['stage']);
-        $oldStage = $project->stage;
+        $oldStage = $project->marketing_stage;
+        $projectService = new ProjectService($project);
         try {
-            $project->updateStage($newStage);
+            $projectService->updateStage($newStage);
             return new JsonResponse([
                 'success' => true,
-                'message' => "Successfully updated stage from {$oldStage} to {$newStage->value}.",
+                'message' => "Successfully updated stage from {$oldStage->value} to {$newStage->value}.",
             ], JsonResponse::HTTP_OK);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
-                'message' => "Failed to update stage from {$oldStage} to {$newStage->value}.",
+                'message' => "Failed to update stage from {$oldStage->value} to {$newStage->value}.",
                 'errors' => $e->errors(),
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
@@ -154,7 +155,7 @@ class ProjectController extends Controller
         $projectKey = $validated['project_key'] ?? null;
         $status = $validated['stage_status'] ?? null;
         $projects = Project::query()
-            ->when($status, fn ($query) => $query->awarded()->withTssStage($status))
+            ->when($status, fn ($query) => $query->awarded())
             ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
             ->latestFirst()
             ->paginate(config('services.pagination.limit'));

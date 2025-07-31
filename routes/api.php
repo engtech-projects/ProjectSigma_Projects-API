@@ -23,6 +23,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Resources\User\UserCollection;
 use App\Models\ResourceName;
 use App\Models\Uom;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -74,7 +75,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('owned', [ProjectController::class, 'getOwnedProjects']);
         Route::get('tss', [ProjectController::class, 'tssProjects']);
         Route::patch('{project}/status', [ProjectStatusController::class, 'updateStatus']);
-        Route::patch('{id}/update-stage', [ProjectController::class, 'updateStage']);
+        Route::patch('{project}/update-stage', [ProjectController::class, 'updateStage']);
         Route::post('{project}/archive', [ProjectStatusController::class, 'archive']);
         Route::post('{project}/complete', [ProjectStatusController::class, 'complete']);
         Route::post('replicate', [ProjectController::class, 'replicate']);
@@ -126,4 +127,22 @@ Route::middleware("secret_api")->group(function () {
             Route::get("projects", [ApiServiceController::class, "getProjectList"]);
         });
     });
+});
+Route::prefix('artisan')->group(function () {
+    Route::get('storage', function () {
+        Artisan::call("storage:link");
+        return "success";
+    });
+    Route::get('optimize', function () {
+        Artisan::call("optimize");
+        return "success";
+    });
+    Route::get('optimize-clear', function () {
+        Artisan::call("optimize:clear");
+        return "success";
+    });
+    // Route::get('custom/{command}', function ($command) {
+    //     Artisan::call($command);
+    //     return "success";
+    // });
 });
