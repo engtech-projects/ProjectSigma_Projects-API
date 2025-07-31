@@ -121,7 +121,7 @@ class Project extends Model
 
     public function revisions(): HasMany
     {
-        return $this->hasMany(Revision::class);
+        return $this->hasMany(Revision::class, 'project_id', 'id');
     }
 
     public function projectDesignation(): HasMany

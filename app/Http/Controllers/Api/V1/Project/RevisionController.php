@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Revision\ApproveProposalRequest;
 use App\Http\Requests\Revision\RejectProposalRequest;
 use App\Http\Resources\Project\ProjectCollection;
+use App\Http\Resources\Project\ProjectDetailResource;
 use App\Http\Resources\Revision\RevisionCollection;
 use App\Http\Resources\RevisionResource;
 use App\Models\Project;
@@ -118,4 +119,33 @@ class RevisionController extends Controller
             'message' => 'Project archived',
         ], 200);
     }
+
+    public function revertToRevision(Project $project, Revision $revision)
+    {
+        if ($revision->project_id != $project->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Revision does not belong to this project',
+            ], 400);
+        }
+        $projectData =json_decode($revision->data, true);
+        try {
+            DB::beginTransaction();
+            $project->update($projectData);
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Project reverted to revision',
+                'data' => new ProjectDetailResource($project->fresh()),
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to revert project to revision',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
 }
