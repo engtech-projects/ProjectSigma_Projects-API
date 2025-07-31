@@ -8,6 +8,7 @@ use App\Http\Requests\Revision\ApproveProposalRequest;
 use App\Http\Requests\Revision\RejectProposalRequest;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectDetailResource;
+use App\Http\Resources\ProjectRevisionsSummaryResource;
 use App\Http\Resources\Revision\RevisionCollection;
 use App\Http\Resources\RevisionResource;
 use App\Models\Project;
@@ -56,13 +57,10 @@ class RevisionController extends Controller
 
     public function showProjectRevisions(Project $project)
     {
-        $revisions = $project->revisions()
-            ->orderByDesc('created_at')
-            ->get();
         return response()->json([
             'success' => true,
             'message' => 'Revisions retrieved successfully',
-            'data' => new RevisionResource($revisions),
+            'data' => new ProjectRevisionsSummaryResource($project),
         ], 200);
     }
 
