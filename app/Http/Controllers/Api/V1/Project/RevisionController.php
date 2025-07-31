@@ -49,7 +49,11 @@ class RevisionController extends Controller
 
     public function show(Revision $revision)
     {
-        return response()->json(new RevisionCollection($revision), 200);
+        return response()->json([
+            'success' => true,
+            'message' => 'Revision retrieved successfully',
+            'data' => new RevisionResource($revision),
+        ], 200);
     }
 
     public function changeToProposal(ApproveProposalRequest $request)

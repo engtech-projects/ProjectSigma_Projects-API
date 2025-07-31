@@ -19,7 +19,7 @@ class RevisionResource extends JsonResource
             'id' => $this->id,
             'project_id' => $this->project_id,
             'project_uuid' => $this->project_uuid,
-            'data' => $this->data,
+            'data' => $this->getDeserializedData(),
             'comments' => $this->comments,
             'status' => $this->status,
             'version' => $this->version,
@@ -27,5 +27,14 @@ class RevisionResource extends JsonResource
             'updated_at' => $this->updated_at,
             'project' => new ProjectDetailResource($this->whenLoaded('project')),
         ];
+    }
+
+    protected function getDeserializedData(): array
+    {
+        $decoded = json_decode($this->data, true) ;
+        if (isset($decoded['cash_flow']) && is_string($decoded['cash_flow'])) {
+            $decoded['cash_flow'] = json_decode($decoded['cash_flow'], true);
+        }
+        return $decoded;
     }
 }
