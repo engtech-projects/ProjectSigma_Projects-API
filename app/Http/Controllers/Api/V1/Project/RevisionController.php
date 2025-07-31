@@ -18,16 +18,13 @@ use Illuminate\Support\Facades\DB;
 
 class RevisionController extends Controller
 {
-    public function index(Project $project)
+    public function index(Request $request)
     {
-        $revisions = $project->revisions()
-            ->with('project')
-            ->orderByDesc('created_at')
-            ->get();
+        $listOfRevisions = Revision::paginate(config('services.pagination_limit'));
         return response()->json([
             'success' => true,
-            'message' => 'Revisions retrieved successfully',
-            'data' => new RevisionCollection($revisions),
+            'message' => 'Revisions lists retrieved successfully',
+            'data' => $listOfRevisions,
         ], 200);
     }
 
@@ -54,6 +51,19 @@ class RevisionController extends Controller
             'success' => true,
             'message' => 'Revision retrieved successfully',
             'data' => new RevisionResource($revision),
+        ], 200);
+    }
+
+    public function showProjectRevisions(Project $project)
+    {
+        $revisions = Revision::where('project_id', $project->id)
+            ->with('project')
+            ->orderByDesc('created_at')
+            ->get();
+        return response()->json([
+            'success' => true,
+            'message' => 'Revisions retrieved successfully',
+            'data' => new RevisionCollection($revisions),
         ], 200);
     }
 
