@@ -19,6 +19,7 @@ class ProjectRevisionsSummaryResource extends JsonResource
             'project_code' => $this->code,
             'project_name' => $this->name,
             'version' => $this->version,
+            'status' => $this->status,
             'created_at' => $this->created_at,
             'revisions' => $this->revisions->map(function ($revision) {
                 $decodedData = json_decode($revision->data, true);
