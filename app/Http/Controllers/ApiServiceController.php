@@ -10,7 +10,8 @@ class ApiServiceController extends Controller
 {
     public function getProjectList()
     {
-        $projectList = Project::whereNotNull('code')
+        $projectList = Project::withTrashed()
+            ->whereNotNull('code')
             ->where('code', '!=', '')
             ->awarded()
             ->orderBy('code')
