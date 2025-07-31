@@ -25,7 +25,6 @@ class RevisionResource extends JsonResource
             'version' => $this->version,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'project' => new ProjectDetailResource($this->whenLoaded('project')),
         ];
     }
 
