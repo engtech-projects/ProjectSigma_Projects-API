@@ -15,6 +15,6 @@ class RevisionCollection extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-        return RevisionResource::collection($this->collection)->toArray($request);
+        return parent::toArray($request);
     }
 }
