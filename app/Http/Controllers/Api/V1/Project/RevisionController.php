@@ -22,11 +22,11 @@ class RevisionController extends Controller
     public function index(Request $request)
     {
         $listOfRevisions = Revision::paginate(config('services.pagination_limit'));
-        return response()->json([
-            'success' => true,
-            'message' => 'Revisions lists retrieved successfully',
-            'data' => $listOfRevisions->items(),
-        ], 200);
+        return RevisionResource::collection($listOfRevisions)
+            ->additional([
+                'success' => true,
+                'message' => 'Revisions retrieved successfully',
+            ]);
     }
 
     public function addRevision($status, $id)
