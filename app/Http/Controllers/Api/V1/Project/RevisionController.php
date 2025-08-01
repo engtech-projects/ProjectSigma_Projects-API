@@ -6,10 +6,8 @@ use App\Enums\ProjectStage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Revision\ApproveProposalRequest;
 use App\Http\Requests\Revision\RejectProposalRequest;
-use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectDetailResource;
 use App\Http\Resources\ProjectRevisionsSummaryResource;
-use App\Http\Resources\Revision\RevisionCollection;
 use App\Http\Resources\RevisionResource;
 use App\Models\Project;
 use App\Models\Revision;
@@ -135,7 +133,7 @@ class RevisionController extends Controller
                 'message' => 'Revision does not belong to this project',
             ], 400);
         }
-        $projectData =json_decode($revision->data, true);
+        $projectData = json_decode($revision->data, true);
         try {
             DB::beginTransaction();
             $project->update($projectData);
