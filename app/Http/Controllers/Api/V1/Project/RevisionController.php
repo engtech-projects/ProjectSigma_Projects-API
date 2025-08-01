@@ -127,30 +127,8 @@ class RevisionController extends Controller
 
     public function revertToRevision(Project $project, Revision $revision)
     {
-        if ($revision->project_id != $project->id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Revision does not belong to this project',
-            ], 400);
-        }
-        $projectData = json_decode($revision->data, true);
-        try {
-            DB::beginTransaction();
-            $project->update($projectData);
-            DB::commit();
-            return response()->json([
-                'success' => true,
-                'message' => 'Project reverted to revision',
-                'data' => new ProjectDetailResource($project->fresh()),
-            ], 200);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to revert project to revision',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
+        $projectService = new ProjectService($project);
+        $result = $projectService->revertToRevision($project, $revision);
+        return $result;
     }
-
 }
