@@ -317,9 +317,9 @@ class ProjectService
         ]);
     }
 
-    public function revertToRevision(Project $project, Revision $revision)
+    public function revertToRevision(Revision $revision)
     {
-        if ($revision->project_id != $project->id) {
+        if ($revision->project_id != $this->project->id) {
             return response()->json([
                 'success' => false,
                 'message' => 'Revision does not belong to this project',
@@ -328,12 +328,12 @@ class ProjectService
         $projectData = json_decode($revision->data, true);
         try {
             DB::beginTransaction();
-            $project->update($projectData);
+            $this->project->update($projectData);
             DB::commit();
             return response()->json([
                 'success' => true,
                 'message' => 'Project reverted to revision',
-                'data' => new ProjectDetailResource($project->fresh()),
+                'data' => new ProjectDetailResource($this->project->fresh()),
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();

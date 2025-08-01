@@ -128,7 +128,7 @@ class RevisionController extends Controller
     public function revertToRevision(Project $project, Revision $revision)
     {
         $projectService = new ProjectService($project);
-        $result = $projectService->revertToRevision($project, $revision);
+        $result = $projectService->revertToRevision($revision);
         return $result;
     }
 }
