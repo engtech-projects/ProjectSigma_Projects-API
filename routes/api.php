@@ -83,7 +83,10 @@ Route::middleware('auth:api')->group(function () {
         Route::get('{project}/document-viewer', [ProjectAttachmentController::class, 'generateUrl']);
         Route::post('change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
         Route::patch('{project}/cash-flow', [ProjectController::class, 'updateCashFlow']);
+        Route::get('{project}/revisions', [RevisionController::class, 'showProjectRevisions']);
+        Route::put('{project}/revert/{revision}', [RevisionController::class, 'revertToRevision']);
     });
+    Route::get('revisions/{revision}', [RevisionController::class, 'show']);
 
     // ────── Attachments ──────
     Route::prefix('attachments')->group(function () {
