@@ -23,7 +23,7 @@ class UpdateProjectRequest extends FormRequest
     {
         return [
             'contract_id' => 'required|string',
-            'code' => 'nullable|string',
+            'project_code' => 'nullable|unique:projects,code',
             'name' => 'required|string',
             'location' => 'required|string',
             'amount' => 'required|regex:/^\d+(\.\d{1,2})?$/',

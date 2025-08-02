@@ -97,10 +97,30 @@ class ProjectService
         return ProjectCollection::collection($query->paginate(config('services.pagination.limit')))->response()->getData(true);
     }
 
-    public function update(Project $project, array $attr)
+    public function update(Project $project, array $data)
     {
-        return DB::transaction(function () use ($project, $attr) {
-            $project->fill($attr)->save();
+        return DB::transaction(function () use ($project, $data) {
+
+            // Check if project_code is being changed
+            if (isset($data['project_code']) && $data['project_code'] !== $project->project_code) {
+                // Check if the new project_code already exists in another project
+                $exists = Project::where('code', $data['project_code'])
+                    ->where('id', '!=', $project->id)
+                    ->exists();
+
+                if ($exists) {
+                    return new JsonResponse([
+                        'message' => 'The project code has already been taken.'
+                    ], 422);
+                }
+
+                // If not duplicate, allow the change
+                $project->code = $data['project_code'];
+            }
+
+            // Always update other fields, excluding project_code to avoid overwriting
+            $project->fill(collect($data)->except('project_code')->toArray());
+            $project->save();
 
             return new JsonResponse([
                 'message' => 'Project updated successfully.',
@@ -265,7 +285,7 @@ class ProjectService
     {
         // Determine if this is a TSS stage update
         $isTssUpdate = $this->project->marketing_stage->value === MarketingStage::AWARDED->value
-            && in_array($newStage->value, array_map(fn ($stage) => $stage->value, TssStage::cases()), true);
+            && in_array($newStage->value, array_map(fn($stage) => $stage->value, TssStage::cases()), true);
         // Only require approval if marketing is AWARDED and we're updating TSS
         if ($isTssUpdate && $this->project->marketing_stage === MarketingStage::AWARDED->value && $this->project->status !== 'approved') {
             throw ValidationException::withMessages([
@@ -274,11 +294,11 @@ class ProjectService
         }
         if (!$isTssUpdate) {
             // Handle marketing stage flow
-            $flow = array_map(fn ($stage) => $stage->value, MarketingStage::flow());
+            $flow = array_map(fn($stage) => $stage->value, MarketingStage::flow());
             $current = $this->project->marketing_stage->value;
         } else {
             // Handle TSS stage flow
-            $flow = array_map(fn ($stage) => $stage->value, TssStage::flow());
+            $flow = array_map(fn($stage) => $stage->value, TssStage::flow());
             $current = $this->project->tss_stage->value;
         }
         $currentIndex = array_search($current, $flow);
