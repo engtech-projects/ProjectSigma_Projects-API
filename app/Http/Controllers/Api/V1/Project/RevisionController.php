@@ -6,8 +6,9 @@ use App\Enums\ProjectStage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Revision\ApproveProposalRequest;
 use App\Http\Requests\Revision\RejectProposalRequest;
-use App\Http\Resources\Project\ProjectCollection;
-use App\Http\Resources\Revision\RevisionCollection;
+use App\Http\Resources\Project\ProjectDetailResource;
+use App\Http\Resources\ProjectRevisionsSummaryResource;
+use App\Http\Resources\RevisionResource;
 use App\Models\Project;
 use App\Models\Revision;
 use App\Services\ProjectService;
@@ -18,9 +19,12 @@ class RevisionController extends Controller
 {
     public function index(Request $request)
     {
-        $projects = Project::revised()->latest()->with(['revisions'])->paginate(config('services.pagination.limit'));
-
-        return response()->json(new ProjectCollection($projects), 200);
+        $listOfRevisions = Revision::paginate(config('services.pagination_limit'));
+        return RevisionResource::collection($listOfRevisions)
+            ->additional([
+                'success' => true,
+                'message' => 'Revisions retrieved successfully',
+            ]);
     }
 
     public function addRevision($status, $id)
@@ -42,7 +46,20 @@ class RevisionController extends Controller
 
     public function show(Revision $revision)
     {
-        return response()->json(new RevisionCollection($revision), 200);
+        return response()->json([
+            'success' => true,
+            'message' => 'Revision retrieved successfully',
+            'data' => new RevisionResource($revision),
+        ], 200);
+    }
+
+    public function showProjectRevisions(Project $project)
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Revisions retrieved successfully',
+            'data' => new ProjectRevisionsSummaryResource($project),
+        ], 200);
     }
 
     public function changeToProposal(ApproveProposalRequest $request)
@@ -106,5 +123,12 @@ class RevisionController extends Controller
         return response()->json([
             'message' => 'Project archived',
         ], 200);
+    }
+
+    public function revertToRevision(Project $project, Revision $revision)
+    {
+        $projectService = new ProjectService($project);
+        $result = $projectService->revertToRevision($revision);
+        return $result;
     }
 }

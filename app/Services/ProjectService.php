@@ -336,4 +336,33 @@ class ProjectService
             'version'      => $this->project->version,
         ]);
     }
+
+    public function revertToRevision(Revision $revision)
+    {
+        if ($revision->project_id != $this->project->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Revision does not belong to this project',
+            ], 400);
+        }
+        $projectData = json_decode($revision->data, true);
+        try {
+            DB::beginTransaction();
+            $this->project->update($projectData);
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Project reverted to revision',
+                'data' => new ProjectDetailResource($this->project->fresh()),
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to revert project to revision',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
 }
