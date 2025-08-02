@@ -285,7 +285,7 @@ class ProjectService
     {
         // Determine if this is a TSS stage update
         $isTssUpdate = $this->project->marketing_stage->value === MarketingStage::AWARDED->value
-            && in_array($newStage->value, array_map(fn($stage) => $stage->value, TssStage::cases()), true);
+            && in_array($newStage->value, array_map(fn ($stage) => $stage->value, TssStage::cases()), true);
         // Only require approval if marketing is AWARDED and we're updating TSS
         if ($isTssUpdate && $this->project->marketing_stage === MarketingStage::AWARDED->value && $this->project->status !== 'approved') {
             throw ValidationException::withMessages([
@@ -294,11 +294,11 @@ class ProjectService
         }
         if (!$isTssUpdate) {
             // Handle marketing stage flow
-            $flow = array_map(fn($stage) => $stage->value, MarketingStage::flow());
+            $flow = array_map(fn ($stage) => $stage->value, MarketingStage::flow());
             $current = $this->project->marketing_stage->value;
         } else {
             // Handle TSS stage flow
-            $flow = array_map(fn($stage) => $stage->value, TssStage::flow());
+            $flow = array_map(fn ($stage) => $stage->value, TssStage::flow());
             $current = $this->project->tss_stage->value;
         }
         $currentIndex = array_search($current, $flow);
