@@ -6,7 +6,6 @@ use App\Enums\ProjectStage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Revision\ApproveProposalRequest;
 use App\Http\Requests\Revision\RejectProposalRequest;
-use App\Http\Resources\Project\ProjectDetailResource;
 use App\Http\Resources\ProjectRevisionsSummaryResource;
 use App\Http\Resources\RevisionResource;
 use App\Models\Project;

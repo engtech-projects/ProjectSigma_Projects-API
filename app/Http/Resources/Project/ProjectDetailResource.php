@@ -14,12 +14,15 @@ class ProjectDetailResource extends JsonResource
         return [
             'id' => $this->id,
             'parent_project_id' => $this->parent_project_id,
+            'project_identifier' => $this->uuid,
             'code' => $this->code,
             'name' => $this->name,
             'contract_id' => $this->contract_id,
             'location' => $this->location,
+            'implementing_office' => $this->implementing_office,
             'amount' => $this->amount,
-            'contract_date' => $this->contract_date,
+            'nature_of_work' => $this->nature_of_work,
+            'contract_date' => $this->contract_date?->format('Y-m-d'),
             'duration' => $this->duration,
             'license' => $this->license,
             'stage' => $this->tss_stage === TssStage::PENDING->value
