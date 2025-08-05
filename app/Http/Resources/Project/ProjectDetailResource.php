@@ -22,7 +22,7 @@ class ProjectDetailResource extends JsonResource
             'implementing_office' => $this->implementing_office,
             'amount' => $this->amount,
             'nature_of_work' => $this->nature_of_work,
-            'contract_date' => optional($this->contract_date)->format('Y-m-d'),
+            'contract_date' => $this->contract_date?->format('Y-m-d'),
             'duration' => $this->duration,
             'license' => $this->license,
             'stage' => $this->tss_stage === TssStage::PENDING->value

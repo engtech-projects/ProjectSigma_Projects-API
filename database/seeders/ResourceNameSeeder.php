@@ -20,7 +20,6 @@ class ResourceNameSeeder extends Seeder
                 'description' => 'Construction Materials',
             ]
         );
-
         ResourceName::updateOrCreate(
             ['name' => 'Labor'],
             [
@@ -29,7 +28,6 @@ class ResourceNameSeeder extends Seeder
                 'description' => 'Labor Expense',
             ]
         );
-
         ResourceName::updateOrCreate(
             ['name' => 'Equipment'],
             [
@@ -38,7 +36,6 @@ class ResourceNameSeeder extends Seeder
                 'description' => 'Equipment Rental',
             ]
         );
-
         ResourceName::updateOrCreate(
             ['name' => 'Fuel / Oil Cost'],
             [
@@ -47,7 +44,6 @@ class ResourceNameSeeder extends Seeder
                 'description' => 'Cost of fuel/oil for vehicles or machines used in operations',
             ]
         );
-
         ResourceName::updateOrCreate(
             ['name' => 'Overhead Cost'],
             [

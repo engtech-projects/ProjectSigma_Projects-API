@@ -20,64 +20,45 @@ use Illuminate\Validation\ValidationException;
 class ProjectService
 {
     protected $project;
-
     public function __construct(Project $project)
     {
         $this->project = $project;
     }
-
     public function create(array $attr)
     {
         return DB::transaction(function () use ($attr) {
-            // Replace legacy stage column with new structure
             $attr['marketing_stage'] = MarketingStage::DRAFT->value;
             $attr['tss_stage'] = TssStage::PENDING->value;
-
             $attr['status'] = ProjectStatus::OPEN->value;
             $attr['amount'] = $attr['amount'] ?? 0;
             $attr['created_by'] = auth()->user()->id;
-
             $attr['cash_flow'] = json_encode(array_fill_keys(['wtax', 'q1', 'q2', 'q3', 'q4'], [
                 'accomplishment' => 0,
                 'cashflow' => 0,
                 'culmutative_accomplishment' => 0,
                 'culmutative_cashflow' => 0,
             ]));
-
             $data = Project::create($attr);
-
             return new JsonResponse([
                 'message' => 'Project created successfully.',
                 'data' => $data,
             ], 201);
         });
     }
-
     public function changeSummaryRates(array $attr)
     {
         return DB::transaction(function () use ($attr) {
             DB::table('resources')
                 ->whereIn('id', $attr['ids'])
                 ->update(['unit_cost' => $attr['unit_cost']]);
-
             return new JsonResponse([
                 'message' => 'Summary rates updated successfully, Number of Direct Cost Affected: ' . count($attr['ids']),
             ], 200);
         });
     }
-
-    /**
-     * Retrieves a paginated list of projects with optional filtering by stage or status.
-     *
-     * Applies filters based on provided attributes, including limiting results to projects created by the authenticated user for certain statuses. Eager loads the latest revision for each project.
-     *
-     * @param array $attr Optional filters such as 'key' for stage or 'status' for project status.
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator Paginated list of projects.
-     */
     public function withPagination(array $attr)
     {
         $query = Project::query();
-
         $query->when(isset($attr['key']), function ($query) use ($attr) {
             $query->where('stage', $attr['key']);
         });
@@ -96,39 +77,28 @@ class ProjectService
         });
         return ProjectCollection::collection($query->paginate(config('services.pagination.limit')))->response()->getData(true);
     }
-
     public function update(Project $project, array $data)
     {
         return DB::transaction(function () use ($project, $data) {
-
-            // Check if project_code is being changed
             if (isset($data['project_code']) && $data['project_code'] !== $project->project_code) {
-                // Check if the new project_code already exists in another project
                 $exists = Project::where('code', $data['project_code'])
                     ->where('id', '!=', $project->id)
                     ->exists();
-
                 if ($exists) {
                     return new JsonResponse([
                         'message' => 'The project code has already been taken.'
                     ], 422);
                 }
-
-                // If not duplicate, allow the change
                 $project->code = $data['project_code'];
             }
-
-            // Always update other fields, excluding project_code to avoid overwriting
             $project->fill(collect($data)->except('project_code')->toArray());
             $project->save();
-
             return new JsonResponse([
                 'message' => 'Project updated successfully.',
                 'data' => $project,
             ], 200);
         });
     }
-
     public function assignTeam(Project $project, array $attr)
     {
         return DB::transaction(function () use ($project, $attr) {
@@ -139,14 +109,12 @@ class ProjectService
                     $personnel
                 );
             }
-
             return new JsonResponse([
                 'message' => 'Team assigned successfully.',
                 'data' => $project->team()->get(),
             ], 200);
         });
     }
-
     public static function changeToDraft($id)
     {
         return DB::transaction(function () use ($id) {
@@ -154,11 +122,9 @@ class ProjectService
             $project->stage = ProjectStage::DRAFT->value;
             $project->status = ProjectStatus::DRAFT->value;
             $project->save();
-
             return true;
         });
     }
-
     public static function changeToAwarded($id)
     {
         return DB::transaction(function () use ($id) {
@@ -166,11 +132,9 @@ class ProjectService
             $project->stage = ProjectStage::AWARDED->value;
             $project->status = ProjectStatus::ONGOING->value;
             $project->save();
-
             return true;
         });
     }
-
     public static function changeToProposal($id)
     {
         return DB::transaction(function () use ($id) {
@@ -178,7 +142,6 @@ class ProjectService
             $project->stage = ProjectStage::PROPOSAL->value;
             $project->status = ProjectStatus::OPEN->value;
             $project->save();
-
             return true;
         });
     }
@@ -188,11 +151,9 @@ class ProjectService
             $project = Project::findOrFail($id);
             $project->stage = ProjectStage::BIDDING->value;
             $project->save();
-
             return true;
         });
     }
-
     public static function changeToArchived($id)
     {
         return DB::transaction(function () use ($id) {
@@ -200,7 +161,6 @@ class ProjectService
             $project->stage = ProjectStage::ARCHIVED->value;
             $project->status = ProjectStatus::ARCHIVED->value;
             $project->save();
-
             return true;
         });
     }
@@ -233,9 +193,7 @@ class ProjectService
                 'cash_flow' => $project->cash_flow,
                 'created_by' => auth()->user()->id,
             ];
-
             $newProject = Project::create($newProjectData);
-
             foreach ($project->phases as $phase) {
                 $newPhaseData = [
                     'project_id' => $newProject->id,
@@ -244,7 +202,6 @@ class ProjectService
                     'total_cost' => $phase->total_cost,
                 ];
                 $newPhase = BoqPart::create($newPhaseData);
-
                 foreach ($phase->tasks as $task) {
                     $newTaskData = [
                         'phase_id' => $newPhase->id,
@@ -256,7 +213,6 @@ class ProjectService
                         'amount' => $task->amount,
                     ];
                     $newTask = BoqItem::create($newTaskData);
-
                     foreach ($task->resources as $resource) {
                         $newResourceData = [
                             'task_id' => $newTask->id,
@@ -273,49 +229,39 @@ class ProjectService
                     }
                 }
             }
-
             return response()->json([
                 'message' => 'Project replicated as version ' . ($maxVersion + 1) . '.',
                 'data' => $newProject->load('phases.tasks.resources'),
             ], 201);
         });
     }
-
     public function updateStage(ProjectStage $newStage)
     {
-        // Determine if this is a TSS stage update
         $isTssUpdate = $this->project->marketing_stage->value === MarketingStage::AWARDED->value
-            && in_array($newStage->value, array_map(fn ($stage) => $stage->value, TssStage::cases()), true);
-        // Only require approval if marketing is AWARDED and we're updating TSS
+            && in_array($newStage->value, array_map(fn($stage) => $stage->value, TssStage::cases()), true);
         if ($isTssUpdate && $this->project->marketing_stage === MarketingStage::AWARDED->value && $this->project->status !== 'approved') {
             throw ValidationException::withMessages([
                 'status' => 'Project must be approved to update TSS stage after marketing is awarded.',
             ]);
         }
         if (!$isTssUpdate) {
-            // Handle marketing stage flow
-            $flow = array_map(fn ($stage) => $stage->value, MarketingStage::flow());
+            $flow = array_map(fn($stage) => $stage->value, MarketingStage::flow());
             $current = $this->project->marketing_stage->value;
         } else {
-            // Handle TSS stage flow
-            $flow = array_map(fn ($stage) => $stage->value, TssStage::flow());
+            $flow = array_map(fn($stage) => $stage->value, TssStage::flow());
             $current = $this->project->tss_stage->value;
         }
         $currentIndex = array_search($current, $flow);
         $newIndex = array_search($newStage->value, $flow);
-        // Allow only forward step-by-step transitions (e.g., index + 1)
         if ($newIndex === false || $currentIndex === false || $newIndex !== $currentIndex + 1) {
             throw ValidationException::withMessages([
                 'stage' => 'Invalid stage transition.',
             ]);
         }
-        // Save the new stage
         if (!$isTssUpdate) {
             $this->project->marketing_stage = $newStage->value;
             if ($newStage->value === MarketingStage::AWARDED->value) {
-                // Automatically promote TSS to 'awarded' when marketing hits 'awarded'
                 $this->project->tss_stage = TssStage::AWARDED->value;
-                // Create revision when marketing hits 'awarded'
                 $this->createProjectRevision($this->project->status);
             }
         } else {
@@ -336,7 +282,6 @@ class ProjectService
             'version'      => $this->project->version,
         ]);
     }
-
     public function revertToRevision(Revision $revision)
     {
         if ($revision->project_id != $this->project->id) {
@@ -364,5 +309,4 @@ class ProjectService
             ], 500);
         }
     }
-
 }
