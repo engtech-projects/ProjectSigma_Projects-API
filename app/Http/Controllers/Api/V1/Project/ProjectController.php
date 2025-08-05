@@ -109,12 +109,6 @@ class ProjectController extends Controller
     {
         $validated = $request->validated();
         $result = $this->projectService->update($project, $validated);
-        if (isset($result['error'])) {
-            return response()->json([
-                'message' => 'Failed to update the project.',
-                'error' => $result['error'],
-            ], 500);
-        }
         return response()->json([
             'message' => 'Project has been updated.',
             'data' => $result,
