@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('resource_id')
                 ->constrained('resources')
-                ->onDelete('cascade');
+                ->onDelete('restrict')
+                ->onUpdate('cascade');
             $table->string('label', 100);
             $table->decimal('value', 10, 2);
             $table->string('unit', 20);
