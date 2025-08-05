@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\LaborCostCategory;
+use App\Enums\WorkTimeCategory;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,8 +16,8 @@ return new class extends Migration
         Schema::table('resources', function (Blueprint $table){
             $table->decimal('consumption_rate', 10, 2)->after('total_cost')->nullable();
             $table->varchar('consumption_unit', 50)->after('consumption_rate')->nullable();
-            $table->enum('labor_cost_category', [])->after('consumption_rate')->nullable();
-            $table->enum('work_time_category', [])->after('labor_cost_category')->nullable();
+            $table->enum('labor_cost_category', LaborCostCategory::values())->after('consumption_rate')->nullable();
+            $table->enum('work_time_category', WorkTimeCategory::values())->after('labor_cost_category')->nullable();
             $table->text('remarks')->after('work_time_category')->nullable();
         });
     }
