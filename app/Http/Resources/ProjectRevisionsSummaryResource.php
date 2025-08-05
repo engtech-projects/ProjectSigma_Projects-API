@@ -20,7 +20,8 @@ class ProjectRevisionsSummaryResource extends JsonResource
         $projectName = $data['name'] ?? null;
         $version = $this->version ?? null;
         return [
-            'project_id' => $this->id,
+            'id' => $this->id,
+            'project_id' => $data['id'] ?? null,
             'project_code' => $data['code'] ?? null,
             'project_name' => $projectName,
             'version' => $this->version,
