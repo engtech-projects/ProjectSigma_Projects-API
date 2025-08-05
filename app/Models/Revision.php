@@ -55,6 +55,6 @@ class Revision extends Model
 
     public function scopeLatestRevision($query)
     {
-        return $query->orderBy('created_at', 'desc')->first();
+        return $query->orderBy('created_at', 'desc');
     }
 }

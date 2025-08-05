@@ -12,17 +12,21 @@ class ProjectRevisionsSummaryResource extends JsonResource
      *
      * @return array<string, mixed>
      */
+
+
     public function toArray(Request $request): array
     {
+        $data = is_array($this->data) ? $this->data : json_decode($this->data, true) ?? [];
+        $projectName = $data['name'] ?? null;
+        $version = $this->version ?? null;
         return [
             'project_id' => $this->id,
-            'project_code' => $this->code,
-            'project_name' => $this->name,
+            'project_code' => $data['code'] ?? null,
+            'project_name' => $projectName,
             'version' => $this->version,
+            'project_name_version' => trim($projectName . ' v' . $version),
             'status' => $this->status,
             'created_at' => $this->created_at,
-            'revisions' => RevisionResource::collection($this->revisions),
         ];
     }
-
 }
