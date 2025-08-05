@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('resources', function (Blueprint $table){
-            $table->decimal('consumption_rate', 10, 2)->after('total_cost');
-            $table->varchar('consumption_unit', 50)->after('consumption_rate');
-            $table->enum('labor_cost_category', ['13th_month', 'government_premiums', 'project_allowance'])->after('consumption_rate');
-            $table->enum('work_time_category', ['regular', 'overtime', 'sunday', 'regular_holiday', 'special_holiday'])->after('labor_cost_category');
-            $table->text('remarks')->after('work_time_category');
+            $table->decimal('consumption_rate', 10, 2)->after('total_cost')->nullable();
+            $table->varchar('consumption_unit', 50)->after('consumption_rate')->nullable();
+            $table->enum('labor_cost_category', ['13th_month', 'government_premiums', 'project_allowance'])->after('consumption_rate')->nullable();
+            $table->enum('work_time_category', ['regular', 'overtime', 'sunday', 'regular_holiday', 'special_holiday'])->after('labor_cost_category')->nullable();
+            $table->text('remarks')->after('work_time_category')->nullable();
         });
     }
 
