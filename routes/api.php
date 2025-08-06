@@ -100,7 +100,7 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('tasks', BoqItemController::class);
     Route::resource('resource-items', ResourceItemController::class);
     Route::get('direct-cost-estimates', [DirectCostEstimateController::class, 'index']);
-    Route::get('direct-cost-estimates/{resourceItem}', [DirectCostEstimateController::class, 'show']);
+    Route::get('direct-cost-estimates/{id}', [DirectCostEstimateController::class, 'show']);
 
     // ────── Revisions ──────
     Route::prefix('project-revisions')->group(function () {
