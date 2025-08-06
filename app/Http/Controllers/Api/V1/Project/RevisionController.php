@@ -56,7 +56,7 @@ class RevisionController extends Controller
     {
         $projectId = $project->id;
         $revisions = Revision::where('project_id', $projectId)
-            ->latestRevision()
+            ->latest()
             ->get();
 
         return response()->json([
