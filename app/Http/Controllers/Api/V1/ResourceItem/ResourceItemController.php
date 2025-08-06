@@ -27,7 +27,6 @@ class ResourceItemController extends Controller
      */
     public function create()
     {
-
     }
 
     /**
