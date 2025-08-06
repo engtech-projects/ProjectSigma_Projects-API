@@ -14,6 +14,7 @@ use App\Models\ResourceItem;
 use App\Models\BoqItem;
 use App\Models\Revision;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -77,22 +78,11 @@ class ProjectService
         });
         return ProjectCollection::collection($query->paginate(config('services.pagination.limit')))->response()->getData(true);
     }
-    public function update(Project $project, array $data)
+    public function update($project, array $payload)
     {
-        return DB::transaction(function () use ($project, $data) {
-            if (isset($data['project_code']) && $data['project_code'] !== $project->project_code) {
-                $exists = Project::where('code', $data['project_code'])
-                    ->where('id', '!=', $project->id)
-                    ->exists();
-                if ($exists) {
-                    return new JsonResponse([
-                        'message' => 'The project code has already been taken.'
-                    ], 422);
-                }
-                $project->code = $data['project_code'];
-            }
-            $project->fill(collect($data)->except('project_code')->toArray());
-            $project->save();
+        return DB::transaction(function () use ($project, $payload) {
+            $payload = Arr::only($payload, $project->getFillable());
+            $project->update($payload);
             return new JsonResponse([
                 'message' => 'Project updated successfully.',
                 'data' => $project,

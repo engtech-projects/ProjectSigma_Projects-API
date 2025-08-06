@@ -38,8 +38,8 @@ class ProjectController extends Controller
         $projectKey = $validated['project_key'] ?? null;
         $status = $validated['stage_status'] ?? null;
         $data = Project::with('revisions')
-            ->when($status, fn ($query) => $query->filterByStage($status))
-            ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
+            ->when($status, fn($query) => $query->filterByStage($status))
+            ->when($projectKey, fn($query) => $query->projectKey($projectKey))
             ->latestFirst()
             ->paginate(config('services.pagination.limit'));
         return ProjectListingResource::collection($data)
@@ -55,8 +55,8 @@ class ProjectController extends Controller
         $projectKey = $validated['project_key'] ?? null;
         $status = $validated['stage_status'] ?? null;
         $data = Project::with('revisions')
-            ->when($status, fn ($query) => $query->filterByStage($status))
-            ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
+            ->when($status, fn($query) => $query->filterByStage($status))
+            ->when($projectKey, fn($query) => $query->projectKey($projectKey))
             ->latestFirst()
             ->createdByAuth()
             ->paginate(config('services.pagination.limit'));
@@ -105,10 +105,10 @@ class ProjectController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProjectRequest $request, Project $project)
+    public function update(UpdateProjectRequest $request, Project $resource)
     {
         $validated = $request->validated();
-        $result = $this->projectService->update($project, $validated);
+        $result = $this->projectService->update($resource, $validated);
         return response()->json([
             'message' => 'Project has been updated.',
             'data' => $result,
@@ -149,8 +149,8 @@ class ProjectController extends Controller
         $projectKey = $validated['project_key'] ?? null;
         $status = $validated['stage_status'] ?? null;
         $projects = Project::query()
-            ->when($status, fn ($query) => $query->awarded())
-            ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
+            ->when($status, fn($query) => $query->awarded())
+            ->when($projectKey, fn($query) => $query->projectKey($projectKey))
             ->latestFirst()
             ->paginate(config('services.pagination.limit'));
         return ProjectListingResource::collection($projects)
