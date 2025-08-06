@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ResourceItem\StoreResourceItemRequest;
 use App\Http\Requests\ResourceItem\UpdateResourceItemRequest;
 use App\Models\ResourceItem;
-use App\Models\ResourceName;
 use App\Services\ResourceService;
 
 class ResourceItemController extends Controller
