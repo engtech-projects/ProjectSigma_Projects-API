@@ -29,7 +29,7 @@ class RevisionResource extends JsonResource
 
     protected function getDeserializedData(): array
     {
-        $decoded = json_decode($this->data, true) ;
+        $decoded = json_decode($this->data, true);
         if (isset($decoded['cash_flow']) && is_string($decoded['cash_flow'])) {
             $decoded['cash_flow'] = json_decode($decoded['cash_flow'], true);
         }
