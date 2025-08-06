@@ -15,8 +15,8 @@ class DirectCostEstimateController extends Controller
         $task_id = $validated['task_id'] ?? null;
         $resource_type = $validated['resource_type'] ?? null;
         $data = ResourceItem::with('project', 'task')
-            ->when($task_id, fn ($query) => $query->where('task_id', $task_id))
-            ->when($resource_type, fn ($query) => $query->where('resource_type', $resource_type))
+            ->when($task_id, fn ($query) => $query->filterByTaskId($task_id))
+            ->when($resource_type, fn ($query) => $query->filterByResourceType($resource_type))
             ->get();
         return DirectCostEstimateResource::collection($data)
             ->additional([
