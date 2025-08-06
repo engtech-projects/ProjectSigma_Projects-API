@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ResourceItem\StoreResourceItemRequest;
 use App\Http\Requests\ResourceItem\UpdateResourceItemRequest;
 use App\Models\ResourceItem;
+use App\Models\ResourceName;
 use App\Services\ResourceService;
 
 class ResourceItemController extends Controller
@@ -15,7 +16,11 @@ class ResourceItemController extends Controller
      */
     public function index()
     {
-        //
+        $resourceItems = ResourceItem::all();
+
+        return response()->json([
+            'data' => $resourceItems,
+        ], 200);
     }
 
     /**
@@ -23,6 +28,7 @@ class ResourceItemController extends Controller
      */
     public function create()
     {
+        //
     }
 
     /**

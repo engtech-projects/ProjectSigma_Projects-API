@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
 use App\Http\Controllers\Api\V1\BoqItem\BoqItemController;
 use App\Http\Controllers\APiSyncController;
 use App\Http\Controllers\ApiServiceController;
+use App\Http\Controllers\DirectCostEstimateController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Resources\User\UserCollection;
 use App\Models\ResourceName;
@@ -85,6 +86,7 @@ Route::middleware('auth:api')->group(function () {
         Route::patch('{project}/cash-flow', [ProjectController::class, 'updateCashFlow']);
         Route::get('{project}/revisions', [RevisionController::class, 'showProjectRevisions']);
         Route::put('{project}/revert/{revision}', [RevisionController::class, 'revertToRevision']);
+        Route::get('/revisions', [RevisionController::class, 'index']);
     });
     Route::get('revisions/{revision}', [RevisionController::class, 'show']);
 
@@ -97,6 +99,8 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('phases', BoqPartController::class);
     Route::resource('tasks', BoqItemController::class);
     Route::resource('resource-items', ResourceItemController::class);
+    Route::get('direct-cost-estimates', [DirectCostEstimateController::class, 'index']);
+    Route::get('direct-cost-estimates/{resourceItem}', [DirectCostEstimateController::class, 'show']);
 
     // ────── Revisions ──────
     Route::prefix('project-revisions')->group(function () {

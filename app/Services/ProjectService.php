@@ -216,7 +216,7 @@ class ProjectService
                     foreach ($task->resources as $resource) {
                         $newResourceData = [
                             'task_id' => $newTask->id,
-                            'name_id' => $resource->name_id,
+                            'resource_type' => $resource->resource_type,
                             'description' => $resource->description,
                             'quantity' => $resource->quantity,
                             'unit' => $resource->unit,
