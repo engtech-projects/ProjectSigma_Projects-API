@@ -25,11 +25,11 @@ class DirectCostEstimateController extends Controller
             ]);
     }
 
-    public function show(ResourceItem $resourceItem)
+    public function show(ResourceItem $id)
     {
         return response()->json([
             'success' => true,
-            'data' => new DirectCostEstimateResource($resourceItem),
+            'data' => new DirectCostEstimateResource($id),
         ], 200);
 
     }
