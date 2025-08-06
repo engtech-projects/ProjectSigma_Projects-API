@@ -86,7 +86,6 @@ Route::middleware('auth:api')->group(function () {
         Route::patch('{project}/cash-flow', [ProjectController::class, 'updateCashFlow']);
         Route::get('{project}/revisions', [RevisionController::class, 'showProjectRevisions']);
         Route::put('{project}/revert/{revision}', [RevisionController::class, 'revertToRevision']);
-        Route::get('/revisions', [RevisionController::class, 'index']);
     });
     Route::get('revisions/{revision}', [RevisionController::class, 'show']);
 
