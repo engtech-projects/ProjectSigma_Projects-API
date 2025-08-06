@@ -56,7 +56,7 @@ class ResourceItem extends Model
 
     public function resourceName(): HasOne
     {
-        return $this->hasOne(ResourceName::class, 'id', 'resource_type');
+        return $this->hasOne(ResourceName::class, 'id', 'name_id');
     }
 
     public function scopeFilterByTaskId($query, $taskId)
