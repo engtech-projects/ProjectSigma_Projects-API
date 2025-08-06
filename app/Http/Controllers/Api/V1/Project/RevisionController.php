@@ -54,7 +54,7 @@ class RevisionController extends Controller
 
     public function showProjectRevisions($project)
     {
-        $revisions = Revision::where('project_id', $project)
+        $revisions = Revision::where('project_id', $project->id)
             ->latest()
             ->get();
 
