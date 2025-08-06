@@ -59,11 +59,17 @@ class ResourceItem extends Model
         return $this->hasOne(ResourceName::class, 'id', 'resource_type');
     }
 
-    public function scopeFilterByTaskIdOrResourceType($query, $taskId, $resourceType)
+    public function scopeFilterByTaskId($query, $taskId)
     {
-        return $query->where(function ($query) use ($taskId, $resourceType) {
-            $query->where('task_id','like', "%{$taskId}%")
-                ->orWhere('resource_type', 'like', "%{$resourceType}%");
+        return $query->where(function ($query) use ($taskId) {
+            $query->where('task_id','like', "%{$taskId}%");
+        });
+    }
+
+    public function scopeFilterByResourceType($query, $resourceType)
+    {
+        return $query->where(function ($query) use ($resourceType) {
+            $query->where('resource_type','like', "%{$resourceType}%");
         });
     }
 }
