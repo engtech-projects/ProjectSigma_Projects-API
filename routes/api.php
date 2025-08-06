@@ -86,7 +86,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('{project}/revisions', [RevisionController::class, 'showProjectRevisions']);
         Route::put('{project}/revert/{revision}', [RevisionController::class, 'revertToRevision']);
     });
-    Route::get('revisions/{revision}', [RevisionController::class, 'show']);
 
     // ────── Attachments ──────
     Route::prefix('attachments')->group(function () {
@@ -100,6 +99,7 @@ Route::middleware('auth:api')->group(function () {
 
     // ────── Revisions ──────
     Route::prefix('project-revisions')->group(function () {
+        Route::resource('revisions', RevisionController::class);
         Route::post('change-to-proposal', [RevisionController::class, 'changeToProposal']);
         Route::post('return-to-draft', [RevisionController::class, 'returnToDraft']);
     });

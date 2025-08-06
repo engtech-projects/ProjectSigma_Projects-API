@@ -105,10 +105,10 @@ class ProjectController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProjectRequest $request, Project $project)
+    public function update(UpdateProjectRequest $request, Project $resource)
     {
         $validated = $request->validated();
-        $result = $this->projectService->update($project, $validated);
+        $result = $this->projectService->update($resource, $validated);
         return response()->json([
             'message' => 'Project has been updated.',
             'data' => $result,
