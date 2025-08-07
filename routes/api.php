@@ -83,6 +83,8 @@ Route::middleware('auth:api')->group(function () {
         Route::get('{project}/document-viewer', [ProjectAttachmentController::class, 'generateUrl']);
         Route::post('change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
         Route::patch('{project}/cash-flow', [ProjectController::class, 'updateCashFlow']);
+        Route::get('{project}/revisions', [RevisionController::class, 'showProjectRevisions']);
+        Route::put('{project}/revert/{revision}', [RevisionController::class, 'revertToRevision']);
     });
 
     // ────── Attachments ──────
@@ -97,6 +99,8 @@ Route::middleware('auth:api')->group(function () {
 
     // ────── Revisions ──────
     Route::prefix('project-revisions')->group(function () {
+        Route::resource('revisions', RevisionController::class);
+        Route::post('revision/{revision}/copy-to-project', [RevisionController::class, 'copyAwardedProjectAsDraft']);
         Route::post('change-to-proposal', [RevisionController::class, 'changeToProposal']);
         Route::post('return-to-draft', [RevisionController::class, 'returnToDraft']);
     });

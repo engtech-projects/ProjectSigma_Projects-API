@@ -34,7 +34,7 @@ class Project extends Model
     {
         return LogOptions::defaults()
             ->logAll() // List of attributes to log
-            ->setDescriptionForEvent(fn(string $eventName) => "Project has been {$eventName}");
+            ->setDescriptionForEvent(fn (string $eventName) => "Project has been {$eventName}");
     }
 
     protected $fillable = [
@@ -121,7 +121,7 @@ class Project extends Model
 
     public function revisions(): HasMany
     {
-        return $this->hasMany(Revision::class);
+        return $this->hasMany(Revision::class, 'project_id', 'id');
     }
 
     public function projectDesignation(): HasMany

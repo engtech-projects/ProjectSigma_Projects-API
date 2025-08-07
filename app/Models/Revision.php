@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\RevisionStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -53,8 +54,21 @@ class Revision extends Model
         return $this->belongsTo(Project::class);
     }
 
-    public function scopeLatestRevision($query)
+    public function scopeWhereProjectCode(Builder $query, string $code): Builder
     {
-        return $query->orderBy('created_at', 'desc')->first();
+        return $query->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.code')) LIKE ?", ["%{$code}%"]);
+    }
+
+    public function scopeWhereProjectName(Builder $query, string $name): Builder
+    {
+        return $query->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.name')) LIKE ?", ["%{$name}%"]);
+    }
+
+    public function scopeProjectKey(Builder $query, string $projectKey): Builder
+    {
+        return $query->where(function ($q) use ($projectKey) {
+            $q->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.code')) LIKE ?", ["%{$projectKey}%"])
+                ->orWhereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.name')) LIKE ?", ["%{$projectKey}%"]);
+        });
     }
 }

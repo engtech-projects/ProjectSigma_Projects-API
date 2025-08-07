@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers\Api\V1\Project;
 
+use App\Enums\MarketingStage;
 use App\Enums\ProjectStage;
+use App\Enums\ProjectStatus;
+use App\Enums\TssStage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FilterProjectRequest;
 use App\Http\Requests\Revision\ApproveProposalRequest;
 use App\Http\Requests\Revision\RejectProposalRequest;
-use App\Http\Resources\Project\ProjectCollection;
-use App\Http\Resources\Revision\RevisionCollection;
+use App\Http\Resources\ProjectRevisionsSummaryResource;
+use App\Http\Resources\RevisionResource;
 use App\Models\Project;
 use App\Models\Revision;
 use App\Services\ProjectService;
@@ -16,11 +20,18 @@ use Illuminate\Support\Facades\DB;
 
 class RevisionController extends Controller
 {
-    public function index(Request $request)
+    public function index(FilterProjectRequest $request)
     {
-        $projects = Project::revised()->latest()->with(['revisions'])->paginate(config('services.pagination.limit'));
-
-        return response()->json(new ProjectCollection($projects), 200);
+        $validated = $request->validated();
+        $projectKey = $validated['project_key'] ?? null;
+        $listOfRevisions = Revision::when($projectKey, fn ($query) => $query->projectKey($projectKey))
+            ->latest()
+            ->paginate(config('services.pagination.limit'));
+        return ProjectRevisionsSummaryResource::collection($listOfRevisions)
+            ->additional([
+                'success' => true,
+                'message' => 'Revisions retrieved successfully',
+            ]);
     }
 
     public function addRevision($status, $id)
@@ -40,9 +51,85 @@ class RevisionController extends Controller
         return true;
     }
 
+    public function copyAwardedProjectAsDraft(Revision $revision)
+    {
+        $projectData = json_decode($revision->data, true);
+        try {
+            DB::beginTransaction();
+            if (!isset($projectData['name'], $projectData['location'])) {
+                throw new \Exception('Missing required project data fields.');
+            }
+            // 1. Create or update project
+            $project = Project::create([
+                'parent_project_id' => $projectData['id'],
+                'contract_id' => $projectData['contract_id'] ?? null,
+                'code' => null,
+                'name' => $projectData['name'],
+                'location' => $projectData['location'],
+                'amount' => $projectData['amount'],
+                'duration' => $projectData['duration'],
+                'nature_of_work' => $projectData['nature_of_work'],
+                'contract_date' => $projectData['contract_date'],
+                'ntp_date'  => null,
+                'noa_date'  => null,
+                'license' => $projectData['license'] ?? null,
+                'is_original' => false,
+                'version' => 1.0,
+                'status' => ProjectStatus::DRAFT->value,
+                'marketing_stage' => MarketingStage::DRAFT->value,
+                'tss_stage' => TssStage::PENDING->value,
+                'project_identifier' => $projectData['project_identifier'],
+                'implementing_office' => $projectData['implementing_office'] ?? null,
+                'current_revision_id' => $projectData['current_revision_id'],
+                'cash_flow' => $projectData['cash_flow'] ?? null,
+                'designator' => $projectData['designator'] ?? null,
+                'position' => $projectData['position'] ?? null,
+                'created_by' => auth()->user()->id,
+            ]);
+            // 2. Restore related data
+            if (!empty($projectData['phases'])) {
+                foreach ($projectData['phases'] as $itemData) {
+                    $phase = $project->phases()->create($itemData);
+                    foreach ($itemData['tasks'] ?? [] as $taskData) {
+                        $phase->tasks()->create($taskData);
+                    }
+                }
+            }
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Project duplicate sucessfully',
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to duplicate',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function show(Revision $revision)
     {
-        return response()->json(new RevisionCollection($revision), 200);
+        return response()->json([
+            'success' => true,
+            'message' => 'Revision retrieved successfully',
+            'data' => new RevisionResource($revision),
+        ], 200);
+    }
+
+    public function showProjectRevisions($project)
+    {
+        $revisions = Revision::where('project_id', $project->id)
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Revisions retrieved successfully',
+            'data' => ProjectRevisionsSummaryResource::collection($revisions),
+        ], 200);
     }
 
     public function changeToProposal(ApproveProposalRequest $request)
@@ -106,5 +193,12 @@ class RevisionController extends Controller
         return response()->json([
             'message' => 'Project archived',
         ], 200);
+    }
+
+    public function revertToRevision(Project $project, Revision $revision)
+    {
+        $projectService = new ProjectService($project);
+        $result = $projectService->revertToRevision($revision);
+        return $result;
     }
 }

@@ -86,6 +86,51 @@ class BoqItem extends Model
         return $this->resources->sum('total_cost');
     }
 
+    public function getTotalMaterialsAmountAttribute()
+    {
+        return $this->resources()
+            ->whereHas('resourceName', function ($query) {
+                $query->where('name', 'Materials');
+            })
+            ->sum('total_cost');
+    }
+
+    public function getTotalEquipmentAmountAttribute()
+    {
+        return $this->resources()
+            ->whereHas('resourceName', function ($query) {
+                $query->where('name', 'Equipment');
+            })
+            ->sum('total_cost');
+    }
+
+    public function getTotalLaborAmountAttribute()
+    {
+        return $this->resources()
+            ->whereHas('resourceName', function ($query) {
+                $query->where('name', 'Labor');
+            })
+            ->sum('total_cost');
+    }
+
+    public function getTotalFuelOilAmountAttribute()
+    {
+        return $this->resources()
+            ->whereHas('resourceName', function ($query) {
+                $query->where('name', 'Fuel / Oil Cost');
+            })
+            ->sum('total_cost');
+    }
+
+    public function getTotalOverheadAmountAttribute()
+    {
+        return $this->resources()
+            ->whereHas('resourceName', function ($query) {
+                $query->where('name', 'Overhead Cost');
+            })
+            ->sum('total_cost');
+    }
+
     public function getOcmAttribute()
     {
         return $this->resource_item_total > 0 ? $this->resource_item_total * 0.1 : 0;
