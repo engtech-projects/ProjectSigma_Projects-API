@@ -24,7 +24,7 @@ class RevisionController extends Controller
     {
         $validated = $request->validated();
         $projectKey = $validated['project_key'] ?? null;
-        $listOfRevisions = Revision::when($projectKey, fn($query) => $query->projectKey($projectKey))
+        $listOfRevisions = Revision::when($projectKey, fn ($query) => $query->projectKey($projectKey))
             ->paginate(config('services.pagination_limit'));
         return ProjectRevisionsSummaryResource::collection($listOfRevisions)
             ->additional([
