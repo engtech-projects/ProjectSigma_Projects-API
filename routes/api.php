@@ -100,6 +100,7 @@ Route::middleware('auth:api')->group(function () {
     // ────── Revisions ──────
     Route::prefix('project-revisions')->group(function () {
         Route::resource('revisions', RevisionController::class);
+        Route::post('revision/{revision}/copy-to-project', [RevisionController::class, 'copyAwardedProjectAsDraft']);
         Route::post('change-to-proposal', [RevisionController::class, 'changeToProposal']);
         Route::post('return-to-draft', [RevisionController::class, 'returnToDraft']);
     });
