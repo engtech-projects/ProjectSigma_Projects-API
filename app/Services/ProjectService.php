@@ -228,17 +228,17 @@ class ProjectService
     public function updateStage(ProjectStage $newStage)
     {
         $isTssUpdate = $this->project->marketing_stage->value === MarketingStage::AWARDED->value
-            && in_array($newStage->value, array_map(fn ($stage) => $stage->value, TssStage::cases()), true);
+            && in_array($newStage->value, array_map(fn($stage) => $stage->value, TssStage::cases()), true);
         if ($isTssUpdate && $this->project->marketing_stage === MarketingStage::AWARDED->value && $this->project->status !== 'approved') {
             throw ValidationException::withMessages([
                 'status' => 'Project must be approved to update TSS stage after marketing is awarded.',
             ]);
         }
         if (!$isTssUpdate) {
-            $flow = array_map(fn ($stage) => $stage->value, MarketingStage::flow());
+            $flow = array_map(fn($stage) => $stage->value, MarketingStage::flow());
             $current = $this->project->marketing_stage->value;
         } else {
-            $flow = array_map(fn ($stage) => $stage->value, TssStage::flow());
+            $flow = array_map(fn($stage) => $stage->value, TssStage::flow());
             $current = $this->project->tss_stage->value;
         }
         $currentIndex = array_search($current, $flow);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Project;
 
 use App\Enums\ProjectStage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FilterProjectRequest;
 use App\Http\Requests\Revision\ApproveProposalRequest;
 use App\Http\Requests\Revision\RejectProposalRequest;
 use App\Http\Resources\ProjectRevisionsSummaryResource;
@@ -16,10 +17,13 @@ use Illuminate\Support\Facades\DB;
 
 class RevisionController extends Controller
 {
-    public function index(Request $request)
+    public function index(FilterProjectRequest $request)
     {
-        $listOfRevisions = Revision::paginate(config('services.pagination_limit'));
-        return RevisionResource::collection($listOfRevisions)
+        $validated = $request->validated();
+        $projectKey = $validated['project_key'] ?? null;
+        $listOfRevisions = Revision::when($projectKey, fn($query) => $query->projectKey($projectKey))
+            ->paginate(config('services.pagination_limit'));
+        return ProjectRevisionsSummaryResource::collection($listOfRevisions)
             ->additional([
                 'success' => true,
                 'message' => 'Revisions retrieved successfully',
@@ -40,6 +44,11 @@ class RevisionController extends Controller
             ]);
         });
 
+        return true;
+    }
+
+    public function copyAwardedProjectAsDraft()
+    {
         return true;
     }
 
