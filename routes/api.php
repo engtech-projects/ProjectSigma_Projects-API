@@ -51,14 +51,14 @@ Route::get('nature-of-works', function () {
 Route::middleware('auth:api')->group(function () {
 
     // ────── User Info ──────
-    Route::get('/user', fn () => response()->json(new UserCollection(Auth::user()), 200));
+    Route::get('/user', fn() => response()->json(new UserCollection(Auth::user()), 200));
 
     // ────── Lookups ──────
     Route::prefix('lookups')->group(function () {
-        Route::get('/project-status', fn () => response()->json(ProjectStatus::cases(), 200));
-        Route::get('/project-stage', fn () => response()->json(ProjectStage::cases(), 200));
-        Route::get('/resource-names', fn () => response()->json(ResourceName::all(), 200));
-        Route::get('/uom', fn () => response()->json(Uom::all(), 200));
+        Route::get('/project-status', fn() => response()->json(ProjectStatus::cases(), 200));
+        Route::get('/project-stage', fn() => response()->json(ProjectStage::cases(), 200));
+        Route::get('/resource-names', fn() => response()->json(ResourceName::all(), 200));
+        Route::get('/uom', fn() => response()->json(Uom::all(), 200));
         Route::resource('positions', PositionController::class);
         Route::get('/all-position', [PositionController::class, 'all']);
     });
@@ -100,6 +100,7 @@ Route::middleware('auth:api')->group(function () {
     // ────── Revisions ──────
     Route::prefix('project-revisions')->group(function () {
         Route::resource('revisions', RevisionController::class);
+        Route::post('revision/{revision}/copy-to-project', [RevisionController::class, 'copyAwardedProjectAsDraft']);
         Route::post('change-to-proposal', [RevisionController::class, 'changeToProposal']);
         Route::post('return-to-draft', [RevisionController::class, 'returnToDraft']);
     });
