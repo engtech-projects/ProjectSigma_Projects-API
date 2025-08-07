@@ -121,7 +121,7 @@ class Project extends Model
 
     public function revisions(): HasMany
     {
-        return $this->hasMany(Revision::class);
+        return $this->hasMany(Revision::class, 'project_id', 'id');
     }
 
     public function projectDesignation(): HasMany
@@ -230,7 +230,7 @@ class Project extends Model
     public function scopeAwarded($query)
     {
         return $query->where('marketing_stage', MarketingStage::AWARDED)
-                        ->orWhere('tss_stage', TssStage::AWARDED);
+            ->orWhere('tss_stage', TssStage::AWARDED);
     }
 
     public function scopeWithTssStage($query, $status)
@@ -367,5 +367,4 @@ class Project extends Model
     {
         return Carbon::parse($this->updated_at)->format('F j, Y h:i A');
     }
-
 }

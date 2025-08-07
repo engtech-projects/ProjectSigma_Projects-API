@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ProjectDetailedEnumResource;
+use App\Http\Resources\ProjectWithDeletedResource;
 use App\Models\Project;
 use Illuminate\Http\JsonResponse;
 
@@ -10,12 +10,17 @@ class ApiServiceController extends Controller
 {
     public function getProjectList()
     {
-        $projectList = Project::orderBy('code')->awarded()->get();
+        $projectList = Project::withTrashed()
+            ->whereNotNull('code')
+            ->where('code', '!=', '')
+            ->awarded()
+            ->orderBy('code')
+            ->get();
 
         return new JsonResponse([
             'success' => true,
             'message' => 'Successfully fetched.',
-            'data' => ProjectDetailedEnumResource::collection($projectList),
+            'data' => ProjectWithDeletedResource::collection($projectList),
         ]);
     }
 }
