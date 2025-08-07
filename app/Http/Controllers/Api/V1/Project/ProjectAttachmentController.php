@@ -25,20 +25,32 @@ class ProjectAttachmentController extends Controller
      */
     public function store(StoreAttachmentRequest $request, Project $project)
     {
-        $validated = $request->validated();
-
-        foreach ($request->file('attachments') as $attachment) {
-
-            $path = $this->uploadFile($attachment, "projects/{$project->id}");
-
-            $project->attachments()->create([
-                'name' => $attachment->getClientOriginalName(),
-                'path' => $path,
-                'mime_type' => $attachment->getMimeType(),
-            ]);
+        try {
+            if ($request->hasFile('attachment') && $request->file('attachment')->isValid()) {
+                $file = $request->file('attachment');
+                $filename = hash('sha256', $file->getClientOriginalName()). '.' . $file->getClientOriginalExtension();
+                $directory = "project/{$project->id}/attachments";
+                $fullPath = $directory. '/' . $filename;
+                Storage::disk('public')->put($fullPath, file_get_contents($file));
+                Attachment::create([
+                    'project_id' => $project->id,
+                    'name' => $filename,
+                    'path' => $fullPath,
+                    'mime_type' => $file->getMimeType(),
+                ]);
+            }
+            return response()->json([
+                'success' => true,
+                'message' => 'File uploaded and stored successfully',
+                'file_url' => Storage::disk('public')->url($fullPath),
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to upload attachment',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
-        return response()->json($project->attachments()->get(), 201);
     }
 
     public function generateUrl(Request $request, Project $project)
