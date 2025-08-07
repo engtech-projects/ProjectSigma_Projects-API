@@ -40,7 +40,7 @@ class ProjectController extends Controller
         $data = Project::with('revisions')
             ->when($status, fn($query) => $query->filterByStage($status))
             ->when($projectKey, fn($query) => $query->projectKey($projectKey))
-            ->latest()
+            ->latestFirst()
             ->paginate(config('services.pagination.limit'));
         return ProjectListingResource::collection($data)
             ->additional([
@@ -57,7 +57,7 @@ class ProjectController extends Controller
         $data = Project::with('revisions')
             ->when($status, fn($query) => $query->filterByStage($status))
             ->when($projectKey, fn($query) => $query->projectKey($projectKey))
-            ->latest()
+            ->latestFirst()
             ->createdByAuth()
             ->paginate(config('services.pagination.limit'));
         return ProjectListingResource::collection($data)
@@ -151,7 +151,7 @@ class ProjectController extends Controller
         $projects = Project::query()
             ->when($status, fn($query) => $query->awarded())
             ->when($projectKey, fn($query) => $query->projectKey($projectKey))
-            ->latest()
+            ->latestFirst()
             ->paginate(config('services.pagination.limit'));
         return ProjectListingResource::collection($projects)
             ->additional([
