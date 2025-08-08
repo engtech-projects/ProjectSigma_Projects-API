@@ -2,6 +2,8 @@
 
 namespace App\Enums;
 
+use App\Enums\Traits\EnumHelper;
+
 enum WorkTimeCategory: string
 {
     case REGULAR = 'regular';
@@ -10,8 +12,5 @@ enum WorkTimeCategory: string
     case REGULAR_HOLIDAY = 'regular_holiday';
     case SPECIAL_HOLIDAY = 'special_holiday';
 
-    public static function values(): array
-    {
-        return array_column(self::cases(), 'value');
-    }
+    use EnumHelper;
 }
