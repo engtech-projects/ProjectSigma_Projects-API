@@ -2,20 +2,18 @@
 
 use App\Enums\ResourceNamesCategory;
 use App\Enums\ResourceType;
-use Database\Seeders\ResourceNamesTableSeeder;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::table('resources', function (Blueprint $table){
+        Schema::table('resources', function (Blueprint $table) {
             if (!Schema::hasColumn('resources', 'resource_type')) {
                 $table->string('resource_type')->nullable()->after('task_id');
             }
@@ -34,7 +32,7 @@ return new class extends Migration
                     'resource_type' => $enumValue
                 ]);
         }
-        Schema::table('resources', function (Blueprint $table){
+        Schema::table('resources', function (Blueprint $table) {
             if (Schema::hasColumn('resources', 'name_id')) {
                 $table->dropColumn('name_id');
                 if (!Schema::hasColumn('resources', 'resource_type')) {
@@ -51,12 +49,12 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('resource_names');
-        Schema::create('resource_names', function (Blueprint $table){
-                $table->id();
-                $table->string('name');
-                $table->enum('category', ResourceNamesCategory::toArray());
-                $table->string('description')->nullable();
-                $table->timestamps();
+        Schema::create('resource_names', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->enum('category', ResourceNamesCategory::toArray());
+            $table->string('description')->nullable();
+            $table->timestamps();
         });
         Schema::table('resources', function (Blueprint $table) {
             if (!Schema::hasColumn('resources', 'name_id')) {
