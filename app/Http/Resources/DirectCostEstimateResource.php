@@ -16,6 +16,7 @@ class DirectCostEstimateResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'task_id' => $this->task_id,
             'resource_type' => $this->resource_type,
             'description' => $this->description,
             'unit_count' => $this->unit_count,
@@ -27,7 +28,8 @@ class DirectCostEstimateResource extends JsonResource
             'consumption_rate' => $this->consumption_rate,
             'labor_cost_category' => $this->labor_cost_category,
             'work_time_category' => $this->work_time_category,
-            'task_id' => $this->task_id,
+            'remarks' => $this->remarks,
+            'consumption_unit' => $this->consumption_unit,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
