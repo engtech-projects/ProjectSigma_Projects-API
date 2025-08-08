@@ -26,28 +26,39 @@ class ProjectAttachmentController extends Controller
     public function store(StoreAttachmentRequest $request, Project $project)
     {
         try {
-            if ($request->hasFile('attachment') && $request->file('attachment')->isValid()) {
-                $file = $request->file('attachment');
-                $filename = hash('sha256', $file->getClientOriginalName()). '.' . $file->getClientOriginalExtension();
-                $directory = "project/{$project->id}/attachments";
-                $fullPath = $directory. '/' . $filename;
-                Storage::disk('public')->put($fullPath, file_get_contents($file));
+            if (!$request->hasFile('attachments')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No files uploaded',
+                ], 422);
+            }
+            $storedFiles = [];
+            foreach ($request->file('attachments') as $file) {
+                $filename = hash('sha256', $file->getClientOriginalName()) . '.' . $file->getClientOriginalExtension();
+                $path = "project/{$project->id}/attachments";
+                $fullPath = $path . '/' . $filename;
+                $storedPath = Storage::disk('public')->put($fullPath, file_get_contents($file));
                 Attachment::create([
                     'project_id' => $project->id,
                     'name' => $filename,
-                    'path' => $fullPath,
+                    'path' => $storedPath,
                     'mime_type' => $file->getMimeType(),
-                ]);
+                    ]);
+                $storedFiles[] = [
+                    'name' => $filename,
+                    'path' => $storedPath,
+                    'mime_type' => $file->getMimeType(),
+                ];
             }
             return response()->json([
                 'success' => true,
-                'message' => 'File uploaded and stored successfully',
-                'file_url' => Storage::disk('public')->url($fullPath),
+                'message' => 'Files uploaded and stored successfully.',
+                'files' => $storedFiles,
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to upload attachment',
+                'message' => 'Failed to upload attachment.',
                 'error' => $e->getMessage(),
             ], 500);
         }
