@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Enums;
 
 use App\Enums\Traits\EnumHelper;
