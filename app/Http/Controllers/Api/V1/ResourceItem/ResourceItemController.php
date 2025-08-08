@@ -16,8 +16,9 @@ class ResourceItemController extends Controller
     public function index()
     {
         $resourceItems = ResourceItem::all();
-
         return response()->json([
+            'success' => true,
+            'message' => 'Resource Items retrieved successfully',
             'data' => $resourceItems,
         ], 200);
     }

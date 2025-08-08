@@ -30,6 +30,7 @@ class DirectCostEstimateController extends Controller
         $resourceItem = ResourceItem::findOrFail($id);
         return response()->json([
             'success' => true,
+            'message' => 'Direct Cost Estimate retrieved successfully',
             'data' => new DirectCostEstimateResource($resourceItem),
         ], 200);
     }
