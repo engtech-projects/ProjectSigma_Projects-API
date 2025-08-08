@@ -22,7 +22,6 @@ class UpdateResourceMetricRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'resource_id' => 'required|exists:resources,id',
             'label' => 'required|string|max:255|unique:resource_metrics,label,resource_id',
             'value' => 'required|numeric',
             'unit' => 'required|numeric',
