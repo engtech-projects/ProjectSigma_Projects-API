@@ -98,8 +98,7 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('phases', BoqPartController::class);
     Route::resource('tasks', BoqItemController::class);
     Route::resource('resource-items', ResourceItemController::class);
-    Route::get('direct-cost-estimates', [DirectCostEstimateController::class, 'index']);
-    Route::get('direct-cost-estimates/{id}', [DirectCostEstimateController::class, 'show']);
+    Route::resource('direct-cost-estimates', DirectCostEstimateController::class);
 
     // ────── Revisions ──────
     Route::prefix('project-revisions')->group(function () {
