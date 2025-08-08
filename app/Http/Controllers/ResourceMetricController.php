@@ -15,7 +15,7 @@ class ResourceMetricController extends Controller
         return ResourceMetric::with('resource')->get();
     }
 
-    public function store(CreateResourceMetricRequest $request, ResourceItem $resourceItem)
+    public function store(CreateResourceMetricRequest $request)
     {
         $validatedData = $request->validated();
         $resourceMetric = ResourceMetric::create([
