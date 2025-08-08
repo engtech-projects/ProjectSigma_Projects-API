@@ -10,5 +10,3 @@ enum ResourceNamesCategory: string
     case INVENTORY = 'inventory';
     case SERVICE = 'service';
 }
-
-
