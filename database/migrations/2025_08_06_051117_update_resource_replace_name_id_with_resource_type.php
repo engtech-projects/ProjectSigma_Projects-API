@@ -58,7 +58,6 @@ return new class extends Migration
                 $table->string('description')->nullable();
                 $table->timestamps();
         });
-        (new ResourceNamesTableSeeder())->run();
         Schema::table('resources', function (Blueprint $table) {
             if (!Schema::hasColumn('resources', 'name_id')) {
                 $table->integer('name_id')->nullable()->after('task_id');
