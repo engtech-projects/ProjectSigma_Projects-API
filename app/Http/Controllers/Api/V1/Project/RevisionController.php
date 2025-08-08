@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Api\V1\Project;
 
+use App\Enums\MarketingStage;
 use App\Enums\ProjectStage;
+use App\Enums\ProjectStatus;
+use App\Enums\TssStage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FilterProjectRequest;
 use App\Http\Requests\Revision\ApproveProposalRequest;
 use App\Http\Requests\Revision\RejectProposalRequest;
 use App\Http\Resources\ProjectRevisionsSummaryResource;
@@ -16,10 +20,14 @@ use Illuminate\Support\Facades\DB;
 
 class RevisionController extends Controller
 {
-    public function index(Request $request)
+    public function index(FilterProjectRequest $request)
     {
-        $listOfRevisions = Revision::paginate(config('services.pagination_limit'));
-        return RevisionResource::collection($listOfRevisions)
+        $validated = $request->validated();
+        $projectKey = $validated['project_key'] ?? null;
+        $listOfRevisions = Revision::when($projectKey, fn ($query) => $query->projectKey($projectKey))
+            ->latest()
+            ->paginate(config('services.pagination.limit'));
+        return ProjectRevisionsSummaryResource::collection($listOfRevisions)
             ->additional([
                 'success' => true,
                 'message' => 'Revisions retrieved successfully',
@@ -41,6 +49,65 @@ class RevisionController extends Controller
         });
 
         return true;
+    }
+
+    public function copyAwardedProjectAsDraft(Revision $revision)
+    {
+        $projectData = json_decode($revision->data, true);
+        try {
+            DB::beginTransaction();
+            if (!isset($projectData['name'], $projectData['location'])) {
+                throw new \Exception('Missing required project data fields.');
+            }
+            // 1. Create or update project
+            $project = Project::create([
+                'parent_project_id' => $projectData['id'],
+                'contract_id' => $projectData['contract_id'] ?? null,
+                'code' => null,
+                'name' => $projectData['name'],
+                'location' => $projectData['location'],
+                'amount' => $projectData['amount'],
+                'duration' => $projectData['duration'],
+                'nature_of_work' => $projectData['nature_of_work'],
+                'contract_date' => $projectData['contract_date'],
+                'ntp_date'  => null,
+                'noa_date'  => null,
+                'license' => $projectData['license'] ?? null,
+                'is_original' => false,
+                'version' => 1.0,
+                'status' => ProjectStatus::DRAFT->value,
+                'marketing_stage' => MarketingStage::DRAFT->value,
+                'tss_stage' => TssStage::PENDING->value,
+                'project_identifier' => $projectData['project_identifier'],
+                'implementing_office' => $projectData['implementing_office'] ?? null,
+                'current_revision_id' => $projectData['current_revision_id'],
+                'cash_flow' => $projectData['cash_flow'] ?? null,
+                'designator' => $projectData['designator'] ?? null,
+                'position' => $projectData['position'] ?? null,
+                'created_by' => auth()->user()->id,
+            ]);
+            // 2. Restore related data
+            if (!empty($projectData['phases'])) {
+                foreach ($projectData['phases'] as $itemData) {
+                    $phase = $project->phases()->create($itemData);
+                    foreach ($itemData['tasks'] ?? [] as $taskData) {
+                        $phase->tasks()->create($taskData);
+                    }
+                }
+            }
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Project duplicate sucessfully',
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to duplicate',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function show(Revision $revision)

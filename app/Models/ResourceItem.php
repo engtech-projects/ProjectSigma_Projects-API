@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ResourceType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,7 +19,7 @@ class ResourceItem extends Model
 
     protected $fillable = [
         'task_id',
-        'name_id',
+        'resource_type',
         'description',
         'unit_count',
         'quantity',
@@ -26,6 +27,10 @@ class ResourceItem extends Model
         'unit_cost',
         'resource_count',
         'total_cost',
+    ];
+
+    protected $casts = [
+        'resource_type' => ResourceType::class,
     ];
 
     protected static function boot()
@@ -46,11 +51,21 @@ class ResourceItem extends Model
 
     public function project(): BelongsTo
     {
-        return $this->belongsTo(Project::class);
+        return $this->belongsTo(Project::class, 'project_id', 'id');
     }
 
     public function resourceName(): HasOne
     {
         return $this->hasOne(ResourceName::class, 'id', 'name_id');
+    }
+
+    public function scopeFilterByTaskId($query, $taskId)
+    {
+        return $query->where('task_id','like', "%{$taskId}%");
+    }
+
+    public function scopeFilterByResourceType($query, $resourceType)
+    {
+        return $query->where('resource_type','like', "%{$resourceType}%");
     }
 }
