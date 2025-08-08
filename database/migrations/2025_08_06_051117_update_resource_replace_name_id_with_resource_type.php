@@ -37,6 +37,9 @@ return new class extends Migration
         Schema::table('resources', function (Blueprint $table){
             if (Schema::hasColumn('resources', 'name_id')) {
                 $table->dropColumn('name_id');
+                if (!Schema::hasColumn('resources', 'resource_type')) {
+                    $table->string('resource_type')->required()->after('task_id');
+                }
             }
         });
         Schema::dropIfExists('resource_names');
