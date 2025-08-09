@@ -35,18 +35,19 @@ class ProjectAttachmentController extends Controller
             $storedFiles = [];
             foreach ($request->file('attachments') as $file) {
                 $filename = hash('sha256', $file->getClientOriginalName()) . '.' . $file->getClientOriginalExtension();
-                $path = "project/{$project->id}/attachments";
-                $fullPath = $path . '/' . $filename;
-                $storedPath = Storage::disk('public')->put($fullPath, file_get_contents($file));
+                $path = "project/attachments/{$project->id}";
+                $fullPath = "{$path}/{$filename}";
+                Storage::disk('public')->put($fullPath, file_get_contents($file));
                 Attachment::create([
                     'project_id' => $project->id,
                     'name' => $filename,
-                    'path' => $storedPath,
+                    'path' => $fullPath,
                     'mime_type' => $file->getMimeType(),
                     ]);
                 $storedFiles[] = [
+                    'project_id' => $project->id,
                     'name' => $filename,
-                    'path' => $storedPath,
+                    'path' => $fullPath,
                     'mime_type' => $file->getMimeType(),
                 ];
             }
@@ -64,10 +65,9 @@ class ProjectAttachmentController extends Controller
         }
     }
 
-    public function generateUrl(Request $request, Project $project)
+    public function getDocumentViewerLink(Request $request, Project $project)
     {
         $attachments = $project->attachments()->get();
-
         if ($attachments->isEmpty()) {
             return response()->json([
                 'success' => false,
@@ -75,17 +75,13 @@ class ProjectAttachmentController extends Controller
                 'data' => [],
             ], 404);
         }
-
         $uniqueKey = Str::random(15);
-
         Cache::put($uniqueKey, $project->id, now()->addMinutes(10));
-
         $webViewerUrl = route('web.document.viewer', ['cacheKey' => $uniqueKey]);
-
         return response()->json([
             'success' => true,
             'message' => 'Document viewer link generated successfully.',
-            'data' => ['url' => $webViewerUrl],
+            'url' => $webViewerUrl,
         ], 200);
     }
 
