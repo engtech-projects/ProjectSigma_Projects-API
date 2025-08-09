@@ -23,7 +23,7 @@ class StoreResourceItemRequest extends FormRequest
     {
         return [
             'task_id' => 'required|exists:tasks,id',
-            'name_id' => 'required|exists:resource_names,id',
+            'resource_type' => 'required|exists:resource_types,id',
             'description' => 'required|string',
             'unit_count' => 'nullable|integer',
             'quantity' => 'required|regex:/^\d+(\.\d{1,2})?$/',
