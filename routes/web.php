@@ -21,6 +21,8 @@ Route::get('/', function () {
 Route::get('document-viewer/{cacheKey}', [DocumentViewerController::class, 'showDocumentViewer'])->name('web.document.viewer');
 Route::get('artisan-clear-optimization', function () {
     Artisan::call('optimize:clear');
-
     return 'success';
 });
+Route::get('/attachments/download/{path}', [DocumentViewerController::class, 'download'])
+    ->where('path', '.*')
+    ->name('attachments.download');

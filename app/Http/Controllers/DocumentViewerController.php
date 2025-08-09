@@ -38,11 +38,13 @@ class DocumentViewerController extends Controller
             ]);
         }
         $files = $attachments->map(function ($attachment) {
+            $relativePath = "project/attachments/{$attachment->project_id}/{$attachment->name}";
             $fullPath = storage_path('app/public/' . $attachment->path);
             return file_exists($fullPath) ? [
                 'name' => $attachment->name,
                 'mime_type' => $attachment->mime_type,
-                'url' => Storage::disk('public')->url($attachment->path),
+                'url' => Storage::url($relativePath),
+                'path' => $relativePath,
             ] : null;
         })->filter()->values();
         if ($files->isEmpty()) {
@@ -54,5 +56,12 @@ class DocumentViewerController extends Controller
             'project' => $project,
             'files' => $files,
         ]);
+    }
+
+    public function download($path) {
+        if (!Storage::disk('public')->exists($path)) {
+            abort(404, 'File not found');
+        }
+        return Storage::disk('public')->download($path);
     }
 }
