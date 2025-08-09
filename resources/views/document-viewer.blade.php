@@ -17,8 +17,10 @@
             <h3>{{ $file['name'] }}</h3>
             @if(Str::startsWith($file['mime_type'], 'image/'))
                 <img src="{{ $file['url'] }}" alt="{{ $file['name'] }}">
+                <a class="download-link" href="{{ $file['url'] }}" target="_blank" download>Download</a>
             @elseif($file['mime_type'] === 'application/pdf')
                 <iframe src="{{ $file['url'] }}" width="100%" height="600px"></iframe>
+                <a class="download-link" href="{{ $file['url'] }}" target="_blank" download>Download</a>
             @else
                 <p>Unsupported preview for file type: {{ $file['mime_type'] }}</p>
                 <a class="download-link" href="{{ $file['url'] }}" target="_blank" download>Download</a>
