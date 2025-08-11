@@ -18,7 +18,7 @@ class ResourceItemController extends Controller
         $resourceItems = ResourceItem::all();
         return response()->json([
             'success' => true,
-            'message' => 'Resource Items retrieved successfully',
+            'message' => 'Resource items retrieved successfully',
             'data' => $resourceItems,
         ], 200);
     }
@@ -37,9 +37,8 @@ class ResourceItemController extends Controller
     {
         $validated = $request->validated();
         $result = ResourceService::create($validated);
-
         return response()->json([
-            'message' => 'task resource allocation added successfully.',
+            'message' => 'Resource item added successfully.',
             'data' => $result,
         ], 201);
     }
@@ -68,11 +67,9 @@ class ResourceItemController extends Controller
     public function update(UpdateResourceItemRequest $request, ResourceItem $resourceItem)
     {
         $validated = $request->validated();
-
         $resourceItem->fill($validated)->save();
-
         return response()->json([
-            'message' => 'Updated.',
+            'message' => 'Resource item updated successfully.',
             'data' => $resourceItem,
         ], 201);
 
