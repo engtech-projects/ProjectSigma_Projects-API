@@ -38,13 +38,13 @@ return new class () extends Migration {
             ->where('TABLE_SCHEMA', DB::getDatabaseName())
             ->value('CONSTRAINT_NAME');
         if ($foreignKeyName) {
-            DB::statement("ALTER TABLE resources DROP FOREIGN KEY $foreignKeyName");
+            DB::statement("ALTER TABLE resources DROP FOREIGN KEY `{$foreignKeyName}`");
         }
         Schema::table('resources', function (Blueprint $table) {
             if (Schema::hasColumn('resources', 'name_id')) {
                 $table->dropColumn('name_id');
                 if (!Schema::hasColumn('resources', 'resource_type')) {
-                    $table->string('resource_type')->required()->after('task_id');
+                    $table->string('resource_type')->after('task_id');
                 }
             }
         });
@@ -56,17 +56,25 @@ return new class () extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('resource_names');
-        Schema::create('resource_names', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->enum('category', ResourceNamesCategory::toArray());
-            $table->string('description')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('resource_names')) {
+            Schema::create('resource_names', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->enum('category', ResourceNamesCategory::toArray())->nullable();
+                $table->string('description')->nullable();
+                $table->timestamps();
+            });
+        }
+        DB::table('resource_names')->insert([
+            ['id' => 1, 'name' => 'materials', 'category' => ResourceNamesCategory::INVENTORY, 'description' => null],
+            ['id' => 2, 'name' => 'labor_expense', 'category' => ResourceNamesCategory::SERVICE, 'description' => null],
+            ['id' => 3, 'name' => 'equipment_rental', 'category' => ResourceNamesCategory::INVENTORY, 'description' => null],
+            ['id' => 4, 'name' => 'miscellaneous_cost', 'category' => ResourceNamesCategory::INVENTORY, 'description' => null],
+            ['id' => 5, 'name' => 'other_expenses', 'category' => ResourceNamesCategory::INVENTORY, 'description' => null],
+        ]);
         Schema::table('resources', function (Blueprint $table) {
             if (!Schema::hasColumn('resources', 'name_id')) {
-                $table->integer('name_id')->nullable()->after('task_id');
+                $table->unsignedBigInteger('name_id')->nullable()->after('task_id');
             }
         });
         $reverseMapping = [
@@ -81,6 +89,9 @@ return new class () extends Migration {
                 ->where('resource_type', $enumValue)
                 ->update(['name_id' => $nameId]);
         }
+        Schema::table('resources', function (Blueprint $table) {
+            $table->foreign('name_id')->references('id')->on('resource_names')->onDelete('restrict');
+        });
         Schema::table('resources', function (Blueprint $table) {
             if (Schema::hasColumn('resources', 'resource_type')) {
                 $table->dropColumn('resource_type');
