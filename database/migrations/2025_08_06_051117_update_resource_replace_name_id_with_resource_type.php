@@ -32,6 +32,14 @@ return new class () extends Migration {
                     'resource_type' => $enumValue
                 ]);
         }
+        $fkName = DB::table('information_schema.KEY_COLUMN_USAGE')
+            ->where('TABLE_NAME', 'resources')
+            ->where('COLUMN_NAME', 'name_id')
+            ->where('TABLE_SCHEMA', DB::getDatabaseName())
+            ->value('CONSTRAINT_NAME');
+        if ($fkName) {
+            DB::statement("ALTER TABLE resources DROP FOREIGN KEY $fkName");
+        }
         Schema::table('resources', function (Blueprint $table) {
             if (Schema::hasColumn('resources', 'name_id')) {
                 $table->dropColumn('name_id');
