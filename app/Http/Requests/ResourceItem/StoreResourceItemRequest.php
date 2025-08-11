@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\ResourceItem;
 
+use App\Enums\ResourceType;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreResourceItemRequest extends FormRequest
@@ -23,7 +24,7 @@ class StoreResourceItemRequest extends FormRequest
     {
         return [
             'task_id' => 'required|exists:tasks,id',
-            'resource_type' => 'required|exists:resource_types,id',
+            'resource_type' => 'required|in:'.implode(',', ResourceType::values()),
             'description' => 'required|string',
             'unit_count' => 'nullable|integer',
             'quantity' => 'required|regex:/^\d+(\.\d{1,2})?$/',
