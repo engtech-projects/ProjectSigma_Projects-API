@@ -38,6 +38,7 @@ class ResourceItemController extends Controller
         $validated = $request->validated();
         $result = ResourceService::create($validated);
         return response()->json([
+            'success' => true,
             'message' => 'Resource item added successfully.',
             'data' => $result,
         ], 201);
@@ -46,11 +47,13 @@ class ResourceItemController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(ResourceItem $resourceItem)
     {
         return response()->json([
-            'data' => $id,
-        ], 201);
+            'success' => true,
+            'message' => 'Resource item retrieved successfully',
+            'data' => $resourceItem,
+        ], 200);
     }
 
     /**
@@ -69,9 +72,10 @@ class ResourceItemController extends Controller
         $validated = $request->validated();
         $resourceItem->fill($validated)->save();
         return response()->json([
+            'success' => true,
             'message' => 'Resource item updated successfully.',
             'data' => $resourceItem,
-        ], 201);
+        ], 200);
 
     }
 
@@ -81,8 +85,8 @@ class ResourceItemController extends Controller
     public function destroy(ResourceItem $resourceItem)
     {
         $resourceItem->delete();
-
         return response()->json([
+            'success' => true,
             'message' => 'Project Resources Item has been deleted',
             'data' => $resourceItem,
         ], 200);
