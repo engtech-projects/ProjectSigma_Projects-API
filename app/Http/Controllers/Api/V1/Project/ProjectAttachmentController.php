@@ -38,7 +38,7 @@ class ProjectAttachmentController extends Controller
                 $path = "project/attachments/{$project->id}";
                 $fullPath = "{$path}/{$filename}";
                 Storage::disk('public')->put($fullPath, file_get_contents($file));
-                Attachment::create([
+                $project->attachments()->create([
                     'project_id' => $project->id,
                     'name' => $filename,
                     'path' => $fullPath,
