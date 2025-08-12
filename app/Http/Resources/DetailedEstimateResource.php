@@ -26,7 +26,7 @@ class DetailedEstimateResource extends JsonResource
             'unit_cost' => $this->unit_cost,
             'resource_count' => $this->resource_count,
             'total_cost' => $this->total_cost,
-            'resource_name' => ResourceType::from($this->resource_type)
+            'resource_name' => $this->resource_type->displayName()
         ];
     }
 }

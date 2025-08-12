@@ -59,7 +59,13 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('lookups')->group(function () {
         Route::get('/project-status', fn() => response()->json(ProjectStatus::cases(), 200));
         Route::get('/project-stage', fn() => response()->json(ProjectStage::cases(), 200));
-        Route::get('/resource-names', fn() => response()->json(ResourceType::displayNames(), 200));
+        Route::get('/resource-names', function () {
+            $data = array_map(fn($case) => [
+                'value' => $case->value,
+                'label' => $case->displayName(),
+            ], ResourceType::cases());
+            return response()->json($data, 200);
+        });
         Route::get('/uom', fn() => response()->json(Uom::all(), 200));
         Route::resource('positions', PositionController::class);
         Route::get('/all-position', [PositionController::class, 'all']);

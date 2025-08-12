@@ -42,7 +42,7 @@ class BoqItemController extends Controller
      */
     public function show(BoqItem $task)
     {
-        $task->load('resources.resourceName');
+        $task->load('resources');
         return response()->json([
             'message' => 'Project Item fetched successfully.',
             'data' => new BoqItemResource($task),
