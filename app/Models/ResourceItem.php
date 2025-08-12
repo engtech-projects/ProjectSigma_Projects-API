@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\LaborCostCategory;
 use App\Enums\ResourceType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -27,6 +28,11 @@ class ResourceItem extends Model
         'unit_cost',
         'resource_count',
         'total_cost',
+        'consumption_rate',
+        'consumption_unit',
+        'labor_cost_category',
+        'work_time_category',
+        'remarks',
     ];
 
     protected $casts = [

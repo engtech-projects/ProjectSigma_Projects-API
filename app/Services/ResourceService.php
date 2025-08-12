@@ -43,7 +43,6 @@ class ResourceService
             } else {
                 $request['total_cost'] = $request['quantity'] * $request['unit_cost'];
             }
-
             $data = ResourceItem::create($request);
             $task = BoqItem::findOrFail($request['task_id'])->load(['resources', 'phase']);
             $task->update([
@@ -97,7 +96,6 @@ class ResourceService
             $totalAmount = BoqItem::whereHas('phase', function ($query) use ($project) {
                 $query->where('project_id', $project->id);
             })->sum('amount');
-
             $project->update(['amount' => $totalAmount]);
         }
     }

@@ -21,6 +21,7 @@ use App\Http\Controllers\APiSyncController;
 use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\DirectCostEstimateController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ResourceMetricController;
 use App\Http\Resources\User\UserCollection;
 use App\Models\ResourceName;
 use App\Models\Uom;
@@ -98,6 +99,7 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('tasks', BoqItemController::class);
     Route::resource('resource-items', ResourceItemController::class);
     Route::resource('direct-cost-estimates', DirectCostEstimateController::class);
+    Route::resource('resource-metrics', ResourceMetricController::class);
 
     // ────── Revisions ──────
     Route::prefix('project-revisions')->group(function () {

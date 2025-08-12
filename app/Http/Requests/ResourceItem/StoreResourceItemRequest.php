@@ -2,6 +2,9 @@
 
 namespace App\Http\Requests\ResourceItem;
 
+use App\Enums\LaborCostCategory;
+use App\Enums\ResourceType;
+use App\Enums\WorkTimeCategory;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreResourceItemRequest extends FormRequest
@@ -23,13 +26,18 @@ class StoreResourceItemRequest extends FormRequest
     {
         return [
             'task_id' => 'required|exists:tasks,id',
-            'resource_type' => 'required|exists:resource_types,id',
+            'resource_type' => 'required|in:'.implode(',', ResourceType::values()),
             'description' => 'required|string',
             'unit_count' => 'nullable|integer',
             'quantity' => 'required|regex:/^\d+(\.\d{1,2})?$/',
             'unit' => 'required|string',
             'unit_cost' => 'required|regex:/^\d+(\.\d{1,2})?$/',
             'resource_count' => 'required|integer',
+            'consumption_rate' => 'nullable|regex:/^\d+(\.\d{1,2})?$/',
+            'consumption_unit' => 'nullable|string',
+            'labor_cost_category' => 'required|in:'.implode(',', LaborCostCategory::values()),
+            'work_time_category' => 'required|in:'.implode(',', WorkTimeCategory::values()),
+            'remarks' => 'nullable|string',
         ];
     }
 }
