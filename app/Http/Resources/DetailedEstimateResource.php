@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\ResourceType;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -25,9 +26,7 @@ class DetailedEstimateResource extends JsonResource
             'unit_cost' => $this->unit_cost,
             'resource_count' => $this->resource_count,
             'total_cost' => $this->total_cost,
-            'resource_name' => $this->whenLoaded('resourceName', function () {
-                return new DetailedCategoryResource($this->resourceName);
-            }),
+            'resource_name' => ResourceType::from($this->resource_type)
         ];
     }
 }

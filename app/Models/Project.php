@@ -34,7 +34,7 @@ class Project extends Model
     {
         return LogOptions::defaults()
             ->logAll() // List of attributes to log
-            ->setDescriptionForEvent(fn (string $eventName) => "Project has been {$eventName}");
+            ->setDescriptionForEvent(fn(string $eventName) => "Project has been {$eventName}");
     }
 
     protected $fillable = [
@@ -340,7 +340,7 @@ class Project extends Model
                     if ($value->quantity <= 0 || ! $value->unit) {
                         continue;
                     }
-                    $resourceName = $value->resourceName->name;
+                    $resourceName = $value->resource_type;
                     $key = $value->description;
                     if (isset($summary_of_rates[$resourceName][$key])) {
                         $summary_of_rates[$resourceName][$key]['ids'][] = $value->id;

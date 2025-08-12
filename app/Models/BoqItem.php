@@ -72,10 +72,10 @@ class BoqItem extends Model
     {
         $resource = [];
         foreach ($this->resources as $key => $value) {
-            if (! isset($resource[$value->resourceName->name]['total_cost'])) {
-                $resource[$value->resourceName->name]['total_cost'] = 0;
+            if (! isset($resource[$value->resource_type]['total_cost'])) {
+                $resource[$value->resource_type]['total_cost'] = 0;
             }
-            $resource[$value->resourceName->name]['total_cost'] += $value->total_cost;
+            $resource[$value->resource_type]['total_cost'] += $value->total_cost;
         }
 
         return $resource;
@@ -88,46 +88,31 @@ class BoqItem extends Model
 
     public function getTotalMaterialsAmountAttribute()
     {
-        return $this->resources()
-            ->whereHas('resourceName', function ($query) {
-                $query->where('name', 'Materials');
-            })
+        return $this->resources()->where('resource_type', 'materials')
             ->sum('total_cost');
     }
 
     public function getTotalEquipmentAmountAttribute()
     {
-        return $this->resources()
-            ->whereHas('resourceName', function ($query) {
-                $query->where('name', 'Equipment');
-            })
+        return $this->resources()->where('resource_type', 'equipment_rental')
             ->sum('total_cost');
     }
 
     public function getTotalLaborAmountAttribute()
     {
-        return $this->resources()
-            ->whereHas('resourceName', function ($query) {
-                $query->where('name', 'Labor');
-            })
+        return $this->resources()->where('resource_type', 'labor_expense')
             ->sum('total_cost');
     }
 
     public function getTotalFuelOilAmountAttribute()
     {
-        return $this->resources()
-            ->whereHas('resourceName', function ($query) {
-                $query->where('name', 'Fuel / Oil Cost');
-            })
+        return $this->resources()->where('resource_type', 'fuel_oil_cost')
             ->sum('total_cost');
     }
 
     public function getTotalOverheadAmountAttribute()
     {
-        return $this->resources()
-            ->whereHas('resourceName', function ($query) {
-                $query->where('name', 'Overhead Cost');
-            })
+        return $this->resources()->where('resource_type', 'overhead_cost')
             ->sum('total_cost');
     }
 
