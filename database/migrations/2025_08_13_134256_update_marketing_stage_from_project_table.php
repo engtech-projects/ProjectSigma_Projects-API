@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('project', function (Blueprint $table) {
+        Schema::table('projects', function (Blueprint $table) {
             $table->enum('marketing_stage', MarketingStage::values())
                 ->default(MarketingStage::DRAFT->value)
                 ->change();
@@ -34,7 +34,7 @@ return new class extends Migration
             ->where('marketing_stage', MarketingStage::GENERATETOTSS->value)
             ->update(['marketing_stage' => MarketingStage::AWARDED->value]);
 
-        Schema::table('project', function (Blueprint $table) use ($originalValues) {
+        Schema::table('projects', function (Blueprint $table) use ($originalValues) {
             $table->enum('marketing_stage', $originalValues)
                 ->default(MarketingStage::DRAFT->value)
                 ->change();
