@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1\ResourceItem;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ResourceItem\StoreResourceItemRequest;
 use App\Http\Requests\ResourceItem\UpdateResourceItemRequest;
+use App\Http\Resources\ResourceItemResource;
 use App\Models\ResourceItem;
 use App\Services\ResourceService;
 
@@ -15,20 +16,18 @@ class ResourceItemController extends Controller
      */
     public function index()
     {
-        $resourceItems = ResourceItem::all();
-        return response()->json([
-            'success' => true,
-            'message' => 'Resource Items retrieved successfully',
-            'data' => $resourceItems,
-        ], 200);
+        $listofResourceItems = ResourceItem::with('task')->get();
+        return ResourceItemResource::collection($listofResourceItems)
+            ->additional([
+                'success' => true,
+                'message' => 'Resource items retrieved successfully',
+            ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-    }
+    public function create() {}
 
     /**
      * Store a newly created resource in storage.
@@ -37,9 +36,9 @@ class ResourceItemController extends Controller
     {
         $validated = $request->validated();
         $result = ResourceService::create($validated);
-
         return response()->json([
-            'message' => 'task resource allocation added successfully.',
+            'success' => true,
+            'message' => 'Resource item added successfully.',
             'data' => $result,
         ], 201);
     }
@@ -47,11 +46,14 @@ class ResourceItemController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(ResourceItem $resourceItem)
     {
+        $resourceItem->load('task');
         return response()->json([
-            'data' => $id,
-        ], 201);
+            'success' => true,
+            'message' => 'Resource item retrieved successfully',
+            'data' => $resourceItem,
+        ], 200);
     }
 
     /**
@@ -68,13 +70,12 @@ class ResourceItemController extends Controller
     public function update(UpdateResourceItemRequest $request, ResourceItem $resourceItem)
     {
         $validated = $request->validated();
-
-        $resourceItem->fill($validated)->save();
-
+        $result = ResourceService::update($validated, $resourceItem->id);
         return response()->json([
-            'message' => 'Updated.',
-            'data' => $resourceItem,
-        ], 201);
+            'success' => true,
+            'message' => 'Resource item updated successfully.',
+            'data' => $result,
+        ], 200);
     }
 
     /**
@@ -82,11 +83,11 @@ class ResourceItemController extends Controller
      */
     public function destroy(ResourceItem $resourceItem)
     {
-        $resourceItem->delete();
-
+        $result = ResourceService::delete($resourceItem->id);
         return response()->json([
+            'success' => true,
             'message' => 'Project Resources Item has been deleted',
-            'data' => $resourceItem,
+            'data' => $result,
         ], 200);
     }
 }
