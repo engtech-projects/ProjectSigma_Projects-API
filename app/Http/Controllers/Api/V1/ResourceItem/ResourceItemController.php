@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\ResourceItem;
 
+use App\Enums\ResourceType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ResourceItem\StoreResourceItemRequest;
 use App\Http\Requests\ResourceItem\UpdateResourceItemRequest;
@@ -23,12 +24,6 @@ class ResourceItemController extends Controller
                 'message' => 'Resource items retrieved successfully',
             ]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create() {}
-
     /**
      * Store a newly created resource in storage.
      */
@@ -42,7 +37,6 @@ class ResourceItemController extends Controller
             'data' => $result,
         ], 201);
     }
-
     /**
      * Display the specified resource.
      */
@@ -55,15 +49,14 @@ class ResourceItemController extends Controller
             'data' => $resourceItem,
         ], 200);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function getResourceType()
     {
-        //
+        $data = array_map(fn ($case) => [
+            'value' => $case->value,
+            'label' => $case->displayName(),
+        ], ResourceType::cases());
+        return response()->json($data, 200);
     }
-
     /**
      * Update the specified resource in storage.
      */
@@ -77,7 +70,6 @@ class ResourceItemController extends Controller
             'data' => $result,
         ], 200);
     }
-
     /**
      * Remove the specified resource from storage.
      */

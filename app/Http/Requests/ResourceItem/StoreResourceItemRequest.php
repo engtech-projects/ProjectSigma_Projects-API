@@ -36,8 +36,8 @@ class StoreResourceItemRequest extends FormRequest
             'resource_count' => 'required|integer',
             'consumption_rate' => 'nullable|regex:/^\d+(\.\d{1,2})?$/',
             'consumption_unit' => 'nullable|string',
-            'labor_cost_category' => 'required|in:' . implode(',', LaborCostCategory::values()),
-            'work_time_category' => 'required|in:' . implode(',', WorkTimeCategory::values()),
+            'labor_cost_category' =>  ['required', new Enum(LaborCostCategory::class)],
+            'work_time_category' => ['required', new Enum(WorkTimeCategory::class)],
             'remarks' => 'nullable|string',
         ];
     }
