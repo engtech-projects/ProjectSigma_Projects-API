@@ -32,6 +32,6 @@ enum ResourceType: string
 
     public static function displayNames(): array
     {
-        return array_map(fn($case) => $case->displayName(), self::cases());
+        return array_map(fn ($case) => $case->displayName(), self::cases());
     }
 }

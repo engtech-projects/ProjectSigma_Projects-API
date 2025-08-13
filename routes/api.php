@@ -23,7 +23,6 @@ use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\DirectCostEstimateController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Resources\User\UserCollection;
-use App\Models\ResourceName;
 use App\Models\Uom;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
@@ -53,20 +52,20 @@ Route::get('nature-of-works', function () {
 Route::middleware('auth:api')->group(function () {
 
     // ────── User Info ──────
-    Route::get('/user', fn() => response()->json(new UserCollection(Auth::user()), 200));
+    Route::get('/user', fn () => response()->json(new UserCollection(Auth::user()), 200));
 
     // ────── Lookups ──────
     Route::prefix('lookups')->group(function () {
-        Route::get('/project-status', fn() => response()->json(ProjectStatus::cases(), 200));
-        Route::get('/project-stage', fn() => response()->json(ProjectStage::cases(), 200));
+        Route::get('/project-status', fn () => response()->json(ProjectStatus::cases(), 200));
+        Route::get('/project-stage', fn () => response()->json(ProjectStage::cases(), 200));
         Route::get('/resource-names', function () {
-            $data = array_map(fn($case) => [
+            $data = array_map(fn ($case) => [
                 'value' => $case->value,
                 'label' => $case->displayName(),
             ], ResourceType::cases());
             return response()->json($data, 200);
         });
-        Route::get('/uom', fn() => response()->json(Uom::all(), 200));
+        Route::get('/uom', fn () => response()->json(Uom::all(), 200));
         Route::resource('positions', PositionController::class);
         Route::get('/all-position', [PositionController::class, 'all']);
     });
