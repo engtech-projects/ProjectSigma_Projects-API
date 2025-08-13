@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\ResourceItem;
 
+use App\Enums\ResourceType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class UpdateResourceItemRequest extends FormRequest
 {
@@ -23,7 +25,7 @@ class UpdateResourceItemRequest extends FormRequest
     {
         return [
             'task_id' => 'required|exists:tasks,id',
-            'resource_type' => 'required|exists:resource_types,id',
+            'resource_type' => ['required', new Enum(ResourceType::class)],
             'id' => 'nullable|exists:resources,id',
             'description' => 'required|string',
             'unit_count' => 'nullable|integer',

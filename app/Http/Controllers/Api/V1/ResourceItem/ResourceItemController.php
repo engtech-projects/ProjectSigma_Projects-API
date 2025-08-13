@@ -75,7 +75,6 @@ class ResourceItemController extends Controller
             'message' => 'Updated.',
             'data' => $resourceItem,
         ], 201);
-
     }
 
     /**
