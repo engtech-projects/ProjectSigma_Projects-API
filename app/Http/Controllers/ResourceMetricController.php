@@ -5,9 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateResourceMetricRequest;
 use App\Http\Requests\UpdateResourceMetricRequest;
 use App\Http\Resources\ResourceMetricResource;
-use App\Models\ResourceItem;
 use App\Models\ResourceMetric;
-use Illuminate\Http\Request;
 
 class ResourceMetricController extends Controller
 {
