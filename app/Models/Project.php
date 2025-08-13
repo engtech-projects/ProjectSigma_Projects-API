@@ -340,8 +340,12 @@ class Project extends Model
                     if ($value->quantity <= 0 || ! $value->unit) {
                         continue;
                     }
-                    $resourceName = $value->resource_type;
-                    $key = $value->description;
+                    $resourceName = is_object($value->resource_type)
+                        ? (property_exists($value->resource_type, 'name') ? $value->resource_type->name : (string) $value->resource_type)
+                        : (string) $value->resource_type;
+
+                    $key = (string) $value->description;
+
                     if (isset($summary_of_rates[$resourceName][$key])) {
                         $summary_of_rates[$resourceName][$key]['ids'][] = $value->id;
                     } else {
