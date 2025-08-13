@@ -23,7 +23,6 @@ use App\Http\Controllers\DirectCostEstimateController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ResourceMetricController;
 use App\Http\Resources\User\UserCollection;
-use App\Models\ResourceName;
 use App\Models\Uom;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
@@ -59,7 +58,7 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('lookups')->group(function () {
         Route::get('/project-status', fn () => response()->json(ProjectStatus::cases(), 200));
         Route::get('/project-stage', fn () => response()->json(ProjectStage::cases(), 200));
-        Route::get('/resource-names', fn () => response()->json(ResourceName::all(), 200));
+        Route::get('/resource-names', [ResourceItemController::class, 'getResourceType']);
         Route::get('/uom', fn () => response()->json(Uom::all(), 200));
         Route::resource('positions', PositionController::class);
         Route::get('/all-position', [PositionController::class, 'all']);
