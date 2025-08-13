@@ -58,6 +58,12 @@ class BoqItem extends Model
         return $this->hasMany(ResourceItem::class, 'task_id', 'id');
     }
 
+    protected function getCanUpdateTotalAmountAttribute()
+    {
+        $status = $this->phase?->project?->marketing_stage->value;
+        return !in_array($status, ['awarded', 'generate_to_tss']);
+    }
+
     public function getUnitPriceWithUnitAttribute()
     {
         return $this->unit_price . ' / ' . $this->unit;

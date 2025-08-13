@@ -8,6 +8,7 @@ enum MarketingStage: string
     case PROPOSAL = 'proposal';
     case BIDDING = 'bidding';
     case AWARDED = 'awarded';
+    case GENERATETOTSS = 'generate_to_tss';
 
     /**
      * Ordered flow of statuses.
@@ -19,6 +20,7 @@ enum MarketingStage: string
             self::PROPOSAL,
             self::BIDDING,
             self::AWARDED,
+            self::GENERATETOTSS,
         ];
     }
 

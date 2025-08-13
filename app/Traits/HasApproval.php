@@ -52,7 +52,7 @@ trait HasApproval
             $user = User::with('employee')->find($approval['user_id']);
             $employee = $user?->employee?->fullname_first ?? 'SYSTEM ADMINISTRATOR';
 
-            return $employee.' - '.$approval['status'].' - '.($approval['no_of_days_approved_from_the_date_filled'] ?? '0');
+            return $employee . ' - ' . $approval['status'] . ' - ' . ($approval['no_of_days_approved_from_the_date_filled'] ?? '0');
         })->implode(', ');
     }
 
@@ -134,9 +134,7 @@ trait HasApproval
         $this->refresh();
     }
 
-    public function setRequestStatus(?string $newStatus)
-    {
-    }
+    public function setRequestStatus(?string $newStatus) {}
 
     public function requestStatusCompleted(): bool
     {
