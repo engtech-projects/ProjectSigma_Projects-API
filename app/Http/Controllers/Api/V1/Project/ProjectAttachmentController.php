@@ -25,44 +25,49 @@ class ProjectAttachmentController extends Controller
      */
     public function store(StoreAttachmentRequest $request, Project $project)
     {
-        $validated = $request->validated();
-
-        foreach ($request->file('attachments') as $attachment) {
-
-            $path = $this->uploadFile($attachment, "projects/{$project->id}");
-
-            $project->attachments()->create([
-                'name' => $attachment->getClientOriginalName(),
-                'path' => $path,
-                'mime_type' => $attachment->getMimeType(),
-            ]);
-        }
-
-        return response()->json($project->attachments()->get(), 201);
-    }
-
-    public function generateUrl(Request $request, Project $project)
-    {
-        $attachments = $project->attachments()->get();
-
-        if ($attachments->isEmpty()) {
+        try {
+            if (!$request->hasFile('attachments')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No files uploaded',
+                ], 422);
+            }
+            $storedFiles = [];
+            foreach ($request->file('attachments') as $file) {
+                $uniqueName = (string) Str::uuid(). '.' . $file->getClientOriginalExtension();
+                $path = "project/attachments/{$project->id}/{$uniqueName}";
+                Storage::disk('public')->put($path, file_get_contents($file));
+                $attachment = $project->attachments()->create([
+                    'project_id' => $project->id,
+                    'name' => $uniqueName,
+                    'path' => $path,
+                    'mime_type' => $file->getMimeType(),
+                    ]);
+                $storedFiles[] = $attachment;
+            }
+            return response()->json([
+                'success' => true,
+                'message' => 'Files uploaded and stored successfully.',
+                'files' => $storedFiles,
+            ], 201);
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'No attachments found',
-                'data' => [],
-            ], 404);
+                'message' => 'Failed to upload attachment.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
+    }
 
+    public function getDocumentViewerLink(Request $request, Project $project)
+    {
         $uniqueKey = Str::random(15);
-
         Cache::put($uniqueKey, $project->id, now()->addMinutes(10));
-
         $webViewerUrl = route('web.document.viewer', ['cacheKey' => $uniqueKey]);
-
         return response()->json([
             'success' => true,
             'message' => 'Document viewer link generated successfully.',
-            'data' => ['url' => $webViewerUrl],
+            'url' => $webViewerUrl,
         ], 200);
     }
 

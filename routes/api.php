@@ -81,7 +81,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('{project}/complete', [ProjectStatusController::class, 'complete']);
         Route::post('replicate', [ProjectController::class, 'replicate']);
         Route::post('{project}/attachments', [ProjectAttachmentController::class, 'store']);
-        Route::get('{project}/document-viewer', [ProjectAttachmentController::class, 'generateUrl']);
+        Route::get('{project}/document-viewer', [ProjectAttachmentController::class, 'getDocumentViewerLink']);
         Route::post('change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
         Route::patch('{project}/cash-flow', [ProjectController::class, 'updateCashFlow']);
         Route::get('{project}/revisions', [RevisionController::class, 'showProjectRevisions']);
