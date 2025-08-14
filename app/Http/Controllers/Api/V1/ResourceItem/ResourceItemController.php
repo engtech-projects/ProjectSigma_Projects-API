@@ -86,19 +86,10 @@ class ResourceItemController extends Controller
 
     public function billOfMaterialsResources(BoqItem $item_id) {
         $resources = $item_id->resources()->get();
-        if ($resources->isEmpty()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No resources found for the given item ID',
-            ], 404);
-        }
         return response()->json([
             'success' => true,
             'message' => 'Resources retrieved successfully',
-            'data' => ResourceItemResource::collection($resources)->additional([
-                'success' => true,
-                'message' => 'Resources retrieved successfully',
-            ]),
+            'data' => ResourceItemResource::collection($resources),
         ], 200);
     }
 }
