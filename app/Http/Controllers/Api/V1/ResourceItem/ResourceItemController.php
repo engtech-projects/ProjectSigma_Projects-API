@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ResourceItem\StoreResourceItemRequest;
 use App\Http\Requests\ResourceItem\UpdateResourceItemRequest;
 use App\Http\Resources\ResourceItemResource;
+use App\Models\BoqItem;
 use App\Models\ResourceItem;
 use App\Services\ResourceService;
 
@@ -80,6 +81,24 @@ class ResourceItemController extends Controller
             'success' => true,
             'message' => 'Project Resources Item has been deleted',
             'data' => $result,
+        ], 200);
+    }
+
+    public function billOfMaterialsResources(BoqItem $item_id) {
+        $resources = $item_id->resources()->get();
+        if ($resources->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No resources found for the given item ID',
+            ], 404);
+        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Resources retrieved successfully',
+            'data' => ResourceItemResource::collection($resources)->additional([
+                'success' => true,
+                'message' => 'Resources retrieved successfully',
+            ]),
         ], 200);
     }
 }
