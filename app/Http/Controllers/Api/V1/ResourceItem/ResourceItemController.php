@@ -51,7 +51,7 @@ class ResourceItemController extends Controller
     }
     public function getResourceType()
     {
-        $data = array_map(fn($case) => [
+        $data = array_map(fn ($case) => [
             'value' => $case->value,
             'label' => $case->displayName(),
         ], ResourceType::cases());

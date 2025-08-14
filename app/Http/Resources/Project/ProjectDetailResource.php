@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources\Project;
 
-use App\Enums\TssStage;
 use App\Http\Resources\AttachmentResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -24,9 +23,7 @@ class ProjectDetailResource extends JsonResource
             'contract_date' => $this->contract_date?->format('Y-m-d'),
             'duration' => $this->duration,
             'license' => $this->license,
-            'stage' => $this->tss_stage === TssStage::PENDING->value
-                ? $this->tss_stage
-                : $this->marketing_stage,
+            'stage' => $this->marketing_stage,
             'status' => $this->status,
             'is_original' => $this->is_original,
             'version' => $this->version,

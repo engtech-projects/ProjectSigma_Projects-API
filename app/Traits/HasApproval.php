@@ -134,7 +134,9 @@ trait HasApproval
         $this->refresh();
     }
 
-    public function setRequestStatus(?string $newStatus) {}
+    public function setRequestStatus(?string $newStatus)
+    {
+    }
 
     public function requestStatusCompleted(): bool
     {
