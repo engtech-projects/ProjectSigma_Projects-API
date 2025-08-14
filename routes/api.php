@@ -99,6 +99,7 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('resource-items', ResourceItemController::class);
     Route::resource('direct-cost-estimates', DirectCostEstimateController::class);
     Route::resource('resource-metrics', ResourceMetricController::class);
+    Route::get('bill-of-materials/{item-id}/resources/all', [ResourceItemController::class, 'billOfMaterialsResources']);
 
     // ────── Revisions ──────
     Route::prefix('project-revisions')->group(function () {
