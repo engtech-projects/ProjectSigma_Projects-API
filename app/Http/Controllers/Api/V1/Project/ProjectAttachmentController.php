@@ -64,8 +64,11 @@ class ProjectAttachmentController extends Controller
         $uniqueKey = Str::random(15);
         Cache::put($uniqueKey, $project->id, now()->addMinutes(10));
         $webViewerUrl = route('web.document.viewer', ['cacheKey' => $uniqueKey]);
-        return response($webViewerUrl, 200)
-            ->header('Content-Type', 'text/plain');
+        return response()->json([
+            'success' => true,
+            'message' => 'Document viewer link generated successfully.',
+            'url' => $webViewerUrl,
+        ], 200);
     }
 
     /****
