@@ -125,19 +125,20 @@ class ProjectController extends Controller
     public function updateStage(UpdateProjectStageRequest $request, Project $project)
     {
         $valid = $request->validated();
-        $newStage = ProjectStage::from($valid['stage']);
-        $oldStage = $project->marketing_stage;
+        $oldStage = $project->marketing_stage->value;
+        $newStage = $valid['stage'];
+        $newStageEnum = ProjectStage::validateTransition($oldStage, $newStage);
         $projectService = new ProjectService($project);
         try {
-            $projectService->updateStage($newStage);
+            $projectService->updateStage($newStageEnum);
             return new JsonResponse([
                 'success' => true,
-                'message' => "Successfully updated stage from {$oldStage->value} to {$newStage->value}.",
+                'message' => "Successfully updated stage from {$oldStage} to {$newStage}.",
             ], JsonResponse::HTTP_OK);
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
-                'message' => "Failed to update stage from {$oldStage->value} to {$newStage->value}.",
+                'message' => "Failed to update stage from {$oldStage} to {$newStage}.",
                 'errors' => $e->errors(),
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
