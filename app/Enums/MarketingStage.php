@@ -24,6 +24,14 @@ enum MarketingStage: string
         ];
     }
 
+    public function display(): string
+    {
+        return match ($this) {
+            self::GENERATETOTSS => 'awarded',
+            default => $this->value
+        };
+    }
+
     /**
      * Get next status in the flow.
      */

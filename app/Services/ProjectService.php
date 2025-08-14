@@ -250,7 +250,7 @@ class ProjectService
         }
         if (!$isTssUpdate) {
             $this->project->marketing_stage = $newStage->value;
-            if ($newStage->value === MarketingStage::AWARDED->value) {
+            if ($newStage->value === MarketingStage::GENERATETOTSS->value) {
                 $this->project->tss_stage = TssStage::AWARDED->value;
                 $this->createProjectRevision($this->project->status);
             }
