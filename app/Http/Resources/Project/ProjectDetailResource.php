@@ -32,6 +32,7 @@ class ProjectDetailResource extends JsonResource
             'current_revision_id' => $this->current_revision_id,
             'created_by' => $this->created_by,
             'created_at' => $this->created_at_formatted,
+            'updated_at' => $this->updated_at_formatted,
             'cash_flow' => $this->cash_flow ? $this->cash_flow : null,
             'phases' => BoqPartResource::collection($this->whenLoaded('phases')),
             'attachments' => AttachmentResource::collection($this->whenLoaded('attachments')),
