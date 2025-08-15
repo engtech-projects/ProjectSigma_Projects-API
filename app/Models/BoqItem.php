@@ -26,22 +26,6 @@ class BoqItem extends Model
         'amount',
     ];
 
-    protected $appends = [
-        'unit_price_with_unit',
-        'total_price',
-        'total_direct_cost',
-        'resource_totals',
-        'total_equipment_amount',
-        'total_labor_amount',
-        'total_fuel_oil_amount',
-        'total_overhead_amount',
-        'ocm',
-        'contractors_profit',
-        'vat',
-        'grand_total',
-        'unit_cost_per',
-    ];
-
     protected static function boot()
     {
         parent::boot();
