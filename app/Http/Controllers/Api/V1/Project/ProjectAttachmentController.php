@@ -34,7 +34,10 @@ class ProjectAttachmentController extends Controller
             }
             $storedFiles = [];
             foreach ($request->file('attachments') as $file) {
-                $uniqueName = (string) Str::uuid(). '.' . $file->getClientOriginalExtension();
+                $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $sanitizedOriginalName = Str::slug($originalName);
+                $extension = $file->getClientOriginalExtension();
+                $uniqueName = $sanitizedOriginalName . '-' . (string) Str::uuid() . '.' . $extension;
                 $path = "project/attachments/{$project->id}/{$uniqueName}";
                 Storage::disk('public')->put($path, file_get_contents($file));
                 $attachment = $project->attachments()->create([
