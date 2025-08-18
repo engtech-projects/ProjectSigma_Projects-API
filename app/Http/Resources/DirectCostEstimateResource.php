@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class DupaDetailedResource extends JsonResource
+class DirectCostEstimateResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -25,6 +25,13 @@ class DupaDetailedResource extends JsonResource
             'unit_cost' => $this->unit_cost,
             'resource_count' => $this->resource_count,
             'total_cost' => $this->total_cost,
+            'consumption_rate' => $this->consumption_rate,
+            'labor_cost_category' => $this->labor_cost_category,
+            'work_time_category' => $this->work_time_category,
+            'remarks' => $this->remarks,
+            'consumption_unit' => $this->consumption_unit,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

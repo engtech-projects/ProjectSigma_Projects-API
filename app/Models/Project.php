@@ -111,7 +111,7 @@ class Project extends Model
 
     public function attachments(): HasMany
     {
-        return $this->hasMany(Attachment::class);
+        return $this->hasMany(Attachment::class, 'project_id', 'id');
     }
 
     public function team(): HasMany
@@ -325,7 +325,7 @@ class Project extends Model
     public function getSummaryOfRatesAttribute()
     {
         $summary_of_rates = [];
-        if (! $this->phases) {
+        if (!$this->phases) {
             return $summary_of_rates;
         }
         foreach ($this->phases as $phase) {
@@ -333,15 +333,15 @@ class Project extends Model
                 continue;
             }
             foreach ($phase->tasks as $task) {
-                if (! $task->resources) {
+                if (!$task->resources) {
                     continue;
                 }
                 foreach ($task->resources as $value) {
                     if ($value->quantity <= 0 || ! $value->unit) {
                         continue;
                     }
-                    $resourceName = $value->resourceName->name;
-                    $key = $value->description;
+                    $resourceName = isset($value->resource_type) ? (string) $value->resource_type->value : '';
+                    $key = (string) $value->description;
                     if (isset($summary_of_rates[$resourceName][$key])) {
                         $summary_of_rates[$resourceName][$key]['ids'][] = $value->id;
                     } else {
@@ -349,7 +349,8 @@ class Project extends Model
                             'description' => $value->description,
                             'unit_cost' => $value->unit_cost,
                             'unit' => $value->unit,
-                            'resource_name' => $value->unit_cost . ' / ' . $value->unit,
+                            'resource_name' => $resourceName ? $resourceName : '',
+                            'unit_cost_with_unit' => $value->unit_cost . ' / ' . $value->unit,
                             'total_cost' => $value->total_cost,
                             'ids' => [$value->id],
                         ];

@@ -20,7 +20,7 @@ class ResourceMetric extends Model
 
     public function resource()
     {
-        return $this->belongsTo(ResourceItem::class);
+        return $this->belongsTo(ResourceItem::class, 'resource_id', 'id');
     }
 
 }

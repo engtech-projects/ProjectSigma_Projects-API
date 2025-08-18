@@ -2,8 +2,6 @@
 
 namespace App\Http\Resources\Project;
 
-use App\Enums\TssStage;
-use App\Http\Resources\Approvals\ApprovalAttributeCollection;
 use App\Http\Resources\AttachmentResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -25,9 +23,7 @@ class ProjectDetailResource extends JsonResource
             'contract_date' => $this->contract_date?->format('Y-m-d'),
             'duration' => $this->duration,
             'license' => $this->license,
-            'stage' => $this->tss_stage === TssStage::PENDING->value
-                ? $this->tss_stage
-                : $this->marketing_stage,
+            'stage' => $this->marketing_stage,
             'status' => $this->status,
             'is_original' => $this->is_original,
             'version' => $this->version,
@@ -36,8 +32,8 @@ class ProjectDetailResource extends JsonResource
             'current_revision_id' => $this->current_revision_id,
             'created_by' => $this->created_by,
             'created_at' => $this->created_at_formatted,
+            'updated_at' => $this->updated_at_formatted,
             'cash_flow' => $this->cash_flow ? $this->cash_flow : null,
-            'approvals' => new ApprovalAttributeCollection(['approvals' => $this?->approvals]),
             'phases' => BoqPartResource::collection($this->whenLoaded('phases')),
             'attachments' => AttachmentResource::collection($this->whenLoaded('attachments')),
             'total_cost' => $this->phases->flatMap->tasks->sum('amount')

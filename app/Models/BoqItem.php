@@ -26,17 +26,6 @@ class BoqItem extends Model
         'amount',
     ];
 
-    protected $appends = [
-        'unit_price_with_unit',
-        'total_price',
-        'resource_item_total',
-        'ocm',
-        'contractors_profit',
-        'vat',
-        'grand_total',
-        'unit_cost_per',
-    ];
-
     protected static function boot()
     {
         parent::boot();
@@ -58,6 +47,24 @@ class BoqItem extends Model
         return $this->hasMany(ResourceItem::class, 'task_id', 'id');
     }
 
+    public function project()
+    {
+        return $this->hasOneThrough(
+            Project::class,
+            BoqPart::class,
+            'id',
+            'id',
+            'phase_id',
+            'project_id'
+        );
+    }
+
+    protected function getCanUpdateTotalAmountAttribute()
+    {
+        $status = $this->phase?->project?->marketing_stage->value;
+        return !in_array($status, ['awarded', 'generate_to_tss']);
+    }
+
     public function getUnitPriceWithUnitAttribute()
     {
         return $this->unit_price . ' / ' . $this->unit;
@@ -68,17 +75,16 @@ class BoqItem extends Model
         return $this->unit_price * $this->quantity;
     }
 
-    public function getEachResourceItemTotalAttribute()
+    public function getResourceTotalsAttribute()
     {
-        $resource = [];
-        foreach ($this->resources as $key => $value) {
-            if (! isset($resource[$value->resourceName->name]['total_cost'])) {
-                $resource[$value->resourceName->name]['total_cost'] = 0;
-            }
-            $resource[$value->resourceName->name]['total_cost'] += $value->total_cost;
-        }
-
-        return $resource;
+        return collect($this->resources)
+            ->groupBy('resource_type')
+            ->map(function ($group) {
+                return [
+                    'total_cost' => $group->sum('total_cost'),
+                ];
+            })
+            ->toArray();
     }
 
     public function getResourceItemTotalAttribute()
@@ -88,67 +94,67 @@ class BoqItem extends Model
 
     public function getTotalMaterialsAmountAttribute()
     {
-        return $this->resources()
-            ->whereHas('resourceName', function ($query) {
-                $query->where('name', 'Materials');
-            })
+        return $this->resources()->where('resource_type', 'materials')
             ->sum('total_cost');
+    }
+
+    public function getTotalDirectCostAttribute()
+    {
+        return $this->resources()->sum('total_cost');
     }
 
     public function getTotalEquipmentAmountAttribute()
     {
-        return $this->resources()
-            ->whereHas('resourceName', function ($query) {
-                $query->where('name', 'Equipment');
-            })
+        return $this->resources()->where('resource_type', 'equipment_rental')
             ->sum('total_cost');
     }
 
     public function getTotalLaborAmountAttribute()
     {
-        return $this->resources()
-            ->whereHas('resourceName', function ($query) {
-                $query->where('name', 'Labor');
-            })
+        return $this->resources()->where('resource_type', 'labor_expense')
             ->sum('total_cost');
     }
 
     public function getTotalFuelOilAmountAttribute()
     {
-        return $this->resources()
-            ->whereHas('resourceName', function ($query) {
-                $query->where('name', 'Fuel / Oil Cost');
-            })
+        return $this->resources()->where('resource_type', 'fuel_oil_cost')
             ->sum('total_cost');
     }
 
     public function getTotalOverheadAmountAttribute()
     {
-        return $this->resources()
-            ->whereHas('resourceName', function ($query) {
-                $query->where('name', 'Overhead Cost');
-            })
+        return $this->resources()->where('resource_type', 'overhead_cost')
             ->sum('total_cost');
     }
 
     public function getOcmAttribute()
     {
-        return $this->resource_item_total > 0 ? $this->resource_item_total * 0.1 : 0;
+        $total = collect($this->resource_totals)
+            ->sum('total_cost');
+
+        return $total > 0 ? $total * 0.1 : 0;
     }
 
     public function getContractorsProfitAttribute()
     {
-        return $this->resource_item_total > 0 ? $this->resource_item_total * 0.1 : 0;
+        $total = collect($this->resource_totals)->sum('total_cost');
+        return $total > 0 ? $total * 0.1 : 0;
     }
 
     public function getVatAttribute()
     {
-        return $this->resource_item_total > 0 ? 0.12 * ($this->resource_item_total + $this->ocm + $this->contractors_profit) : 0;
+        $total = collect($this->resource_totals)->sum('total_cost');
+        return $total > 0
+            ? 0.12 * ($total + $this->ocm + $this->contractors_profit)
+            : 0;
     }
 
     public function getGrandTotalAttribute()
     {
-        return $this->resource_item_total > 0 ? $this->resource_item_total + $this->ocm + $this->contractors_profit + $this->vat : 0;
+        $total = collect($this->resource_totals)->sum('total_cost');
+        return $total > 0
+            ? $total + $this->ocm + $this->contractors_profit + $this->vat
+            : 0;
     }
 
     public function getUnitCostPerAttribute()

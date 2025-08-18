@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Attachment;
+namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreAttachmentRequest extends FormRequest
+class FilterDirectCostEstimateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,8 @@ class StoreAttachmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'attachments' => 'required|array',
-            'attachments.*' => 'file|mimes:pdf,doc,docx,png,jpeg|max:10240',
+            'task_id' => ['nullable', 'string'],
+            'resource_type' => ['nullable', 'string'],
         ];
     }
 }

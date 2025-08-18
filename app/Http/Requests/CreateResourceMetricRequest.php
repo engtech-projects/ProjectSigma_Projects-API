@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Attachment;
+namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreAttachmentRequest extends FormRequest
+class CreateResourceMetricRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,10 @@ class StoreAttachmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'attachments' => 'required|array',
-            'attachments.*' => 'file|mimes:pdf,doc,docx,png,jpeg|max:10240',
+            'resource_id' => 'required|exists:resources,id',
+            'label' => 'required|string|max:255|unique:resource_metrics,label,resource_id',
+            'value' => 'required|numeric',
+            'unit' => 'required|numeric',
         ];
     }
 }

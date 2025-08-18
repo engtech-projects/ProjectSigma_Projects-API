@@ -6,6 +6,7 @@ use Cache;
 use File;
 use Illuminate\Http\Request;
 use App\Models\Project;
+use Storage;
 
 class DocumentViewerController extends Controller
 {
@@ -16,45 +17,51 @@ class DocumentViewerController extends Controller
      *
      * @return \Illuminate\View\View|\Illuminate\Http\JsonResponse The document viewer view with attachment paths, or a JSON error response if attachments are not found.
      */
-    public function __invoke($cacheKey)
+    public function showDocumentViewer($cacheKey)
     {
         if (!Cache::has($cacheKey)) {
-            return view('document-not-found', ['message' => 'Document not found or cache key has expired.']);
+            return view('errors.document-not-found', [
+                'message' => 'Document not found or cache key expired.'
+            ]);
         }
-
         $projectId = Cache::get($cacheKey);
         $project = Project::find($projectId);
-
-        if (!$project || empty($project->attachments) || !count($project->attachments)) {
-            return view('document-not-found', ['message' => 'Project not found or attachments not found.']);
+        if (!$project) {
+            return view('errors.document-not-found', [
+                'message' => 'Project not found.'
+            ]);
         }
-
-        $publicFilePaths = [];
-
-        foreach ($project->attachments as $attachment) {
-            $originalFilePath = "project/{$project->id}/$attachment";
-            $publicFilePath = "storage/project/{$project->id}/$attachment";
-            $publicDir = public_path("storage/project/{$project->id}");
-
-            if (!file_exists($publicDir)) {
-                if (!mkdir($publicDir, 0755, true)) {
-                    throw new \Exception('Failed to create directory');
-                }
-            }
-
-            if (!file_exists($publicFilePath)) {
-                if (!copy(storage_path("app/{$originalFilePath}"), $publicFilePath)) {
-                    throw new \Exception('Failed to copy file');
-                }
-            }
-
-            $publicFilePaths[] = $publicFilePath;
+        $attachments = $project->attachments()->get();
+        if ($attachments->isEmpty()) {
+            return view('errors.document-not-found', [
+                'message' => 'No attachments found for this project.'
+            ]);
         }
-
+        $files = $attachments->map(function ($attachment) {
+            $relativePath = "project/attachments/{$attachment->project_id}/{$attachment->name}";
+            $fullPath = storage_path('app/public/' . $attachment->path);
+            return file_exists($fullPath) ? [
+                'name' => $attachment->name,
+                'mime_type' => $attachment->mime_type,
+                'url' => Storage::url($relativePath),
+                'path' => $relativePath,
+            ] : null;
+        })->filter()->values();
+        if ($files->isEmpty()) {
+            return view('errors.document-not-found', [
+                'message' => 'All attachments are missing from storage.'
+            ]);
+        }
         return view('document-viewer', [
-            'title' => 'Sigma Projects Attachments',
-            'publicFilePaths' => $publicFilePaths,
+            'project' => $project,
+            'files' => $files,
         ]);
     }
 
+    public function download($path) {
+        if (!Storage::disk('public')->exists($path)) {
+            abort(404, 'File not found');
+        }
+        return Storage::disk('public')->download($path);
+    }
 }
