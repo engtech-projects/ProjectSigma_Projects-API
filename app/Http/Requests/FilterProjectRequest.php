@@ -33,7 +33,14 @@ class FilterProjectRequest extends FormRequest
                         array_map(fn ($stage) => $stage->value, TssStage::cases())
                     )
                 )
-            )],
+            )],            
+        ];
+    }
+    public function messages(): array
+    {
+        return [
+            'project_key.required' => 'Project key is required.',
+            'stage_status.in' => 'Invalid stage status.',
         ];
     }
 }
