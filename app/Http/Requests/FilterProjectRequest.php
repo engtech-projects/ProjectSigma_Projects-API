@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Enums\ProjectStage;
 use App\Enums\TssStage;
+use App\Enums\TaskStatus;
 
 class FilterProjectRequest extends FormRequest
 {
@@ -34,13 +35,6 @@ class FilterProjectRequest extends FormRequest
                     )
                 )
             )],
-        ];
-    }
-    public function messages(): array
-    {
-        return [
-            'project_key.required' => 'Project key is required.',
-            'stage_status.in' => 'Invalid stage status.',
         ];
     }
 }
