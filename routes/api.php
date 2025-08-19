@@ -105,7 +105,6 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/projects/task_schedules', [TaskScheduleController::class, 'filterProjectTaskSchedules']);
     Route::get('bill-of-materials/{item-id}/resources/all', [ResourceItemController::class, 'billOfMaterialsResources']);
 
-
     // ────── Revisions ──────
     Route::prefix('project-revisions')->group(function () {
         Route::resource('revisions', RevisionController::class);
