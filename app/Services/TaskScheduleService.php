@@ -21,36 +21,13 @@ class TaskScheduleService
 
     public function searchAndFilter(array $filter)
     {
-        $query  = Project::with('phases.tasks.schedules');
-        $queryAllProjectsTitle = Project::select('name');
-        if (!empty($filter['title'])) {
-            $query->where('name', 'like', "% {$filter['title']} %");
-        }
-        if (!empty($filter['item_id'])) {
-            $query->whereHas('phases.tasks.schedules', function($query) use ($filter) {
-                $query->where('item_id', $filter['item_id']);
-            });
-        }
-        if (!empty($filter['status'])) {
-            $query->whereHas('phases.tasks.schedules', function($query) use ($filter) {
-                $query->where('status', $filter['status']);
-            });
-        }
-        if (!empty($filter['date_from']) && !empty($filter['date_to'])) {
-            $dateFrom = $filter['date_from'];
-            $dateTo = $filter['date_to'];
-            $query->whereHas('phases.tasks.schedules', function($query) use ($dateFrom, $dateTo) {
-                $query->whereBetween('original_start', [$dateFrom, $dateTo])
-                    ->orWhereBetween('original_end', [$dateFrom, $dateTo])
-                    ->orWhereBetween('current_start', [$dateFrom, $dateTo])
-                    ->orWhereBetween('current_end', [$dateFrom, $dateTo]);
-            });
-        }
-        $sortBy = $filter['sort_by'] ?? 'updated_at';
-        $order = $filter['order'] ?? 'desc'; 
-        $query->orderBy($sortBy, $order);      
-        $projects = $query->paginate(config('services.pagination.limit'));
-        return $projects;
+        return Project::with('phases.tasks.schedules')
+            ->filterByTitle($filter['title'] ?? null)
+            ->filterByItemId($filter['item_id'] ?? null)
+            ->filterByDate($filter['date_from'] ?? null, $filter['date_to'] ?? null)
+            ->filterByStatus($filter['status'] ?? null)
+            ->sortByField($filter['sort_by'] ?? 'updated_at', $filter['order'] ?? 'desc')
+            ->paginate(config('services.pagination.limit'));
     }
 
     public function create(array $data)
