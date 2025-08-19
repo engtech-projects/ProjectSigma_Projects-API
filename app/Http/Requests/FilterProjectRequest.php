@@ -33,7 +33,7 @@ class FilterProjectRequest extends FormRequest
                         array_map(fn ($stage) => $stage->value, TssStage::cases())
                     )
                 )
-            )],            
+            )],
         ];
     }
     public function messages(): array
