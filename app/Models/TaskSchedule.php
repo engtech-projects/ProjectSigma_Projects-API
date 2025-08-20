@@ -12,8 +12,6 @@ class TaskSchedule extends Model
     use HasFactory;
     use SoftDeletes;
 
-    protected $table = "task_schedule";
-
     protected $fillable = [
         'item_id',
         'name',
