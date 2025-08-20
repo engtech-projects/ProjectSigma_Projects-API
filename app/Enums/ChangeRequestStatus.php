@@ -11,5 +11,3 @@ enum ChangeRequestStatus: string
     case APPROVED = 'approved';
     case DECLINED = 'declined';
 }
-
-
