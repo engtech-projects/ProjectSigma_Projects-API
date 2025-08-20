@@ -1,7 +1,7 @@
 <?php
 
-use App\Enums\RequestStatuses;
-use App\Enums\RequestType;
+use App\Enums\ChangeRequestStatus;
+use App\Enums\ChangeRequestType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,9 +17,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('project_id')->constrained('projects')->onDelete('restrict');
             $table->foreignId('requested_by')->constrained('users')->onDelete('restrict');
-            $table->enum('request_type', RequestType::values());
+            $table->enum('request_type', ChangeRequestType::values());
             $table->json('changes');
-            $table->enum('status', RequestStatuses::values());
+            $table->enum('status', ChangeRequestStatus::values());
             $table->timestamps();
             $table->softDeletes();
         });
