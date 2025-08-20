@@ -30,7 +30,7 @@ class FilterTaskScheduleRequest extends FormRequest
             'date_from' => ['nullable', 'date'],
             'date_to' => ['nullable', 'date', 'after:date_from'],
             'status' => ['nullable', 'string', Rule::in(TaskStatus::cases())],
-            'sort_by' => ['nullable', 'string', 'in:title,created_at,updated_at'],
+            'sort_by' => ['nullable', 'string', 'in:name,created_at,updated_at'],
             'order' => ['nullable', 'string', 'in:asc,desc'],
         ];
     }
