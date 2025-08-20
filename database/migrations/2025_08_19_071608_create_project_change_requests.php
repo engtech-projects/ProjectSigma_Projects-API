@@ -14,8 +14,8 @@ return new class () extends Migration {
     {
         Schema::create('project_change_requests', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('project_id')->constrained('projects')->onDelete('restrict');
-            $table->foreignId('requested_by')->constrained('users')->onDelete('restrict');
+            $table->foreignId('project_id')->constrained('projects')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreignId('requested_by')->constrained('users')->onDelete('restrict')->onUpdate('cascade');
             $table->enum('request_type', ChangeRequestType::values());
             $table->json('changes');
             $table->enum('status', ChangeRequestStatus::values());
