@@ -11,4 +11,3 @@ enum TaskStatus: string
     case ONGOING = 'ongoing';
     case DONE = 'done';
 }
-
