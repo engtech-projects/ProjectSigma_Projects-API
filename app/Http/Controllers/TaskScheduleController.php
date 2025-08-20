@@ -8,7 +8,6 @@ use App\Http\Requests\FilterTaskScheduleRequest;
 use App\Http\Requests\UpdateTaskScheduleRequest;
 use App\Http\Resources\ProjectTaskScheduleResource;
 use App\Http\Resources\TaskScheduleResource;
-use App\Models\Project;
 use App\Services\TaskScheduleService;
 use Illuminate\Validation\ValidationException;
 
@@ -34,7 +33,7 @@ class TaskScheduleController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
-            ], 422); 
+            ], 422);
         }
     }
 

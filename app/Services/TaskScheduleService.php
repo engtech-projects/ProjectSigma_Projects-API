@@ -8,7 +8,6 @@ use Illuminate\Validation\ValidationException;
 use App\Models\TaskSchedule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Request;
 
 class TaskScheduleService
 {
@@ -126,4 +125,3 @@ class TaskScheduleService
         return $slots;
     }
 }
-
