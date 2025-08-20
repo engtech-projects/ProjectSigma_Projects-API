@@ -47,6 +47,11 @@ class BoqItem extends Model
         return $this->hasMany(ResourceItem::class, 'task_id', 'id');
     }
 
+    public function schedules(): HasMany
+    {
+        return $this->hasMany(TaskSchedule::class, 'item_id', 'id');
+    }
+
     public function project()
     {
         return $this->hasOneThrough(
