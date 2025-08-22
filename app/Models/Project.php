@@ -251,6 +251,48 @@ class Project extends Model
         return $query->orderBy('updated_at', 'desc');
     }
 
+    public function scopeFilterByTitle($query, $title)
+    {
+        return $query->when($title, function ($q) use ($title) {
+            $q->where('name', 'like', "%{$title}%");
+        });
+    }
+
+    public function scopeFilterByItemId($query, $itemId)
+    {
+        return $query->when($itemId, function ($q) use ($itemId) {
+            $q->whereHas('phases.tasks.schedules', function ($q) use ($itemId) {
+                $q->where('item_id', $itemId);
+            });
+        });
+    }
+
+    public function scopeFilterByStatus($query, $status)
+    {
+        return $query->when($status, function ($q) use ($status) {
+            $q->whereHas('phases.tasks.schedules', function ($q) use ($status) {
+                $q->where('status', $status);
+            });
+        });
+    }
+
+    public function scopeFilterByDate($query, $dateFrom, $dateTo)
+    {
+        return $query->when($dateFrom && $dateTo, function ($q) use ($dateFrom, $dateTo) {
+            $q->whereHas('phases.tasks.schedules', function ($subQuery) use ($dateFrom, $dateTo) {
+                $subQuery->whereBetween('original_start', [$dateFrom, $dateTo])
+                    ->orWhereBetween('original_end', [$dateFrom, $dateTo])
+                    ->orWhereBetween('current_start', [$dateFrom, $dateTo])
+                    ->orWhereBetween('current_end', [$dateFrom, $dateTo]);
+            });
+        });
+    }
+
+    public function scopeSortByField($query, $sortBy, $order)
+    {
+        return $query->orderBy($sortBy ?? 'updated_at', $order ?? 'desc');
+    }
+
     public function getSummaryOfBidAttribute()
     {
         $summaryOfBid = [];

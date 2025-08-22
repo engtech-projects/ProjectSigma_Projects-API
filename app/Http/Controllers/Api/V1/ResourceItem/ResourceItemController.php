@@ -84,7 +84,8 @@ class ResourceItemController extends Controller
         ], 200);
     }
 
-    public function billOfMaterialsResources(BoqItem $item_id) {
+    public function billOfMaterialsResources(BoqItem $item_id)
+    {
         $resources = $item_id->resources()->get();
         return response()->json([
             'success' => true,

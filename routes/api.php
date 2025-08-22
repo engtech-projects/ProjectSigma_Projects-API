@@ -24,6 +24,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ProjectChangeRequestApprovalController;
 use App\Http\Controllers\ProjectChangeRequestController;
 use App\Http\Controllers\ResourceMetricController;
+use App\Http\Controllers\TaskScheduleController;
 use App\Http\Resources\User\UserCollection;
 use App\Models\Uom;
 use Illuminate\Support\Facades\Artisan;
@@ -101,6 +102,9 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('resource-items', ResourceItemController::class);
     Route::resource('direct-cost-estimates', DirectCostEstimateController::class);
     Route::resource('resource-metrics', ResourceMetricController::class);
+    Route::resource('task-schedule', TaskScheduleController::class);
+    Route::patch('task-schedule/{id}/schedule', [TaskScheduleController::class, 'updateTaskSchedule']);
+    Route::get('/projects/task_schedules', [TaskScheduleController::class, 'filterProjectTaskSchedules']);
     Route::get('bill-of-materials/{item-id}/resources/all', [ResourceItemController::class, 'billOfMaterialsResources']);
 
     // ────── Revisions ──────
