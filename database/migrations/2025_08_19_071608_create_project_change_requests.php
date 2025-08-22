@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\ChangeRequestStatus;
 use App\Enums\ChangeRequestType;
 use App\Enums\RequestStatuses;
 use Illuminate\Database\Migrations\Migration;
@@ -17,9 +16,9 @@ return new class () extends Migration {
             $table->id();
             $table->foreignId('project_id')->constrained('projects')->onDelete('restrict')->onUpdate('cascade');
             $table->enum('request_type', ChangeRequestType::values());
-            $table->json('changes');
-            $table->json('approvals');
-            $table->enum('request_status', RequestStatuses::values());
+            $table->json('changes')->nullable();
+            $table->json('approvals')->nullable();
+            $table->enum('request_status', RequestStatuses::values())->default(RequestStatuses::PENDING);
             $table->foreignId('created_by')->constrained('users')->onDelete('restrict')->onUpdate('cascade');
             $table->timestamps();
             $table->softDeletes();
