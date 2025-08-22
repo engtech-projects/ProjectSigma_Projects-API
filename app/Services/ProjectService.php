@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\ChangeRequestStatus;
 use App\Enums\MarketingStage;
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
@@ -10,6 +11,8 @@ use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectDetailResource;
 use App\Models\BoqPart;
 use App\Models\Project;
+use App\Models\ProjectChangeRequest;
+use App\Models\ProjectChangeRequestApproval;
 use App\Models\ResourceItem;
 use App\Models\BoqItem;
 use App\Models\Revision;
@@ -298,5 +301,28 @@ class ProjectService
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function createProjectChangeRequest($data)
+    {
+        $projectChangeRequest = ProjectChangeRequest::create([
+            'project_id' => $data['project_id'],
+            'requested_by' => auth()->user()->id,
+            'request_type' => $data['request_type'],
+            'changes' => $data['changes'],
+            'status' => $data['status'],
+        ]);
+        return $projectChangeRequest;
+    }
+
+    public function updateProjectChangeRequest($id, $data)
+    {
+        $projectChangeRequest = ProjectChangeRequest::findOrFail($id);
+        $projectChangeRequest->update([
+            'title' => $data['title'],
+            'description' => $data['description'],
+            'status' => $data['status'],
+        ]);
+        return $projectChangeRequest;
     }
 }
