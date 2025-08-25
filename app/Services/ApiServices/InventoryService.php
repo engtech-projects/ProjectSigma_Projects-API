@@ -4,8 +4,8 @@ namespace App\Services\ApiServices;
 
 use App\Models\SetupItemProfiles;
 use App\Models\Uom;
-use DB;
-use Http;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class InventoryService
 {
@@ -27,11 +27,9 @@ class InventoryService
 
     public function syncAll()
     {
-        $syncData = [
-            'uom' => $this->syncUOM(),
-        ];
-
-        return $syncData;
+        $syncUOMs = $this->syncUOM();
+        $syncItemProfiles = $this->syncItemProfile();
+        return $syncUOMs && $syncItemProfiles;
     }
 
     public function syncUOM()

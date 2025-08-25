@@ -46,13 +46,23 @@ Route::prefix('setup')->group(function () {
     Route::prefix('sync')->group(function () {
         Route::post('/all', [ApiSyncController::class, 'syncAll']);
         Route::prefix('inventory')->group(function () {
+            Route::post('/all', [ApiSyncController::class, 'syncAllInventory']);
             Route::post('/uom', [APiSyncController::class, 'syncUom']);
             Route::post('/item-profile', [APiSyncController::class, 'syncItemProfile']);
+        });
+        Route::prefix('hrms')->group(function () {
+            Route::post('/all', [ApiSyncController::class, 'syncAllHrms']);
+            Route::post('/employees', [APiSyncController::class, 'syncEmployees']);
+            Route::post('/accessibilities', [APiSyncController::class, 'syncAccessibilities']);
+            Route::post('/departments', [APiSyncController::class, 'syncDepartments']);
         });
     });
     Route::prefix('lists')->group(function () {
         Route::get('/uom', [SetupListsController::class, 'getUomList']);
         Route::get('/item-profile', [SetupListsController::class, 'getItemProfileList']);
+        Route::get('/employees', [SetupListsController::class, 'getItemProfileList']);
+        Route::get('/accessibilities', [SetupListsController::class, 'getAccessibilityList']);
+        Route::get('/departments', [SetupListsController::class, 'getDepartmentList']);
     });
 });
 
