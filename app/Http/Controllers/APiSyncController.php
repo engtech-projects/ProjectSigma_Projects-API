@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\ApiInventorySyncJob;
-use App\Services\ApiServices\InventoryService;
-use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 

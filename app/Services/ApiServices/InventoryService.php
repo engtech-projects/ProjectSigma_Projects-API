@@ -5,7 +5,6 @@ namespace App\Services\ApiServices;
 use App\Models\SetupItemProfiles;
 use App\Models\Uom;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class InventoryService
 {
