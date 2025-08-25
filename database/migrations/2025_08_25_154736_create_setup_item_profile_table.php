@@ -14,34 +14,35 @@ return new class extends Migration
         Schema::dropIfExists('item_profiles');
         Schema::create('setup_item_profile', function (Blueprint $table) {
             $table->id();
+
             $table->string('item_code')->unique();
             $table->string('item_description')->nullable();
-            $table->decimal('thickness', 10, 2)->nullable();
-            $table->decimal('length', 10, 2)->nullable();
-            $table->decimal('width', 10, 2)->nullable();
-            $table->decimal('height', 10, 2)->nullable();
-            $table->decimal('outside_diameter', 10, 2)->nullable();
-            $table->decimal('inside_diameter', 10, 2)->nullable();
-            $table->decimal('angle', 10, 2)->nullable();
+            $table->string('thickness')->nullable();
+            $table->string('length')->nullable();
+            $table->string('width')->nullable();
+            $table->string('height')->nullable();
+            $table->string('outside_diameter')->nullable();
+            $table->string('inside_diameter')->nullable();
+            $table->string('angle')->nullable();
             $table->string('size')->nullable();
             $table->string('specification')->nullable();
-            $table->decimal('volume', 15, 4)->nullable();
-            $table->decimal('weight', 15, 4)->nullable();
+            $table->string('volume')->nullable();
+            $table->string('weight')->nullable();
             $table->string('grade')->nullable();
-            $table->integer('volts')->nullable();
-            $table->integer('plates')->nullable();
+            $table->string('volts')->nullable();
+            $table->string('plates')->nullable();
             $table->string('part_number')->nullable();
             $table->string('color')->nullable();
-            $table->string('uom')->nullable(); // unit of measure
-            $table->decimal('uom_conversion_value', 15, 4)->nullable();
+            $table->unsignedBigInteger('uom')->nullable();
+            $table->foreign('uom')->references('id')->on('uom')->onDelete('set null');
+            $table->double('uom_conversion_value', 8, 2)->nullable();
             $table->string('item_group')->nullable();
             $table->string('sub_item_group')->nullable();
-            $table->string('inventory_type')->nullable();
-            $table->boolean('active_status')->default(true);
+            $table->enum('inventory_type', ['Inventoriable', 'Non-Inventoriable'])->nullable();
+            $table->enum('active_status', ['Active', 'Inactive'])->default('active');
             $table->boolean('is_approved')->default(false);
-
-            $table->softDeletes(); // softdelete support
-            $table->timestamps();  // created_at, updated_at
+            $table->softDeletes();
+            $table->timestamps();
         });
     }
 

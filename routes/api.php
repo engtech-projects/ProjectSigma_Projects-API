@@ -22,6 +22,7 @@ use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\DirectCostEstimateController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ResourceMetricController;
+use App\Http\Controllers\SetupListsController;
 use App\Http\Controllers\TaskScheduleController;
 use App\Http\Resources\User\UserCollection;
 use App\Models\Uom;
@@ -41,11 +42,20 @@ use Illuminate\Support\Facades\Route;
 */
 
 // SYNCHRONIZATION ROUTES
-Route::prefix('sync')->group(function () {
-    Route::prefix('inventory')->group(function () {
-        Route::post('/uom', [APiSyncController::class, 'syncUom']);
+Route::prefix('setup')->group(function () {
+    Route::prefix('sync')->group(function () {
+        Route::post('/all', [ApiSyncController::class, 'syncAll']);
+        Route::prefix('inventory')->group(function () {
+            Route::post('/uom', [APiSyncController::class, 'syncUom']);
+            Route::post('/item-profile', [APiSyncController::class, 'syncItemProfile']);
+        });
+    });
+    Route::prefix('lists')->group(function () {
+        Route::get('/uom', [SetupListsController::class, 'getUomList']);
+        Route::get('/item-profile', [SetupListsController::class, 'getItemProfileList']);
     });
 });
+
 Route::get('nature-of-works', function () {
     return response()->json(NatureOfWork::cases(), 200);
 });
@@ -53,14 +63,14 @@ Route::get('nature-of-works', function () {
 Route::middleware('auth:api')->group(function () {
 
     // ────── User Info ──────
-    Route::get('/user', fn () => response()->json(new UserCollection(Auth::user()), 200));
+    Route::get('/user', fn() => response()->json(new UserCollection(Auth::user()), 200));
 
     // ────── Lookups ──────
     Route::prefix('lookups')->group(function () {
-        Route::get('/project-status', fn () => response()->json(ProjectStatus::cases(), 200));
-        Route::get('/project-stage', fn () => response()->json(ProjectStage::cases(), 200));
+        Route::get('/project-status', fn() => response()->json(ProjectStatus::cases(), 200));
+        Route::get('/project-stage', fn() => response()->json(ProjectStage::cases(), 200));
         Route::get('/resource-names', [ResourceItemController::class, 'getResourceType']);
-        Route::get('/uom', fn () => response()->json(Uom::all(), 200));
+        Route::get('/uom', fn() => response()->json(Uom::all(), 200));
         Route::resource('positions', PositionController::class);
         Route::get('/all-position', [PositionController::class, 'all']);
     });
