@@ -87,9 +87,8 @@ class InventoryService
         ], $datas);
         SetupItemProfiles::upsert(
             $datas,
-            ['id'],
+            ['id', 'item_code'],
             [
-                'item_code',
                 'item_description',
                 'uom',
                 'item_group',
