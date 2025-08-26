@@ -22,6 +22,7 @@ use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\DirectCostEstimateController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ResourceMetricController;
+use App\Http\Controllers\SetupListsController;
 use App\Http\Controllers\TaskScheduleController;
 use App\Http\Resources\User\UserCollection;
 use App\Models\Uom;
@@ -40,17 +41,36 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// SYNCHRONIZATION ROUTES
-Route::prefix('sync')->group(function () {
-    Route::prefix('inventory')->group(function () {
-        Route::post('/uom', [APiSyncController::class, 'syncUom']);
-    });
-});
 Route::get('nature-of-works', function () {
     return response()->json(NatureOfWork::cases(), 200);
 });
 
 Route::middleware('auth:api')->group(function () {
+
+    // SYNCHRONIZATION ROUTES
+    Route::prefix('setup')->group(function () {
+        Route::prefix('sync')->group(function () {
+            Route::post('/all', [ApiSyncController::class, 'syncAll']);
+            Route::prefix('inventory')->group(function () {
+                Route::post('/all', [ApiSyncController::class, 'syncAllInventory']);
+                Route::post('/uom', [APiSyncController::class, 'syncUom']);
+                Route::post('/item-profile', [APiSyncController::class, 'syncItemProfile']);
+            });
+            Route::prefix('hrms')->group(function () {
+                Route::post('/all', [ApiSyncController::class, 'syncAllHrms']);
+                Route::post('/employees', [APiSyncController::class, 'syncEmployees']);
+                Route::post('/accessibilities', [APiSyncController::class, 'syncAccessibilities']);
+                Route::post('/departments', [APiSyncController::class, 'syncDepartments']);
+            });
+        });
+        Route::prefix('lists')->group(function () {
+            Route::get('/uom', [SetupListsController::class, 'getUomList']);
+            Route::get('/item-profile', [SetupListsController::class, 'getItemProfileList']);
+            Route::get('/employees', [SetupListsController::class, 'getItemProfileList']);
+            Route::get('/accessibilities', [SetupListsController::class, 'getAccessibilityList']);
+            Route::get('/departments', [SetupListsController::class, 'getDepartmentList']);
+        });
+    });
 
     // ────── User Info ──────
     Route::get('/user', fn () => response()->json(new UserCollection(Auth::user()), 200));
@@ -74,6 +94,7 @@ Route::middleware('auth:api')->group(function () {
     // ────── Projects ──────
     Route::prefix('projects')->group(function () {
         Route::resource('resource', ProjectController::class);
+        Route::get('live', [ProjectController::class, 'getLiveProjects']);
         Route::get('owned', [ProjectController::class, 'getOwnedProjects']);
         Route::get('tss', [ProjectController::class, 'tssProjects']);
         Route::patch('{project}/status', [ProjectStatusController::class, 'updateStatus']);
