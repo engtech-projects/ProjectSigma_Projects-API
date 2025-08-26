@@ -69,14 +69,6 @@ class HrmsService
     public function syncDepartments()
     {
         $departments = $this->getAllDepartments();
-        $departments = array_map(fn ($department) => [
-            "id" => $department['id'],
-            "code" => $department['code'],
-            "department_name" => $department['department_name'],
-            "created_at" => $department['created_at'],
-            "updated_at" => $department['updated_at'],
-            "deleted_at" => $department['deleted_at'],
-        ], $departments);
         SetupDepartments::upsert(
             $departments,
             [
