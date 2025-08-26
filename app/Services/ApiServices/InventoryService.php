@@ -34,7 +34,7 @@ class InventoryService
     public function syncUOM()
     {
         $uoms = $this->getUOMs();
-        $uoms = array_map(fn ($uom) => [
+        $uoms = array_map(fn($uom) => [
             "id" => $uom['id'],
             "name" => $uom['name'],
             "symbol" => $uom['symbol'],
@@ -74,9 +74,9 @@ class InventoryService
     public function syncItemProfile()
     {
         $datas = $this->getItemProfileList();
-        $datas = array_map(fn ($data) => [
+        $datas = array_map(fn($data) => [
             'id'              => $data['id'],
-            'item_code' => $data['item_code'] ?? "-",
+            'item_code' => $data['item_code'],
             'item_description' => $data['item_name_summary'],
             'uom'             => $data['uom'],
             'item_group'      => $data['uom_name'],
