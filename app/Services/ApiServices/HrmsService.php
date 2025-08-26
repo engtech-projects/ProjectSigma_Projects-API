@@ -69,7 +69,7 @@ class HrmsService
     public function syncDepartments()
     {
         $departments = $this->getAllDepartments();
-        $departments = array_map(fn ($department) => [
+        $departments = array_map(fn($department) => [
             "id" => $department['id'],
             "code" => $department['code'],
             "department_name" => $department['department_name'],

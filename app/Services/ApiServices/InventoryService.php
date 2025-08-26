@@ -34,14 +34,14 @@ class InventoryService
     public function syncUOM()
     {
         $uoms = $this->getUOMs();
-        $uoms = array_map(fn ($uom) => [
+        $uoms = array_map(fn($uom) => [
             "id" => $uom['id'],
             "name" => $uom['name'],
             "symbol" => $uom['symbol'],
             "created_at" => $uom['created_at'],
             "updated_at" => $uom['updated_at'],
             "deleted_at" => $uom['deleted_at'],
-        ], $uoms["data"]);
+        ], $uoms);
         Uom::upsert(
             $uoms,
             ['id'],
@@ -68,25 +68,23 @@ class InventoryService
         if (!$response->successful()) {
             return false;
         }
-        return $response->json();
+        return $response->json("data") ?: [];
     }
 
     public function syncItemProfile()
     {
-        $datas = collect($this->getItemProfileList()['data'])
-            ->map(fn ($data) => [
-                'id'              => $data['id'],
-                'item_code' => $data['item_name_summary'],
-                'item_description' => $data['item_name_summary'],
-                'uom'             => $data['uom'],
-                'item_group'      => $data['uom_name'],
-                'active_status'   => $data['status'],
-                'created_at'      => $data['created_at'],
-                'updated_at'      => $data['updated_at'],
-                'deleted_at'      => $data['deleted_at'],
-            ])
-            ->values()
-            ->all();
+        $datas = $this->getItemProfileList();
+        $datas = array_map(fn($data) => [
+            'id'              => $data['id'],
+            'item_code' => $data['item_code'],
+            'item_description' => $data['item_name_summary'],
+            'uom'             => $data['uom'],
+            'item_group'      => $data['uom_name'],
+            'active_status'   => $data['status'],
+            'created_at'      => $data['created_at'],
+            'updated_at'      => $data['updated_at'],
+            'deleted_at'      => $data['deleted_at'],
+        ], $datas);
         SetupItemProfiles::upsert(
             $datas,
             ['id'],
@@ -115,6 +113,6 @@ class InventoryService
         if (! $response->successful()) {
             return false;
         }
-        return $response->json();
+        return $response->json("data") ?: [];
     }
 }

@@ -2,12 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ApiHrmsSyncJob;
 use App\Jobs\ApiInventorySyncJob;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class APiSyncController extends Controller
 {
+    public function syncAll(Request $request)
+    {
+        try {
+            ApiInventorySyncJob::dispatch('syncAllHrms');
+            ApiInventorySyncJob::dispatch('syncAll');
+        } catch (\Exception $e) {
+            Log::error('Failed to dispatch HRMS sync job', ['error' => $e->getMessage()]);
+            throw new \Exception("HRMS sync failed: " . $e->getMessage());
+        }
+        return response()->json([
+            'message' => 'Successfully synced all HRMS.',
+            'success' => true,
+        ]);
+    }
+
     public function syncAllHrms(Request $request)
     {
         try {
@@ -24,7 +40,7 @@ class APiSyncController extends Controller
     public function syncEmployees(Request $request)
     {
         try {
-            ApiInventorySyncJob::dispatch('syncEmployees');
+            ApiHrmsSyncJob::dispatch('syncEmployees');
         } catch (\Exception $e) {
             Log::error('Failed to dispatch Employee sync job', ['error' => $e->getMessage()]);
             throw new \Exception("Employee sync failed: " . $e->getMessage());
@@ -37,7 +53,7 @@ class APiSyncController extends Controller
     public function syncAccessibilities(Request $request)
     {
         try {
-            ApiInventorySyncJob::dispatch('syncAccessibilities');
+            ApiHrmsSyncJob::dispatch('syncAccessibilities');
         } catch (\Exception $e) {
             Log::error('Failed to dispatch Accessibility sync job', ['error' => $e->getMessage()]);
             throw new \Exception("Accessibility sync failed: " . $e->getMessage());
@@ -50,7 +66,7 @@ class APiSyncController extends Controller
     public function syncDepartments(Request $request)
     {
         try {
-            ApiInventorySyncJob::dispatch('syncDepartments');
+            ApiHrmsSyncJob::dispatch('syncDepartments');
         } catch (\Exception $e) {
             Log::error('Failed to dispatch Department sync job', ['error' => $e->getMessage()]);
             throw new \Exception("Department sync failed: " . $e->getMessage());
