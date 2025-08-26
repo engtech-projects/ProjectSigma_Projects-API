@@ -12,7 +12,7 @@ class APiSyncController extends Controller
     public function syncAll(Request $request)
     {
         try {
-            ApiInventorySyncJob::dispatch('syncAllHrms');
+            ApiHrmsSyncJob::dispatch('syncAllHrms');
             ApiInventorySyncJob::dispatch('syncAll');
         } catch (\Exception $e) {
             Log::error('Failed to dispatch HRMS sync job', ['error' => $e->getMessage()]);
@@ -27,7 +27,7 @@ class APiSyncController extends Controller
     public function syncAllHrms(Request $request)
     {
         try {
-            ApiInventorySyncJob::dispatch('syncAllHrms');
+            ApiHrmsSyncJob::dispatch('syncAllHrms');
         } catch (\Exception $e) {
             Log::error('Failed to dispatch HRMS sync job', ['error' => $e->getMessage()]);
             throw new \Exception("HRMS sync failed: " . $e->getMessage());
