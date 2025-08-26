@@ -76,7 +76,7 @@ class InventoryService
         $datas = $this->getItemProfileList();
         $datas = array_map(fn ($data) => [
             'id'              => $data['id'],
-            'item_code' => $data['item_code'],
+            'item_code' => $data['item_code'] ?? "-",
             'item_description' => $data['item_name_summary'],
             'uom'             => $data['uom'],
             'item_group'      => $data['uom_name'],
