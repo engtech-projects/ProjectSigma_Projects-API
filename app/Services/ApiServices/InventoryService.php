@@ -34,6 +34,14 @@ class InventoryService
     public function syncUOM()
     {
         $uoms = $this->getUOMs();
+        $uoms = array_map(fn ($uom) => [
+            "id" => $uom['id'],
+            "name" => $uom['name'],
+            "symbol" => $uom['symbol'],
+            "created_at" => $uom['created_at'],
+            "updated_at" => $uom['updated_at'],
+            "deleted_at" => $uom['deleted_at'],
+        ], $uoms["data"]);
         Uom::upsert(
             $uoms,
             ['id'],
@@ -57,46 +65,37 @@ class InventoryService
             ])
             ->acceptJson()
             ->get($this->apiUrl . '/api/sigma/sync-list/uoms');
-        if (! $response->successful()) {
+        if (!$response->successful()) {
             return false;
         }
-
         return $response->json();
     }
 
     public function syncItemProfile()
     {
-        $data = $this->getItemProfileList();
+        $datas = collect($this->getItemProfileList()['data'])
+            ->map(fn ($data) => [
+                'id'              => $data['id'],
+                'item_code' => $data['item_name_summary'],
+                'item_description' => $data['item_name_summary'],
+                'uom'             => $data['uom'],
+                'item_group'      => $data['uom_name'],
+                'active_status'   => $data['status'],
+                'created_at'      => $data['created_at'],
+                'updated_at'      => $data['updated_at'],
+                'deleted_at'      => $data['deleted_at'],
+            ])
+            ->values()
+            ->all();
         SetupItemProfiles::upsert(
-            $data,
+            $datas,
             ['id'],
             [
                 'item_code',
                 'item_description',
-                'thickness',
-                'length',
-                'width',
-                'height',
-                'outside_diameter',
-                'inside_diameter',
-                'angle',
-                'size',
-                'specification',
-                'volume',
-                'weight',
-                'grade',
-                'volts',
-                'plates',
-                'part_number',
-                'color',
                 'uom',
-                'uom_conversion_value',
                 'item_group',
-                'sub_item_group',
-                'inventory_type',
                 'active_status',
-                'is_approved',
-                'created_at',
                 'updated_at',
                 'deleted_at',
             ]
@@ -116,7 +115,6 @@ class InventoryService
         if (! $response->successful()) {
             return false;
         }
-
         return $response->json();
     }
 }
