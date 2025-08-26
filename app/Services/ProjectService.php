@@ -303,26 +303,4 @@ class ProjectService
         }
     }
 
-    public function createProjectChangeRequest($data)
-    {
-        $projectChangeRequest = ProjectChangeRequest::create([
-            'project_id' => $data['project_id'],
-            'requested_by' => auth()->user()->id,
-            'request_type' => $data['request_type'],
-            'changes' => $data['changes'],
-            'status' => $data['status'],
-        ]);
-        return $projectChangeRequest;
-    }
-
-    public function updateProjectChangeRequest($id, $data)
-    {
-        $projectChangeRequest = ProjectChangeRequest::findOrFail($id);
-        $projectChangeRequest->update([
-            'title' => $data['title'],
-            'description' => $data['description'],
-            'status' => $data['status'],
-        ]);
-        return $projectChangeRequest;
-    }
 }

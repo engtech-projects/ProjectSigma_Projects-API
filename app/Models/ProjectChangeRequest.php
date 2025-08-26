@@ -13,10 +13,17 @@ class ProjectChangeRequest extends Model
 
     protected $fillable = [
         'project_id',
-        'requested_by',
         'request_type',
         'changes',
-        'status',
+        'approvals',
+        'request_status',
+        'created_by',
+    ];
+
+    protected $casts = [
+        'changes' => 'array',
+        'approvals' => 'array',
+        'created_at' => 'datetime',
     ];
 
     public function project()
@@ -29,8 +36,9 @@ class ProjectChangeRequest extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function projectChangeRequestApprovals()
+    public function updateApproval(array $data)
     {
-        return $this->hasMany(ProjectChangeRequestApproval::class);
+        $this->approvals = $data;
+        $this->save();
     }
 }
