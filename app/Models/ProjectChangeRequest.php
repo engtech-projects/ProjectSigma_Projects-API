@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Traits\HasApproval;
+use App\Traits\ModelHelpers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -10,7 +12,7 @@ class ProjectChangeRequest extends Model
 {
     use HasFactory;
     use SoftDeletes;
-
+    use HasApproval;
     protected $fillable = [
         'project_id',
         'request_type',
@@ -36,9 +38,4 @@ class ProjectChangeRequest extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function updateApproval(array $data)
-    {
-        $this->approvals = $data;
-        $this->save();
-    }
 }

@@ -4,24 +4,25 @@ namespace App\Notifications;
 
 use App\Broadcasting\HrmsNotifyCreatorChannel;
 use App\Enums\ApprovalModels;
+use App\Models\Project;
 use App\Models\ProjectChangeRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ChangeRequestForApprovalNotification extends Notification
+class RequestProposalCancelledNotification extends Notification
 {
     use Queueable;
 
-    private $token;
-    private $model;
-    public $id;
+    public $token;
+    public $model;
+
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($token, ProjectChangeRequest $model)
+    public function __construct($token, Project $model)
     {
         $this->token = $token;
         $this->model = $model;
@@ -34,14 +35,7 @@ class ChangeRequestForApprovalNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return [
-            HrmsNotifyCreatorChannel::class,
-        ];
-    }
-
-    public function getToken()
-    {
-        return $this->token;
+        return [HrmsNotifyCreatorChannel::class];
     }
 
     /**
@@ -63,9 +57,9 @@ class ChangeRequestForApprovalNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'message' => 'Project Change Request for Approval',
+            'message' => 'A Project Proposal has been Cancelled',
             'module' => "Project",
-            'request_type' => ApprovalModels::PROJECT_CHANGE_REQUEST->name,
+            'request_type' => ApprovalModels::PROJECT_PROPOSAL_REQUEST->name,
             'request_id' => $this->model->id,
             'action' => "View",
         ];

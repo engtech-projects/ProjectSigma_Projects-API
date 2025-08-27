@@ -10,14 +10,13 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ChangeRequestForApprovalNotification extends Notification
+class ChangeRequestCancelledNotification extends Notification
 {
     use Queueable;
 
-    private $token;
-    private $model;
+    public $token;
+    public $model;
     public $id;
-
     /**
      * Create a new notification instance.
      */
@@ -34,9 +33,7 @@ class ChangeRequestForApprovalNotification extends Notification
      */
     public function via(object $notifiable): array
     {
-        return [
-            HrmsNotifyCreatorChannel::class,
-        ];
+        return [HrmsNotifyCreatorChannel::class];
     }
 
     public function getToken()
@@ -63,7 +60,7 @@ class ChangeRequestForApprovalNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'message' => 'Project Change Request for Approval',
+            'message' => 'A Project Change Request has been Cancelled',
             'module' => "Project",
             'request_type' => ApprovalModels::PROJECT_CHANGE_REQUEST->name,
             'request_id' => $this->model->id,

@@ -27,14 +27,18 @@ class StoreProjectChangeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'project_id' => 'required', 'exists:projects,id',
-            'request_type' => 'required', Rule::in(ChangeRequestType::values()),
-            'changes' => 'nullable', 'json',
-            'request_status' => 'required', Rule::in(RequestStatuses::values()),
-            'created_by' => 'required', 'exists:users,id',
+            'project_id' => ['required', 'exists:projects,id'],
+            'request_type' => ['required', Rule::in(ChangeRequestType::values())],
+            'changes' => ['nullable', 'json'],
+            'request_status' => ['required', Rule::in(RequestStatuses::values())],
+            'created_by' => ['required', 'exists:users,id'],
             ...$this->storeApprovals(),
         ];
     }
 
+    public function prepareForValidation()
+    {
+        $this->prepareApprovalValidation();
+    }
 
 }

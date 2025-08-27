@@ -21,27 +21,28 @@ class ApproveApproval extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke($modelType, $model)
+    public function __invoke($modelType, $model, Request $request)
     {
         $cacheKey = "approve" . $modelType . $model->id. '-'. Auth::user()->id;
         if (Cache::has($cacheKey)) {
             return new JsonResponse(["success" => false, "message" => "Too Many Attempts"], 429);
         }
-        return Cache::remember($cacheKey, 5, function () use ($modelType, $model) {
-            return $this->approve($modelType, $model);
+        return Cache::remember($cacheKey, 5, function () use ($modelType, $model, $request) {
+            return $this->approve($modelType, $model, $request);
         });
     }
-    public function approve($modelType, $model)
+    public function approve($modelType, $model, $request)
     {
-        $result = $model->updateApproval(['status' => RequestApprovalStatus::APPROVED, "date_approved" => Carbon::now()]);
+        $result = $model->updateApproval(["status" => RequestApprovalStatus::APPROVED, "date_approved" => Carbon::now()]);
         $nextApproval = $model->getNextPendingApproval();
         if ($nextApproval) {
+            $nextApprover = User::find($nextApproval['user_id']);
             $notificationMap = [
                 ApprovalModels::PROJECT_PROPOSAL_REQUEST->name => RequestProposalForApprovalNotification::class,
                 ApprovalModels::PROJECT_CHANGE_REQUEST->name => ChangeRequestForApprovalNotification::class,
             ];
             if (isset($notificationMap[$modelType])) {
-                $model->notifyNextApprover($notificationMap[$modelType]);
+                $nextApprover->notify(new $notificationMap[$modelType]($request->bearerToken(), $model));
             }
         } else {
             $notificationMap = [
@@ -49,7 +50,7 @@ class ApproveApproval extends Controller
                 ApprovalModels::PROJECT_CHANGE_REQUEST->name => ChangeRequestApprovedNotification::class,
             ];
             if (isset($notificationMap[$modelType])) {
-                $model->notifyCreator($notificationMap[$modelType]);
+                $model->created_by_user->notify(new $notificationMap[$modelType]($request->bearerToken(), $model));
             }
         }
         return new JsonResponse(["success" => $result["success"], "message" => $result['message']], $result["status_code"]);

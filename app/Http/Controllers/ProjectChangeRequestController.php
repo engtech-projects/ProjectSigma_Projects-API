@@ -6,11 +6,12 @@ use App\Http\Requests\StoreProjectChangeRequest;
 use App\Http\Requests\UpdateProjectChangeRequest;
 use App\Http\Resources\ProjectChangeRequestResource;
 use App\Models\ProjectChangeRequest;
-use Illuminate\Http\Request;
+use App\Traits\HasApproval;
 
 
 class ProjectChangeRequestController extends Controller
 {
+    use HasApproval;
     public function index()
     {
         $projectChangeRequest = ProjectChangeRequest::all();
@@ -18,16 +19,6 @@ class ProjectChangeRequestController extends Controller
             'success' => true,
             'message' => 'Project change requests retrieved successfully',
             'data' => ProjectChangeRequestResource::collection($projectChangeRequest),
-        ], 200);
-    }
-
-    public function show($id)
-    {
-        $projectChangeRequest = ProjectChangeRequest::findOrFail($id);
-        return response()->json([
-            'success' => true,
-            'message' => 'Project change request retrieved successfully',
-            'data' => $projectChangeRequest,
         ], 200);
     }
 
@@ -39,6 +30,16 @@ class ProjectChangeRequestController extends Controller
             'message' => 'Project change request created successfully',
             'data' => $projectChangeRequest,
         ], 201);
+    }
+
+    public function show($id)
+    {
+        $projectChangeRequest = ProjectChangeRequest::findOrFail($id);
+        return response()->json([
+            'success' => true,
+            'message' => 'Project change request retrieved successfully',
+            'data' => $projectChangeRequest,
+        ], 200);
     }
 
     public function update(UpdateProjectChangeRequest $request, $id)

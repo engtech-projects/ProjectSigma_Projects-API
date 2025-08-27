@@ -10,14 +10,12 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ChangeRequestForApprovalNotification extends Notification
+class ChangeRequestDeniedNotification extends Notification
 {
     use Queueable;
 
-    private $token;
-    private $model;
-    public $id;
-
+    public $token;
+    public $model;
     /**
      * Create a new notification instance.
      */
@@ -43,7 +41,6 @@ class ChangeRequestForApprovalNotification extends Notification
     {
         return $this->token;
     }
-
     /**
      * Get the mail representation of the notification.
      */
@@ -63,7 +60,7 @@ class ChangeRequestForApprovalNotification extends Notification
     public function toArray(object $notifiable): array
     {
         return [
-            'message' => 'Project Change Request for Approval',
+            'message' => 'A Project Change Request has been Denied',
             'module' => "Project",
             'request_type' => ApprovalModels::PROJECT_CHANGE_REQUEST->name,
             'request_id' => $this->model->id,

@@ -19,12 +19,14 @@ use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
 use App\Http\Controllers\Api\V1\BoqItem\BoqItemController;
 use App\Http\Controllers\APiSyncController;
 use App\Http\Controllers\ApiServiceController;
+use App\Http\Controllers\CancelApproval;
 use App\Http\Controllers\DirectCostEstimateController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ProjectChangeRequestApprovalController;
 use App\Http\Controllers\ProjectChangeRequestController;
 use App\Http\Controllers\ResourceMetricController;
 use App\Http\Controllers\TaskScheduleController;
+use App\Http\Controllers\VoidApproval;
 use App\Http\Resources\User\UserCollection;
 use App\Models\Uom;
 use Illuminate\Support\Facades\Artisan;
@@ -71,6 +73,8 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('approvals')->group(function () {
         Route::post('approve/{modelName}/{model}', ApproveApproval::class);
         Route::post('disapprove/{modelName}/{model}', DisapproveApproval::class);
+        Route::post('cancel/{modelName}/{model}', CancelApproval::class);
+        Route::post('void/{modelName}/{model}', VoidApproval::class);
     });
 
     // ────── Projects ──────
