@@ -5,6 +5,7 @@ use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Http\Controllers\Actions\Approvals\ApproveApproval;
 use App\Http\Controllers\Actions\Approvals\DisapproveApproval;
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\Api\V1\Accessibility\PermissionController;
 use App\Http\Controllers\Api\V1\Accessibility\RoleController;
 use App\Http\Controllers\Api\V1\Assignment\ProjectAssignmentController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
 use App\Http\Controllers\Api\V1\BoqItem\BoqItemController;
 use App\Http\Controllers\APiSyncController;
 use App\Http\Controllers\ApiServiceController;
+use App\Http\Controllers\DailyScheduleController;
 use App\Http\Controllers\DirectCostEstimateController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ResourceMetricController;
@@ -87,6 +89,8 @@ Route::middleware('auth:api')->group(function () {
         Route::patch('{project}/cash-flow', [ProjectController::class, 'updateCashFlow']);
         Route::get('{project}/revisions', [RevisionController::class, 'showProjectRevisions']);
         Route::put('{project}/revert/{revision}', [RevisionController::class, 'revertToRevision']);
+        Route::get('{id}/activities', [ActivityController::class, 'projectActivities']);
+        Route::post('{id}/activities', [ActivityController::class, 'createProjectActivity']);
     });
 
     // ────── Attachments ──────
@@ -129,6 +133,16 @@ Route::middleware('auth:api')->group(function () {
         Route::get('{project_assignment}', [ProjectAssignmentController::class, 'show']);
         Route::post('/', [ProjectAssignmentController::class, 'store']);
     });
+
+    // ────── Activities ──────
+    Route::resource('activities', ActivityController::class);
+    Route::post('activities/{id}/restore', [ActivityController::class, 'restore']);
+    Route::get('activities/{id}/daily', [ActivityController::class, 'getDailySchedule']);
+    Route::post('activities/{id}/daily', [ActivityController::class, 'updateDailySchedule']);
+
+    // ────── Daily Schedule ──────
+    Route::resource('daily-schedule', DailyScheduleController::class);
+    Route::post('daily-schedule/{id}/restore', [DailyScheduleController::class, 'restore']);
 });
 
 // SECRET API KEY ROUTES
