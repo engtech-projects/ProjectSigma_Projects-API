@@ -13,9 +13,16 @@ return new class () extends Migration {
      */
     public function up(): void
     {
-        Schema::table('resources', function (Blueprint $table) {
-            $table->enum('resource_type', ResourceType::toArray())->nullable()->after('task_id');
-        });
+        $allowed = ResourceType::toArray();
+        $enumList = implode(',', $allowed);
+        if (Schema::hasColumn('resources', 'resource_type')) {
+            DB::table('resources')->whereNotIn('resource_type', $allowed)->update(['resource_type' => null]);
+            DB::statement("ALTER TABLE `resource` MODIFY COLUMN `resource_type` ENUM({$enumList}) NULL AFTER `task_id`");
+        } else {
+            Schema::table('resources', function (Blueprint $table) use ($allowed) {
+                $table->enum('resource_type', $allowed)->nullable()->after('task_id');
+            });
+        }
         $mapping = [
             1 => ResourceType::MATERIALS,
             2 => ResourceType::LABOR_EXPENSE,
@@ -91,7 +98,9 @@ return new class () extends Migration {
             $table->foreign('name_id')->references('id')->on('resource_names')->onDelete('restrict');
         });
         Schema::table('resources', function (Blueprint $table) {
-            $table->dropColumn('resource_type');
+            if (Schema::hasColumn('resources', 'resource_type')) {
+                $table->dropColumn('resource_type');
+            }
         });
     }
 };
