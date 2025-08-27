@@ -14,10 +14,10 @@ return new class () extends Migration {
     public function up(): void
     {
         $allowed = ResourceType::toArray();
-        $enumList = implode(',', $allowed);
+        $enumList = "'" . implode("','", $allowed) . "'";
         if (Schema::hasColumn('resources', 'resource_type')) {
             DB::table('resources')->whereNotIn('resource_type', $allowed)->update(['resource_type' => null]);
-            DB::statement("ALTER TABLE `resource` MODIFY COLUMN `resource_type` ENUM({$enumList}) NULL AFTER `task_id`");
+            DB::statement("ALTER TABLE `resources` MODIFY COLUMN `resource_type` ENUM ({$enumList}) NULL AFTER `task_id`");
         } else {
             Schema::table('resources', function (Blueprint $table) use ($allowed) {
                 $table->enum('resource_type', $allowed)->nullable()->after('task_id');
