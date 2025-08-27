@@ -14,9 +14,7 @@ return new class () extends Migration {
     public function up(): void
     {
         Schema::table('resources', function (Blueprint $table) {
-            if (!Schema::hasColumn('resources', 'resource_type')) {
-                $table->enum('resource_type', ResourceType::toArray())->nullable()->after('task_id');
-            }
+            $table->enum('resource_type', ResourceType::toArray())->nullable()->after('task_id');
         });
         $mapping = [
             1 => ResourceType::MATERIALS,
@@ -93,9 +91,7 @@ return new class () extends Migration {
             $table->foreign('name_id')->references('id')->on('resource_names')->onDelete('restrict');
         });
         Schema::table('resources', function (Blueprint $table) {
-            if (Schema::hasColumn('resources', 'resource_type')) {
-                $table->dropColumn('resource_type');
-            }
+            $table->dropColumn('resource_type');
         });
     }
 };
