@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\WeekDays;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,7 +15,7 @@ return new class extends Migration
         Schema::create('daily_schedules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('activity_id')->constrained('activities')->onDelete('restrict')->onUpdate('cascade');
-            $table->enum('day', ['m', 't', 'w', 'th', 'f', 'sa', 'su']);
+            $table->enum('day', WeekDays::values());
             $table->decimal('value', 10, 2);
             $table->timestamps();
             $table->softDeletes();
