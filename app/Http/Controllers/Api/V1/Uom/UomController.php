@@ -14,21 +14,16 @@ class UomController extends Controller
     public function index(FilterUomRequest $request)
     {
         $validatedData = $request->validated();
-
+        if ($request->paginate()) {
+            $data = UomService::withPaginate($validatedData);
+        } else {
+            $data = Uom::all();
+        }
         return response()->json([
             'message' => 'Units fetched successfully.',
-            'data' => UomService::withPaginate($validatedData),
-        ], 200);
+            'data' => $data,
+        ]);
     }
-
-    public function all()
-    {
-        return response()->json([
-            'message' => 'Units fetched successfully.',
-            'data' => UomService::all(),
-        ], 200);
-    }
-
     public function store(StoreUomRequest $request)
     {
         return response()->json([
@@ -36,7 +31,6 @@ class UomController extends Controller
             'data' => Uom::create($request->validated()),
         ], 201);
     }
-
     public function update(UpdateUomRequest $request, Uom $uom)
     {
         $validatedRequest = $request->validated();
@@ -47,7 +41,6 @@ class UomController extends Controller
             'data' => $uom,
         ], 200);
     }
-
     public function destroy(Uom $uom)
     {
         $uom->delete();

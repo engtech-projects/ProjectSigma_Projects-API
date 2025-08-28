@@ -17,10 +17,12 @@ use App\Http\Controllers\Api\V1\Project\ProjectStatusController;
 use App\Http\Controllers\Api\V1\Project\RevisionController;
 use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
 use App\Http\Controllers\Api\V1\BoqItem\BoqItemController;
+use App\Http\Controllers\Api\V1\Uom\UomController;
 use App\Http\Controllers\APiSyncController;
 use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\DirectCostEstimateController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\NatureOfWorkController;
 use App\Http\Controllers\ResourceMetricController;
 use App\Http\Controllers\SetupListsController;
 use App\Http\Controllers\TaskScheduleController;
@@ -73,14 +75,14 @@ Route::middleware('auth:api')->group(function () {
     });
 
     // ────── User Info ──────
-    Route::get('/user', fn () => response()->json(new UserCollection(Auth::user()), 200));
+    Route::get('/user', fn() => response()->json(new UserCollection(Auth::user()), 200));
 
     // ────── Lookups ──────
     Route::prefix('lookups')->group(function () {
-        Route::get('/project-status', fn () => response()->json(ProjectStatus::cases(), 200));
-        Route::get('/project-stage', fn () => response()->json(ProjectStage::cases(), 200));
+        Route::get('/project-status', fn() => response()->json(ProjectStatus::cases(), 200));
+        Route::get('/project-stage', fn() => response()->json(ProjectStage::cases(), 200));
         Route::get('/resource-names', [ResourceItemController::class, 'getResourceType']);
-        Route::get('/uom', fn () => response()->json(Uom::all(), 200));
+        Route::get('/uom', fn() => response()->json(Uom::all(), 200));
         Route::resource('positions', PositionController::class);
         Route::get('/all-position', [PositionController::class, 'all']);
     });
@@ -110,14 +112,11 @@ Route::middleware('auth:api')->group(function () {
         Route::put('{project}/revert/{revision}', [RevisionController::class, 'revertToRevision']);
     });
 
-    // ────── Attachments ──────
-    Route::prefix('attachments')->group(function () {
-        Route::delete('{attachment}/remove', [ProjectAttachmentController::class, 'destroy']);
-    });
-
     // ────── Phases, Tasks, Resources ──────
     Route::resource('phases', BoqPartController::class);
     Route::resource('tasks', BoqItemController::class);
+    Route::resource('uom', UomController::class);
+    Route::resource('nature-of-work', NatureOfWorkController::class);
     Route::resource('resource-items', ResourceItemController::class);
     Route::resource('direct-cost-estimates', DirectCostEstimateController::class);
     Route::resource('resource-metrics', ResourceMetricController::class);
@@ -132,6 +131,11 @@ Route::middleware('auth:api')->group(function () {
         Route::post('revision/{revision}/copy-to-project', [RevisionController::class, 'copyAwardedProjectAsDraft']);
         Route::post('change-to-proposal', [RevisionController::class, 'changeToProposal']);
         Route::post('return-to-draft', [RevisionController::class, 'returnToDraft']);
+    });
+
+    // ────── Attachments ──────
+    Route::prefix('attachments')->group(function () {
+        Route::delete('{attachment}/remove', [ProjectAttachmentController::class, 'destroy']);
     });
 
     // ────── Roles & Permissions ──────

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class FilterUomRequest extends FormRequest
+class StoreNatureOfWorkRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,13 +22,7 @@ class FilterUomRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'key' => 'nullable|string',
-            'paginate' => 'nullable|boolean',
+            'name' => 'required|string|max:255|unique:nature_of_work,name',
         ];
-    }
-
-    public function paginate(): bool
-    {
-        return $this->boolean('paginate', false); // default false
     }
 }
