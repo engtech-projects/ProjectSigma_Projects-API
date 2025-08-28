@@ -13,7 +13,7 @@ class DailyScheduleController extends Controller
         $this->dailySchedule = DailySchedule::class;
     }
 
-    public function delete($dailyScheduleId)
+    public function destroy($dailyScheduleId)
     {
         $dailySchedule = $this->dailySchedule::findOrFail($dailyScheduleId);
         $dailySchedule->delete();
