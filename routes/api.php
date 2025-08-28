@@ -138,7 +138,7 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('activities', ActivityController::class);
     Route::post('activities/{id}/restore', [ActivityController::class, 'restore']);
     Route::get('activities/{id}/daily', [ActivityController::class, 'getDailySchedule']);
-    Route::post('activities/{id}/daily', [ActivityController::class, 'updateDailySchedule']);
+    Route::post('activities/{id}/daily', [ActivityController::class, 'updateOrCreateDailySchedule']);
 
     // ────── Daily Schedule ──────
     Route::resource('daily-schedule', DailyScheduleController::class);
