@@ -58,7 +58,8 @@ class DocumentViewerController extends Controller
         ]);
     }
 
-    public function download($path) {
+    public function download($path)
+    {
         if (!Storage::disk('public')->exists($path)) {
             abort(404, 'File not found');
         }

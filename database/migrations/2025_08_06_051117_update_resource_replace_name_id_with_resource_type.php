@@ -13,7 +13,7 @@ return new class () extends Migration {
      */
     public function up(): void
     {
-        Schema::table('resources', function(Blueprint $table){
+        Schema::table('resources', function (Blueprint $table) {
             $table->enum('resource_type', ResourceType::toArray())->nullable()->after('task_id');
         });
         $mapping = [
