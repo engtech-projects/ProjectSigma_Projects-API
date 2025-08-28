@@ -102,6 +102,19 @@ class ProjectController extends Controller
         ], JsonResponse::HTTP_OK);
     }
 
+    public function getLiveProjects()
+    {
+        $data = Project::ongoing()
+            ->latestFirst()
+            ->createdByAuth()
+            ->paginate(config('services.pagination.limit'));
+        return ProjectListingResource::collection($data)
+            ->additional([
+                'success' => true,
+                'message' => 'Successfully fetched.',
+            ]);
+    }
+
     /**
      * Update the specified resource in storage.
      */
