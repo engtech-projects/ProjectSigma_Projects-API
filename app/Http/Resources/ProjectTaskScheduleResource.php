@@ -21,5 +21,4 @@ class ProjectTaskScheduleResource extends JsonResource
             'phases' => PhasesDetailedResource::collection($this->whenLoaded('phases')),
         ];
     }
-    }
 }
