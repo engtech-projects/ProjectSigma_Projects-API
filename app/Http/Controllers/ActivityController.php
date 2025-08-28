@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ActivityDailyScheduleRequest;
+use App\Http\Requests\ProjectActitvityRequest;
 use App\Models\Activity;
 use Illuminate\Http\Request;
 
@@ -13,7 +15,7 @@ class ActivityController extends Controller
         $this->activity = Activity::class;
     }
 
-    public function update($activityId, Request $request)
+    public function update($activityId, ProjectActitvityRequest $request)
     {
         $activity = $this->activity::findOrFail($activityId);
         $activity->update([
@@ -33,7 +35,7 @@ class ActivityController extends Controller
         ], 200);
     }
 
-    public function delete($activityId)
+    public function destroy($activityId)
     {
         $activity = $this->activity::findOrFail($activityId);
         $activity->delete();
@@ -53,7 +55,7 @@ class ActivityController extends Controller
         ], 200);
     }
 
-    public function createProjectActivity($projectId, Request $request)
+    public function createProjectActivity($projectId, ProjectActitvityRequest $request)
     {
         $activity = $this->activity::create([
             'project_id' => $projectId,
@@ -94,13 +96,12 @@ class ActivityController extends Controller
         ], 200);
     }
 
-    public function updateDailySchedule($activityId, Request $request)
+    public function updateOrCreateDailySchedule($activityId, ActivityDailyScheduleRequest $request)
     {
         $activity = $this->activity::findOrFail($activityId);
         $activity->dailySchedule()->updateOrCreate([
             'activity_id' => $activityId,
             'day' => $request->day,
-        ], [
             'value' => $request->value,
         ]);
         return response()->json([
