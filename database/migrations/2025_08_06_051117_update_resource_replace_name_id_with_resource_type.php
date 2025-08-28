@@ -14,7 +14,7 @@ return new class () extends Migration {
     public function up(): void
     {
         Schema::table('resources', function (Blueprint $table) {
-            if (!Schema::hasColumn('resources', 'resource_type')) {	            $table->enum('resource_type', ResourceType::toArray())->nullable()->after('task_id');
+            if (!Schema::hasColumn('resources', 'resource_type')) {
                 $table->enum('resource_type', ResourceType::toArray())->nullable()->after('task_id');
             }
         });
