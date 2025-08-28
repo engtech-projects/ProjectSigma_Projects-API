@@ -23,6 +23,12 @@ class Activity extends Model
         'actual',
     ];
 
+    protected $appends = [
+        'total',
+        'variance',
+        'balance_to_date',
+    ];
+
     public function project()
     {
         return $this->belongsTo(Project::class);
@@ -36,5 +42,20 @@ class Activity extends Model
     public function dailySchedule()
     {
         return $this->hasMany(DailySchedule::class);
+    }
+
+    public function getTotalAttribute()
+    {
+        return $this->dailySchedule()->sum('value');
+    }
+
+    public function getVarianceAttribute()
+    {
+        return $this->target - $this->total;
+    }
+
+    public function getBalanceToDateAttribute()
+    {
+        return $this->quantity - $this->total;
     }
 }
