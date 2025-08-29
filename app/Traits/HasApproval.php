@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Enums\Accessibility;
 use App\Enums\RequestStatuses;
+use App\Http\Traits\CheckAccessibility;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 
 trait HasApproval
 {
+    use CheckAccessibility;
     /**
      * ==================================================
      * MODEL RELATIONSHIPS

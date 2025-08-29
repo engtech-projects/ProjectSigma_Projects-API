@@ -410,4 +410,9 @@ class Project extends Model
     {
         return Carbon::parse($this->updated_at)->format('F j, Y h:i A');
     }
+
+    public function changeRequests()
+    {
+        return $this->hasMany(ProjectChangeRequest::class);
+    }
 }

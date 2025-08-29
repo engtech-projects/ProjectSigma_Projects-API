@@ -3,7 +3,7 @@
 namespace App\Broadcasting;
 
 use App\Services\HrmsServices;
-use Notification;
+use Illuminate\Notifications\Notification;
 
 class HrmsNotifyCreatorChannel
 {

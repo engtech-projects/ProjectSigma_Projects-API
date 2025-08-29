@@ -6,7 +6,10 @@ use App\Enums\ApprovalModels;
 use App\Enums\RequestApprovalStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DisapproveApprovalRequest;
+use App\Notifications\ChangeRequestDeniedNotification;
 use App\Notifications\RequestProposalForDeniedNotification;
+use Auth;
+use Cache;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 
@@ -17,21 +20,32 @@ class DisapproveApproval extends Controller
      */
     public function __invoke($modelType, $model, DisapproveApprovalRequest $request)
     {
+        $cacheKey = "disapprove" . $modelType . $model->id . '-' . Auth::user()->id;
+        if (Cache::has($cacheKey)) {
+            return new JsonResponse(["success" => false, "message" => "Too Many Attempts"], 429);
+        }
+        return Cache::remember($cacheKey, 5, function () use ($modelType, $model, $request) {
+            return $this->disapprove($modelType, $model, $request);
+        });
+    }
+    public function disapprove($modelType, $model, DisapproveApprovalRequest $request)
+    {
         $attribute = $request->validated();
         $result = collect($model->updateApproval([
-            'status' => RequestApprovalStatus::DENIED,
-            'remarks' => $attribute['remarks'],
-            'date_denied' => Carbon::now(),
+            "status" => RequestApprovalStatus::DENIED,
+            "remarks" => $attribute['remarks'],
+            "date_denied" => Carbon::now(),
         ]));
-
-        switch ($modelType) {
-            case ApprovalModels::PROJECT_PROPOSAL_REQUEST->name:
-                $model->notify(new RequestProposalForDeniedNotification(auth()->user()->token, $model));
-                break;
-            default:
-                break;
+        $notificationMap = [
+            ApprovalModels::PROJECT_PROPOSAL_REQUEST->name => RequestProposalForDeniedNotification::class,
+            ApprovalModels::PROJECT_CHANGE_REQUEST->name => ChangeRequestDeniedNotification::class,
+        ];
+        if (isset($notificationMap[$modelType])) {
+            $model->created_by_user->notify(new $notificationMap[$modelType]($request->bearerToken(), $model));
         }
-
-        return new JsonResponse(['success' => $result['success'], 'message' => $result['message']], JsonResponse::HTTP_OK);
+        return response()->json([
+            "success" => $result["success"],
+            "message" => $result['message']
+        ], $result["status_code"]);
     }
 }
