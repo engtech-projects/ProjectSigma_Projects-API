@@ -3,13 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Enums\ApprovalModels;
-use App\Enums\RequestApprovalStatus;
 use App\Enums\RequestStatuses;
 use App\Http\Requests\VoidApprovalRequest;
 use App\Notifications\ChangeRequestVoidedNotification;
 use App\Notifications\RequestProposalVoidedNotification;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class VoidApproval extends Controller
 {

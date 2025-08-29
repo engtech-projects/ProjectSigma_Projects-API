@@ -8,7 +8,6 @@ use App\Http\Requests\CancelApprovalRequest;
 use App\Notifications\ChangeRequestCancelledNotification;
 use App\Notifications\RequestProposalCancelledNotification;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 
 class CancelApproval extends Controller
 {

@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Enums\ChangeRequestStatus;
 use App\Enums\MarketingStage;
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
@@ -11,8 +10,6 @@ use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectDetailResource;
 use App\Models\BoqPart;
 use App\Models\Project;
-use App\Models\ProjectChangeRequest;
-use App\Models\ProjectChangeRequestApproval;
 use App\Models\ResourceItem;
 use App\Models\BoqItem;
 use App\Models\Revision;

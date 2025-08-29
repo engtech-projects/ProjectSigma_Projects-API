@@ -34,7 +34,7 @@ class RouteServiceProvider extends ServiceProvider
             $project = Project::find($value) ?? throw new NotFoundHttpException('Project not found.');
             return $project;
         });
-        Route::bind('model', function ($value, $route){
+        Route::bind('model', function ($value, $route) {
             $modelName = $route->parameter('modelName');
             $getModel = $this->getModelClass($modelName);
             return $getModel::findOrFail($value);
