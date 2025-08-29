@@ -15,6 +15,7 @@ class ProjectTaskScheduleResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
             'title' => $this->name,
             'phases' => PhasesDetailedResource::collection($this->whenLoaded('phases')),
         ];
