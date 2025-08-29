@@ -30,7 +30,7 @@ class ProjectService
         return DB::transaction(function () use ($attr) {
             $attr['marketing_stage'] = MarketingStage::DRAFT->value;
             $attr['tss_stage'] = TssStage::PENDING->value;
-            $attr['status'] = ProjectStatus::OPEN->value;
+            $attr['status'] = ProjectStatus::PENDING->value;
             $attr['amount'] = $attr['amount'] ?? 0;
             $attr['created_by'] = auth()->user()->id;
             $attr['cash_flow'] = json_encode(array_fill_keys(['wtax', 'q1', 'q2', 'q3', 'q4'], [
@@ -109,8 +109,8 @@ class ProjectService
     {
         return DB::transaction(function () use ($id) {
             $project = Project::findOrFail($id);
-            $project->stage = ProjectStage::DRAFT->value;
-            $project->status = ProjectStatus::DRAFT->value;
+            $project->marketing_stage = ProjectStage::DRAFT->value;
+            $project->status = ProjectStatus::PENDING->value;
             $project->save();
             return true;
         });
@@ -129,8 +129,8 @@ class ProjectService
     {
         return DB::transaction(function () use ($id) {
             $project = Project::findOrFail($id);
-            $project->stage = ProjectStage::PROPOSAL->value;
-            $project->status = ProjectStatus::OPEN->value;
+            $project->marketing_stage = ProjectStage::PROPOSAL->value;
+            $project->status = ProjectStatus::PENDING->value;
             $project->save();
             return true;
         });
@@ -174,7 +174,7 @@ class ProjectService
                 'ntp_date' => $project->ntp_date,
                 'license' => $project->license,
                 'stage' => ProjectStage::DRAFT->value,
-                'status' => ProjectStatus::DRAFT->value,
+                'status' => ProjectStatus::PENDING->value,
                 'is_original' => 0,
                 'version' => $maxVersion + 1,
                 'project_identifier' => $project->project_identifier,
@@ -281,6 +281,12 @@ class ProjectService
             ], 400);
         }
         $projectData = json_decode($revision->data, true);
+        if ($revision->status === ProjectStatus::OPEN->value || $revision->status === ProjectStatus::DRAFT->value) {
+            $projectData['status'] = ProjectStatus::PENDING->value;
+        }
+        if ($revision->status === ProjectStatus::ARCHIVED->value) {
+            $projectData['status'] = ProjectStatus::COMPLETED->value;
+        }
         try {
             DB::beginTransaction();
             $this->project->update($projectData);

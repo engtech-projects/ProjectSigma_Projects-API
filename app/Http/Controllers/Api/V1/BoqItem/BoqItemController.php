@@ -20,9 +20,9 @@ class BoqItemController extends Controller
     {
         if ($request->has('phase_id')) {
             $phase = BoqPart::find($request->phase_id);
-            return response()->json($phase->load('tasks.resources.resourceName'), 200);
+            return response()->json($phase->load('tasks.resources'), 200);
         }
-        return response()->json(BoqItem::all()->load('resources.resourceName'), 200);
+        return response()->json(BoqItem::all()->load('resources'), 200);
     }
 
     /**

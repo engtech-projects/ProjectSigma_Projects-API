@@ -75,7 +75,7 @@ class RevisionController extends Controller
                 'license' => $projectData['license'] ?? null,
                 'is_original' => false,
                 'version' => 1.0,
-                'status' => ProjectStatus::DRAFT->value,
+                'status' => ProjectStatus::PENDING->value,
                 'marketing_stage' => MarketingStage::DRAFT->value,
                 'tss_stage' => TssStage::PENDING->value,
                 'project_identifier' => $projectData['project_identifier'],
@@ -139,7 +139,7 @@ class RevisionController extends Controller
         DB::transaction(function () use ($validatedData) {
             ProjectService::changeToProposal($validatedData['id']);
             $revision = Project::findOrFail($validatedData['id']);
-            $revision->status = ProjectStage::PROPOSAL->value;
+            $revision->status = ProjectStatus::PENDING->value;
             $revision->save();
         });
 
@@ -170,7 +170,7 @@ class RevisionController extends Controller
         DB::transaction(function () use ($validatedData) {
             ProjectService::changeToDraft($validatedData['id']);
             $revision = Project::findOrFail($validatedData['id']);
-            $revision->status = ProjectStage::DRAFT->value;
+            $revision->status = ProjectStatus::PENDING->value;
             $revision->save();
         });
 
