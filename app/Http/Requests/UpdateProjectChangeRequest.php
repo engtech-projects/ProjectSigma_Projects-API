@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use App\Enums\ChangeRequestType;
 use App\Enums\RequestStatuses;
-use App\Models\ProjectChangeRequest;
 use App\Traits\HasApprovalValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -28,9 +27,9 @@ class UpdateProjectChangeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "request_type" => "nullable",Rule::in(ChangeRequestType::values()),
-            "changes" => "nullable|json",
-            "request_status" => "nullable",Rule::in(RequestStatuses::values()),
+            "request_type" => ["nullable",Rule::in(ChangeRequestType::values())],
+            "changes" => ["nullable","json"],
+            "request_status" => ["nullable",Rule::in(RequestStatuses::values())],
         ];
     }
 }
