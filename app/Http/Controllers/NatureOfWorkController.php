@@ -4,15 +4,34 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreNatureOfWorkRequest;
 use App\Http\Requests\UpdateNatureOfWorkRequest;
+use App\Http\Resources\NatureOfWorkListResource;
 use App\Models\NatureOfWork;
 use Illuminate\Http\JsonResponse;
 
 class NatureOfWorkController extends Controller
 {
+    public function index()
+    {
+        $perPage = config('services.pagination.limit', 10);
+        $data = NatureOfWork::latest()->paginate($perPage);
+        return NatureOfWorkListResource::collection($data)
+            ->additional([
+                'success' => true,
+                'message' => 'Data fetched successfully.',
+            ]);
+    }
+    public function all()
+    {
+        $data = NatureOfWork::latest()->pluck('name');
+        return response()->json([
+            'success' => true,
+            'message' => 'Data fetched successfully.',
+            'data'    => $data,
+        ]);
+    }
     public function store(StoreNatureOfWorkRequest $request): JsonResponse
     {
         $natureOfWork = NatureOfWork::create($request->validated());
-
         return response()->json([
             'message' => 'Nature of Work created successfully',
             'data' => $natureOfWork,

@@ -19,4 +19,11 @@ class Uom extends Model
         'description',
         'source_id',
     ];
+
+    protected $appends = ['name_with_symbol'];
+
+    public function getNameWithSymbolAttribute()
+    {
+        return "{$this->name} ({$this->symbol})";
+    }
 }

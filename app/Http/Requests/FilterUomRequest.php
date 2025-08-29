@@ -23,12 +23,6 @@ class FilterUomRequest extends FormRequest
     {
         return [
             'key' => 'nullable|string',
-            'paginate' => 'nullable|boolean',
         ];
-    }
-
-    public function paginate(): bool
-    {
-        return $this->boolean('paginate', false); // default false
     }
 }

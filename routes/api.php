@@ -43,10 +43,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('nature-of-works', function () {
-    return response()->json(NatureOfWork::cases(), 200);
-});
-
 Route::middleware('auth:api')->group(function () {
 
     // SYNCHRONIZATION ROUTES
@@ -115,8 +111,14 @@ Route::middleware('auth:api')->group(function () {
     // ────── Phases, Tasks, Resources ──────
     Route::resource('phases', BoqPartController::class);
     Route::resource('tasks', BoqItemController::class);
-    Route::resource('uom', UomController::class);
-    Route::resource('nature-of-work', NatureOfWorkController::class);
+    Route::prefix('uom')->as('uom.')->group(function () {
+        Route::resource('resource', UomController::class);
+        Route::get('all', [UomController::class, 'all']);
+    });
+    Route::prefix('nature-of-work')->as('nature-of-work.')->group(function () {
+        Route::resource('resource', NatureOfWorkController::class);
+        Route::get('all', [NatureOfWorkController::class, 'all']);
+    });
     Route::resource('resource-items', ResourceItemController::class);
     Route::resource('direct-cost-estimates', DirectCostEstimateController::class);
     Route::resource('resource-metrics', ResourceMetricController::class);

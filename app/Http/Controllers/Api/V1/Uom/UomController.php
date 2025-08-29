@@ -6,22 +6,31 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterUomRequest;
 use App\Http\Requests\StoreUomRequest;
 use App\Http\Requests\UpdateUomRequest;
+use App\Http\Resources\UomListResource;
 use App\Models\Uom;
-use App\Services\UomService;
 
 class UomController extends Controller
 {
     public function index(FilterUomRequest $request)
     {
-        $validatedData = $request->validated();
-        if ($request->paginate()) {
-            $data = UomService::withPaginate($validatedData);
-        } else {
-            $data = Uom::all();
-        }
+        $perPage = config('services.pagination.limit', 10);
+        $data = Uom::latest()->paginate($perPage);
+        return UomListResource::collection($data)
+            ->additional([
+                'success' => true,
+                'message' => 'Units fetched successfully.',
+            ]);
+    }
+    public function all()
+    {
+        $data = Uom::latest()
+            ->get()
+            ->map(fn($uom) => $uom->name_with_symbol)
+            ->values();
         return response()->json([
-            'message' => 'Units fetched successfully.',
-            'data' => $data,
+            'success' => true,
+            'message' => 'Data fetched successfully.',
+            'data'    => $data,
         ]);
     }
     public function store(StoreUomRequest $request)
