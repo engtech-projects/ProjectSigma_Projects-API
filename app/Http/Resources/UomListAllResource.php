@@ -14,6 +14,6 @@ class UomListAllResource extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-        return $this->collection->map(fn($uom) => $uom->name_with_symbol)->all();
+        return $this->collection->map(fn ($uom) => $uom->name_with_symbol)->all();
     }
 }

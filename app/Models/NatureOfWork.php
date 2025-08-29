@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class NatureOfWork extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
+    use SoftDeletes;
 
     protected $table = 'nature_of_work';
 
