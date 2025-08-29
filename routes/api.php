@@ -25,6 +25,7 @@ use App\Http\Controllers\ResourceMetricController;
 use App\Http\Controllers\SetupListsController;
 use App\Http\Controllers\TaskScheduleController;
 use App\Http\Resources\User\UserCollection;
+use App\Http\Controllers\Api\V1\Uom\UomController;
 use App\Models\Uom;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
@@ -118,6 +119,7 @@ Route::middleware('auth:api')->group(function () {
     // ────── Phases, Tasks, Resources ──────
     Route::resource('phases', BoqPartController::class);
     Route::resource('tasks', BoqItemController::class);
+    Route::resource('uom', UomController::class);
     Route::resource('resource-items', ResourceItemController::class);
     Route::resource('direct-cost-estimates', DirectCostEstimateController::class);
     Route::resource('resource-metrics', ResourceMetricController::class);
