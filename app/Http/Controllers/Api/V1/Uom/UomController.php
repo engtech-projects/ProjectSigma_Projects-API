@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterUomRequest;
 use App\Http\Requests\StoreUomRequest;
 use App\Http\Requests\UpdateUomRequest;
+use App\Http\Resources\UomListAllResource;
 use App\Http\Resources\UomListResource;
 use App\Models\Uom;
 
@@ -23,10 +24,7 @@ class UomController extends Controller
     }
     public function all()
     {
-        $data = Uom::latest()
-            ->get()
-            ->map(fn($uom) => $uom->name_with_symbol)
-            ->values();
+        $data = new UomListAllResource(Uom::latest()->get());
         return response()->json([
             'success' => true,
             'message' => 'Data fetched successfully.',
