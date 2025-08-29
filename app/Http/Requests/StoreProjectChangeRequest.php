@@ -36,9 +36,4 @@ class StoreProjectChangeRequest extends FormRequest
         ];
     }
 
-    public function prepareForValidation()
-    {
-        $this->prepareApprovalValidation();
-    }
-
 }
