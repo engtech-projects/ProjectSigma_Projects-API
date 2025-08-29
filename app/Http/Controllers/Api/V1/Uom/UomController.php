@@ -42,7 +42,6 @@ class UomController extends Controller
     {
         $validatedRequest = $request->validated();
         $uom->update($validatedRequest);
-
         return response()->json([
             'message' => 'UOM updated successfully.',
             'data' => $uom,
@@ -51,7 +50,6 @@ class UomController extends Controller
     public function destroy(Uom $uom)
     {
         $uom->delete();
-
         return response()->json([
             'message' => 'UOM deleted successfully.',
             'data' => $uom,

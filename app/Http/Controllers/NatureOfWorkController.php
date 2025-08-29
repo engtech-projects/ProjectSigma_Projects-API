@@ -38,7 +38,6 @@ class NatureOfWorkController extends Controller
             'data' => $natureOfWork,
         ], 201);
     }
-
     public function update(UpdateNatureOfWorkRequest $request, NatureOfWork $nature_of_work): JsonResponse
     {
         $nature_of_work->update($request->validated());
