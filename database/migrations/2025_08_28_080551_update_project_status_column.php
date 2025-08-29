@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\NewProjectStatus;
 use App\Enums\ProjectStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -14,13 +13,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $allowed = NewProjectStatus::toArray();
+        $allowed = ProjectStatus::toArray();
         $list = "'".implode("', '", $allowed)."'";
         $mapping = [
             'open' => 'pending',
             'draft' => 'pending',
-            'proposal' => 'ongoing',
-            'bidding' => 'ongoing',
+            'proposal' => 'pending',
+            'bidding' => 'pending',
             'closed' => 'completed',
         ];
         foreach ($mapping as $old => $new) {
