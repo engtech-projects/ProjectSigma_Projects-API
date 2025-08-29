@@ -42,18 +42,14 @@ class NatureOfWorkController extends Controller
     public function update(UpdateNatureOfWorkRequest $request, NatureOfWork $nature_of_work): JsonResponse
     {
         $nature_of_work->update($request->validated());
-
         return response()->json([
             'message' => 'Nature of Work updated successfully',
             'data' => $nature_of_work,
         ]);
     }
-
-    // Delete (soft delete)
     public function destroy(NatureOfWork $nature_of_work): JsonResponse
     {
         $nature_of_work->delete();
-
         return response()->json([
             'message' => 'Nature of Work deleted successfully',
         ]);
