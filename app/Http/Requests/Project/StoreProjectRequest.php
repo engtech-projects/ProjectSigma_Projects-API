@@ -35,6 +35,8 @@ class StoreProjectRequest extends FormRequest
             'designation' => 'nullable|string|max:255',
             'nature_of_work' => 'nullable|string',
             'position' => 'required|string',
+            'abc' => 'nullable|string',
+            'bid_date' => 'nullable|date_format:Y-m-d',
         ];
     }
 }
