@@ -6,12 +6,10 @@ use App\Http\Requests\StoreProjectChangeRequest;
 use App\Http\Requests\UpdateProjectChangeRequest;
 use App\Http\Resources\ProjectChangeRequestResource;
 use App\Models\ProjectChangeRequest;
-use App\Traits\HasApproval;
 
 
 class ProjectChangeRequestController extends Controller
 {
-    use HasApproval;
     public function index()
     {
         $projectChangeRequest = ProjectChangeRequest::all();
