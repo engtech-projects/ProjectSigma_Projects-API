@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\V1\Project;
 
 use App\Enums\MarketingStage;
-use App\Enums\NewProjectStatus;
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Enums\TssStage;
@@ -76,7 +75,7 @@ class RevisionController extends Controller
                 'license' => $projectData['license'] ?? null,
                 'is_original' => false,
                 'version' => 1.0,
-                'status' => NewProjectStatus::PENDING->value,
+                'status' => ProjectStatus::PENDING->value,
                 'marketing_stage' => MarketingStage::DRAFT->value,
                 'tss_stage' => TssStage::PENDING->value,
                 'project_identifier' => $projectData['project_identifier'],
@@ -140,7 +139,7 @@ class RevisionController extends Controller
         DB::transaction(function () use ($validatedData) {
             ProjectService::changeToProposal($validatedData['id']);
             $revision = Project::findOrFail($validatedData['id']);
-            $revision->status = NewProjectStatus::ONGOING->value;
+            $revision->status = ProjectStatus::PENDING->value;
             $revision->save();
         });
 
@@ -171,7 +170,7 @@ class RevisionController extends Controller
         DB::transaction(function () use ($validatedData) {
             ProjectService::changeToDraft($validatedData['id']);
             $revision = Project::findOrFail($validatedData['id']);
-            $revision->status = NewProjectStatus::PENDING->value;
+            $revision->status = ProjectStatus::PENDING->value;
             $revision->save();
         });
 
