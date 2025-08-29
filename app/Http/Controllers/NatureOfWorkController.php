@@ -23,12 +23,12 @@ class NatureOfWorkController extends Controller
     }
     public function all()
     {
-        $data = new NatureOfWorkListAllResource(NatureOfWork::latest()->get());
-        return response()->json([
-            'success' => true,
-            'message' => 'Data fetched successfully.',
-            'data'    => $data,
-        ]);
+        $data = NatureOfWork::latest()->get();
+        return (new NatureOfWorkListAllResource($data))
+            ->additional([
+                'success' => true,
+                'message' => 'Data fetched successfully.',
+            ]);
     }
     public function store(StoreNatureOfWorkRequest $request): JsonResponse
     {

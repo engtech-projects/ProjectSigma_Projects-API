@@ -24,12 +24,12 @@ class UomController extends Controller
     }
     public function all()
     {
-        $data = new UomListAllResource(Uom::latest()->get());
-        return response()->json([
-            'success' => true,
-            'message' => 'Data fetched successfully.',
-            'data'    => $data,
-        ]);
+        $data = Uom::latest()->get();
+        return (new UomListAllResource($data))
+            ->additional([
+                'success' => true,
+                'message' => 'Data fetched successfully.',
+            ]);
     }
     public function store(StoreUomRequest $request)
     {

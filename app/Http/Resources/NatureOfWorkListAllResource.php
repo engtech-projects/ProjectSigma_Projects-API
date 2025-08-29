@@ -14,6 +14,6 @@ class NatureOfWorkListAllResource extends ResourceCollection
      */
     public function toArray(Request $request): array
     {
-        return $this->collection->map(fn ($work) => $work->name)->all();
+        return $this->collection->pluck('name')->all();
     }
 }
