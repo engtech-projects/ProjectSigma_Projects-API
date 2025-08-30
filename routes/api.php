@@ -1,6 +1,4 @@
 <?php
-
-use App\Enums\NatureOfWork;
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Http\Controllers\Actions\Approvals\ApproveApproval;
@@ -17,10 +15,12 @@ use App\Http\Controllers\Api\V1\Project\ProjectStatusController;
 use App\Http\Controllers\Api\V1\Project\RevisionController;
 use App\Http\Controllers\Api\V1\ResourceItem\ResourceItemController;
 use App\Http\Controllers\Api\V1\BoqItem\BoqItemController;
+use App\Http\Controllers\Api\V1\Uom\UomController;
 use App\Http\Controllers\APiSyncController;
 use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\DirectCostEstimateController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\NatureOfWorkController;
 use App\Http\Controllers\ResourceMetricController;
 use App\Http\Controllers\SetupDocumentSignatureController;
 use App\Http\Controllers\SetupListsController;
@@ -30,7 +30,6 @@ use App\Models\Uom;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -41,9 +40,6 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::get('nature-of-works', function () {
-    return response()->json(NatureOfWork::cases(), 200);
-});
 Route::middleware('auth:api')->group(function () {
     // SYNCHRONIZATION ROUTES
     Route::prefix('setup')->group(function () {
@@ -111,6 +107,14 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('signatures', SetupDocumentSignatureController::class);
     Route::resource('phases', BoqPartController::class);
     Route::resource('tasks', BoqItemController::class);
+    Route::prefix('uom')->as('uom.')->group(function () {
+        Route::resource('resource', UomController::class);
+        Route::get('all', [UomController::class, 'all']);
+    });
+    Route::prefix('nature-of-work')->as('nature-of-work.')->group(function () {
+        Route::resource('resource', NatureOfWorkController::class);
+        Route::get('all', [NatureOfWorkController::class, 'all']);
+    });
     Route::resource('resource-items', ResourceItemController::class);
     Route::resource('direct-cost-estimates', DirectCostEstimateController::class);
     Route::resource('resource-metrics', ResourceMetricController::class);
