@@ -40,9 +40,6 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::get('nature-of-works', function () {
-    return response()->json(NatureOfWork::cases(), 200);
-});
 Route::middleware('auth:api')->group(function () {
     // SYNCHRONIZATION ROUTES
     Route::prefix('setup')->group(function () {
