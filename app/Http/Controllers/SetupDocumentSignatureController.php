@@ -1,13 +1,10 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Http\Requests\StoreSetupDocumentSignatureRequest;
 use App\Http\Requests\UpdateSetupDocumentSignatureRequest;
 use App\Http\Resources\SetupDocumentSignatureResource;
 use App\Models\SetupDocumentSignature;
 use Illuminate\Http\Request;
-
 class SetupDocumentSignatureController extends Controller
 {
     public function index()
@@ -16,34 +13,34 @@ class SetupDocumentSignatureController extends Controller
             ->groupBy('document_type');
         return SetupDocumentSignatureResource::collection($signatures->flatten())
             ->additional([
-                'success' => true,
-                'message' => 'Document signatures retrieved successfully.',
-                'grouped' => $signatures
+            'success' => true,
+            'message' => 'Document signatures retrieved successfully.',
+            'grouped' => $signatures
             ]);
     }
-    public function store(Request $request)
+    public function store(StoreSetupDocumentSignatureRequest $request)
     {
         $signature = SetupDocumentSignature::create($request->validated());
-        return (new SetupDocumentSignatureResource($signature))
+        return SetupDocumentSignatureResource::make($signature)
             ->additional([
-                'success' => true,
-                'message' => 'Document signature created successfully.',
+            'success' => true,
+            'message' => 'Document signature created successfully.',
             ])
-            ->response()
-            ->setStatusCode(201);
+            ->response();
     }
-    public function show(StoreSetupDocumentSignatureRequest $setupDocumentSignature)
+    public function show(SetupDocumentSignature $setupDocumentSignature)
     {
-        return (new SetupDocumentSignatureResource($setupDocumentSignature))
+        return SetupDocumentSignatureResource::make($setupDocumentSignature)
             ->additional([
                 'success' => true,
                 'message' => 'Document signature retrieved successfully.',
-            ]);
+            ])
+            ->response();
     }
     public function update(UpdateSetupDocumentSignatureRequest $request, SetupDocumentSignature $setupDocumentSignature)
     {
         $setupDocumentSignature->update($request->validated());
-        return (new SetupDocumentSignatureResource($setupDocumentSignature))
+        return SetupDocumentSignatureResource::make($setupDocumentSignature)
             ->additional([
                 'success' => true,
                 'message' => 'Document signature updated successfully.',
