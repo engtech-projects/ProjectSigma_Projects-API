@@ -1,19 +1,16 @@
 <?php
-
 namespace App\Http\Resources;
-
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\ResourceCollection;
-
-class NatureOfWorkListAllResource extends ResourceCollection
+use Illuminate\Http\Resources\Json\JsonResource;
+class NatureOfWorkListAllResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
      *
      * @return array<string, mixed>
      */
-    public function toArray(Request $request): array
+    public function toArray(Request $request): string
     {
-        return $this->collection->pluck('name')->all();
+        return $this->name;
     }
 }

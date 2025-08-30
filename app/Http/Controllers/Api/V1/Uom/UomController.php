@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers\Api\V1\Uom;
-
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterUomRequest;
 use App\Http\Requests\StoreUomRequest;
@@ -9,7 +7,6 @@ use App\Http\Requests\UpdateUomRequest;
 use App\Http\Resources\UomListAllResource;
 use App\Http\Resources\UomListResource;
 use App\Models\Uom;
-
 class UomController extends Controller
 {
     public function index(FilterUomRequest $request)
@@ -25,7 +22,7 @@ class UomController extends Controller
     public function all()
     {
         $data = Uom::latest()->get();
-        return (new UomListAllResource($data))
+        return UomListAllResource::collection($data)
             ->additional([
                 'success' => true,
                 'message' => 'Data fetched successfully.',
