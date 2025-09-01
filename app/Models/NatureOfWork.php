@@ -1,21 +1,19 @@
 <?php
+
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-class Uom extends Model
+
+class NatureOfWork extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    protected $table = 'uom';
+
+    protected $table = 'nature_of_work';
+
     protected $fillable = [
         'name',
-        'symbol',
-        'description',
-        'source_id',
     ];
-    public function getNameWithSymbolAttribute(): string
-    {
-        return "{$this->name} ({$this->symbol})";
-    }
 }

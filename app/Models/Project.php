@@ -60,6 +60,8 @@ class Project extends Model
         'current_revision_id',
         'position',
         'designation',
+        'abc',
+        'bid_date',
         'created_by',
         'cash_flow',
     ];
@@ -69,6 +71,7 @@ class Project extends Model
         'contract_date' => 'datetime:Y-m-d',
         'noa_date' => 'datetime:Y-m-d',
         'ntp_date' => 'datetime:Y-m-d',
+        'bid_date' => 'datetime:Y-m-d',
         'amount' => 'decimal:2',
         'marketing_stage' => MarketingStage::class,
         'tss_stage' => TssStage::class,
@@ -144,9 +147,9 @@ class Project extends Model
         return $this->status == ProjectStatus::APPROVED->value;
     }
 
-    public function isOpen(): bool
+    public function isPending(): bool
     {
-        return $this->status == ProjectStatus::OPEN->value;
+        return $this->status == ProjectStatus::PENDING->value;
     }
 
     // PROJECT SCOPES
@@ -177,9 +180,9 @@ class Project extends Model
     /**
      * Scope a query to only include ongoing projects
      */
-    public function scopeOpen(Builder $query)
+    public function scopePending(Builder $query)
     {
-        return $query->where(['status' => ProjectStatus::OPEN]);
+        return $query->where(['status' => ProjectStatus::PENDING]);
     }
 
     /**
