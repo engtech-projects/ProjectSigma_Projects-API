@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\BoqItem;
+namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreBoqItemRequest extends FormRequest
+class StoreNatureOfWorkRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,12 +22,7 @@ class StoreBoqItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phase_id' => 'required|exists:phases,id',
-            'name' => 'required|string',
-            'description' => 'required|string',
-            'quantity' => 'required|numeric',
-            'unit' => 'required|string',
-            'unit_price' => 'nullable|numeric',
+            'name' => 'required|string|max:255|unique:nature_of_work,name',
         ];
     }
 }
