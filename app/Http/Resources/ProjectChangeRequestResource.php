@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProjectTaskScheduleResource extends JsonResource
+class ProjectChangeRequestResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,11 +14,6 @@ class ProjectTaskScheduleResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'title' => $this->name,
-            'phases' => PhasesDetailedResource::collection($this->whenLoaded('phases')),
-        ];
+        return parent::toArray($request);
     }
 }
