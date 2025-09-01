@@ -7,6 +7,7 @@ use App\Enums\Traits\EnumHelper;
 enum ProjectStatus: string
 {
     use EnumHelper;
+    case PENDING = 'pending';
     case OPEN = 'open';
     case SUBMITTED = 'submitted';
     case APPROVED = 'approved';
@@ -17,5 +18,6 @@ enum ProjectStatus: string
     case VOID = 'void';
     case DELETED = 'deleted';
     case DRAFT = 'draft';
+    case COMPLETED = 'completed';
     case MY_PROJECT = 'myProjects';
 }
