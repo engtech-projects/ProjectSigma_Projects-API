@@ -6,7 +6,6 @@ use App\Enums\ResourceType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
@@ -27,6 +26,11 @@ class ResourceItem extends Model
         'unit_cost',
         'resource_count',
         'total_cost',
+        'consumption_rate',
+        'consumption_unit',
+        'labor_cost_category',
+        'work_time_category',
+        'remarks',
     ];
 
     protected $casts = [
@@ -52,11 +56,6 @@ class ResourceItem extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
-    }
-
-    public function resourceName(): HasOne
-    {
-        return $this->hasOne(ResourceName::class, 'id', 'name_id');
     }
 
     public function scopeFilterByTaskId($query, $taskId)

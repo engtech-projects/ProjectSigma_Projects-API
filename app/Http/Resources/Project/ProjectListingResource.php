@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Project;
 
+use App\Enums\MarketingStage;
 use App\Enums\TssStage;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -21,7 +22,8 @@ class ProjectListingResource extends JsonResource
             'updated_at' => $this->updated_at_formatted,
             'stage' => $this->tss_stage === TssStage::PENDING->value
                 ? $this->tss_stage
-                : $this->marketing_stage,
+                : $this->marketing_stage->display(),
+            'tss_submission' => $this->marketing_stage->value === MarketingStage::GENERATETOTSS->value ? '✅' : '❌',
             'status' => $this->status,
         ];
     }

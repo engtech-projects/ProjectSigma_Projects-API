@@ -27,7 +27,7 @@ class StoreBoqItemRequest extends FormRequest
             'description' => 'required|string',
             'quantity' => 'required|numeric',
             'unit' => 'required|string',
-            'unit_price' => 'required|numeric',
+            'unit_price' => 'nullable|numeric',
         ];
     }
 }

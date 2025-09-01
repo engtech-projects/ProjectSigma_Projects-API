@@ -60,6 +60,8 @@ class Project extends Model
         'current_revision_id',
         'position',
         'designation',
+        'abc',
+        'bid_date',
         'created_by',
         'cash_flow',
     ];
@@ -69,6 +71,7 @@ class Project extends Model
         'contract_date' => 'datetime:Y-m-d',
         'noa_date' => 'datetime:Y-m-d',
         'ntp_date' => 'datetime:Y-m-d',
+        'bid_date' => 'datetime:Y-m-d',
         'amount' => 'decimal:2',
         'marketing_stage' => MarketingStage::class,
         'tss_stage' => TssStage::class,
@@ -111,7 +114,7 @@ class Project extends Model
 
     public function attachments(): HasMany
     {
-        return $this->hasMany(Attachment::class);
+        return $this->hasMany(Attachment::class, 'project_id', 'id');
     }
 
     public function team(): HasMany
@@ -251,6 +254,48 @@ class Project extends Model
         return $query->orderBy('updated_at', 'desc');
     }
 
+    public function scopeFilterByTitle($query, $title)
+    {
+        return $query->when($title, function ($q) use ($title) {
+            $q->where('name', 'like', "%{$title}%");
+        });
+    }
+
+    public function scopeFilterByItemId($query, $itemId)
+    {
+        return $query->when($itemId, function ($q) use ($itemId) {
+            $q->whereHas('phases.tasks.schedules', function ($q) use ($itemId) {
+                $q->where('item_id', $itemId);
+            });
+        });
+    }
+
+    public function scopeFilterByStatus($query, $status)
+    {
+        return $query->when($status, function ($q) use ($status) {
+            $q->whereHas('phases.tasks.schedules', function ($q) use ($status) {
+                $q->where('status', $status);
+            });
+        });
+    }
+
+    public function scopeFilterByDate($query, $dateFrom, $dateTo)
+    {
+        return $query->when($dateFrom && $dateTo, function ($q) use ($dateFrom, $dateTo) {
+            $q->whereHas('phases.tasks.schedules', function ($subQuery) use ($dateFrom, $dateTo) {
+                $subQuery->whereBetween('original_start', [$dateFrom, $dateTo])
+                    ->orWhereBetween('original_end', [$dateFrom, $dateTo])
+                    ->orWhereBetween('current_start', [$dateFrom, $dateTo])
+                    ->orWhereBetween('current_end', [$dateFrom, $dateTo]);
+            });
+        });
+    }
+
+    public function scopeSortByField($query, $sortBy, $order)
+    {
+        return $query->orderBy($sortBy ?? 'updated_at', $order ?? 'desc');
+    }
+
     public function getSummaryOfBidAttribute()
     {
         $summaryOfBid = [];
@@ -325,7 +370,7 @@ class Project extends Model
     public function getSummaryOfRatesAttribute()
     {
         $summary_of_rates = [];
-        if (! $this->phases) {
+        if (!$this->phases) {
             return $summary_of_rates;
         }
         foreach ($this->phases as $phase) {
@@ -333,15 +378,15 @@ class Project extends Model
                 continue;
             }
             foreach ($phase->tasks as $task) {
-                if (! $task->resources) {
+                if (!$task->resources) {
                     continue;
                 }
                 foreach ($task->resources as $value) {
                     if ($value->quantity <= 0 || ! $value->unit) {
                         continue;
                     }
-                    $resourceName = $value->resourceName->name;
-                    $key = $value->description;
+                    $resourceName = isset($value->resource_type) ? (string) $value->resource_type->value : '';
+                    $key = (string) $value->description;
                     if (isset($summary_of_rates[$resourceName][$key])) {
                         $summary_of_rates[$resourceName][$key]['ids'][] = $value->id;
                     } else {
@@ -349,7 +394,8 @@ class Project extends Model
                             'description' => $value->description,
                             'unit_cost' => $value->unit_cost,
                             'unit' => $value->unit,
-                            'resource_name' => $value->unit_cost . ' / ' . $value->unit,
+                            'resource_name' => $resourceName ? $resourceName : '',
+                            'unit_cost_with_unit' => $value->unit_cost . ' / ' . $value->unit,
                             'total_cost' => $value->total_cost,
                             'ids' => [$value->id],
                         ];
