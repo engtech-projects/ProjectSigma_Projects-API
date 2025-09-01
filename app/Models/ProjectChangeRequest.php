@@ -32,9 +32,4 @@ class ProjectChangeRequest extends Model
         return $this->belongsTo(Project::class);
     }
 
-    public function requestedBy()
-    {
-        return $this->belongsTo(User::class);
-    }
-
 }
