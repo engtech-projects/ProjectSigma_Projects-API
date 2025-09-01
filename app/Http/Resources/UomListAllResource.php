@@ -9,8 +9,13 @@ class UomListAllResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-    public function toArray(Request $request): string
+    public function toArray(Request $request): array
     {
-        return $this->name_with_symbol;
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'symbol' => $this->symbol,
+            'label' => $this->name_with_symbol,
+        ];
     }
 }
