@@ -26,7 +26,6 @@ use App\Http\Controllers\SetupDocumentSignatureController;
 use App\Http\Controllers\SetupListsController;
 use App\Http\Controllers\TaskScheduleController;
 use App\Http\Resources\User\UserCollection;
-use App\Http\Controllers\Api\V1\Uom\UomController;
 use App\Models\Uom;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;

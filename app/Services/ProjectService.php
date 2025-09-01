@@ -110,6 +110,7 @@ class ProjectService
         return DB::transaction(function () use ($id) {
             $project = Project::findOrFail($id);
             $project->marketing_stage = ProjectStage::DRAFT->value;
+            $project->tss_stage = TssStage::PENDING->value;
             $project->status = ProjectStatus::PENDING->value;
             $project->save();
             return true;
@@ -130,6 +131,7 @@ class ProjectService
         return DB::transaction(function () use ($id) {
             $project = Project::findOrFail($id);
             $project->marketing_stage = ProjectStage::PROPOSAL->value;
+            $project->tss_stage = TssStage::PENDING->value;
             $project->status = ProjectStatus::PENDING->value;
             $project->save();
             return true;
@@ -173,7 +175,8 @@ class ProjectService
                 'noa_date' => $project->noa_date,
                 'ntp_date' => $project->ntp_date,
                 'license' => $project->license,
-                'stage' => ProjectStage::DRAFT->value,
+                'marketing_stage' => MarketingStage::DRAFT->value,
+                'tss_stage' => TssStage::PENDING->value,
                 'status' => ProjectStatus::PENDING->value,
                 'is_original' => 0,
                 'version' => $maxVersion + 1,
@@ -250,8 +253,9 @@ class ProjectService
         }
         if (!$isTssUpdate) {
             $this->project->marketing_stage = $newStage->value;
-            if ($newStage->value === MarketingStage::GENERATETOTSS->value) {
+            if ($newStage->value === MarketingStage::AWARDED->value) {
                 $this->project->tss_stage = TssStage::AWARDED->value;
+                $this->project->status = ProjectStatus::ONGOING->value;
                 $this->createProjectRevision($this->project->status);
             }
         } else {
@@ -281,7 +285,7 @@ class ProjectService
             ], 400);
         }
         $projectData = json_decode($revision->data, true);
-        if ($revision->status === ProjectStatus::OPEN->value || $revision->status === ProjectStatus::DRAFT->value) {
+        if ($revision->status === ProjectStatus::PENDING->value || $revision->status === ProjectStatus::DRAFT->value) {
             $projectData['status'] = ProjectStatus::PENDING->value;
         }
         if ($revision->status === ProjectStatus::ARCHIVED->value) {

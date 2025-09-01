@@ -124,7 +124,6 @@ class RevisionController extends Controller
         $revisions = Revision::where('project_id', $project->id)
             ->latest()
             ->get();
-
         return response()->json([
             'success' => true,
             'message' => 'Revisions retrieved successfully',

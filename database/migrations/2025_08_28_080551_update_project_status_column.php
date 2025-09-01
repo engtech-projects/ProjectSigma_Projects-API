@@ -20,6 +20,7 @@ return new class extends Migration
             'draft' => 'pending',
             'proposal' => 'pending',
             'bidding' => 'pending',
+            'awarded' => 'ongoing',
             'closed' => 'completed',
         ];
         foreach ($mapping as $old => $new) {
