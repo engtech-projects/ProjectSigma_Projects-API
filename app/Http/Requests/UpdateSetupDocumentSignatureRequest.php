@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Requests\BoqItem;
+namespace App\Http\Requests;
 
+use App\Models\SetupDocumentSignature;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreBoqItemRequest extends FormRequest
+class UpdateSetupDocumentSignatureRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +14,6 @@ class StoreBoqItemRequest extends FormRequest
     {
         return true;
     }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -22,12 +22,10 @@ class StoreBoqItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phase_id' => 'required|exists:phases,id',
-            'name' => 'required|string',
-            'description' => 'required|string',
-            'quantity' => 'required|numeric',
-            'unit' => 'required|string',
-            'unit_price' => 'nullable|numeric',
+            'name'          => 'required|string',
+            'position'      => 'required|string',
+            'license'       => 'required|string',
+            'document_type' => 'required|in:' . implode(',', SetupDocumentSignature::DOCUMENT_TYPES),
         ];
     }
 }
