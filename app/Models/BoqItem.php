@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ProjectStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -66,8 +67,8 @@ class BoqItem extends Model
 
     protected function getCanUpdateTotalAmountAttribute()
     {
-        $status = $this->phase?->project?->marketing_stage->value;
-        return !in_array($status, ['awarded']);
+        $status = $this->phase?->project?->status;
+        return !in_array($status, [ProjectStatus::ONGOING->value]);
     }
 
     public function getUnitPriceWithUnitAttribute()
