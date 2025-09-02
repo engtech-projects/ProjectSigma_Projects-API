@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Enums\ApprovalModels;
 use App\Models\Project;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
@@ -29,14 +30,15 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
-
         Route::bind('project', function ($value) {
             $project = Project::find($value) ?? throw new NotFoundHttpException('Project not found.');
-
             return $project;
-
         });
-
+        Route::bind('model', function ($value, $route) {
+            $modelName = $route->parameter('modelName');
+            $getModel = $this->getModelClass($modelName);
+            return $getModel::findOrFail($value);
+        });
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')
@@ -46,6 +48,16 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/web.php'));
 
         });
+    }
 
+    private function getModelClass($modelName)
+    {
+        $modelHasApprovals = ApprovalModels::toArray();
+        try {
+            array_key_exists($modelName, $modelHasApprovals);
+            return $modelHasApprovals[$modelName];
+        } catch (\Exception $e) {
+            throw new NotFoundHttpException('Model not found.');
+        }
     }
 }

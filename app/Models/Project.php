@@ -126,9 +126,9 @@ class Project extends Model
     {
         return $this->status == ProjectStatus::APPROVED->value;
     }
-    public function isOpen(): bool
+    public function isPending(): bool
     {
-        return $this->status == ProjectStatus::OPEN->value;
+        return $this->status == ProjectStatus::PENDING->value;
     }
     // PROJECT SCOPES
     /**
@@ -155,9 +155,9 @@ class Project extends Model
     /**
      * Scope a query to only include ongoing projects
      */
-    public function scopeOpen(Builder $query)
+    public function scopePending(Builder $query)
     {
-        return $query->where(['status' => ProjectStatus::OPEN]);
+        return $query->where(['status' => ProjectStatus::PENDING]);
     }
     /**
      * Scope a query to only include ongoing projects
@@ -363,5 +363,9 @@ class Project extends Model
     public function getUpdatedAtFormattedAttribute()
     {
         return Carbon::parse($this->updated_at)->format('F j, Y h:i A');
+    }
+    public function changeRequests()
+    {
+        return $this->hasMany(ProjectChangeRequest::class);
     }
 }

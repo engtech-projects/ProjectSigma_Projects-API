@@ -18,13 +18,16 @@ use App\Http\Controllers\Api\V1\BoqItem\BoqItemController;
 use App\Http\Controllers\Api\V1\Uom\UomController;
 use App\Http\Controllers\APiSyncController;
 use App\Http\Controllers\ApiServiceController;
+use App\Http\Controllers\CancelApproval;
 use App\Http\Controllers\DirectCostEstimateController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\NatureOfWorkController;
+use App\Http\Controllers\ProjectChangeRequestController;
 use App\Http\Controllers\ResourceMetricController;
 use App\Http\Controllers\SetupDocumentSignatureController;
 use App\Http\Controllers\SetupListsController;
 use App\Http\Controllers\TaskScheduleController;
+use App\Http\Controllers\VoidApproval;
 use App\Http\Resources\User\UserCollection;
 use App\Models\Uom;
 use Illuminate\Support\Facades\Artisan;
@@ -80,6 +83,8 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('approvals')->group(function () {
         Route::post('approve/{modelName}/{model}', ApproveApproval::class);
         Route::post('disapprove/{modelName}/{model}', DisapproveApproval::class);
+        Route::post('cancel/{modelName}/{model}', CancelApproval::class);
+        Route::post('void/{modelName}/{model}', VoidApproval::class);
     });
     // ────── Projects ──────
     Route::prefix('projects')->group(function () {
@@ -142,6 +147,9 @@ Route::middleware('auth:api')->group(function () {
         Route::get('{project_assignment}', [ProjectAssignmentController::class, 'show']);
         Route::post('/', [ProjectAssignmentController::class, 'store']);
     });
+
+    // ────── Project Change Requests ──────
+    Route::resource('change-requests', ProjectChangeRequestController::class);
 });
 // SECRET API KEY ROUTES
 Route::middleware("secret_api")->group(function () {
