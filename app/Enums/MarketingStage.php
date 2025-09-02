@@ -25,14 +25,6 @@ enum MarketingStage: string
         ];
     }
 
-    public function display(): string
-    {
-        return match ($this) {
-            self::AWARDED => 'awarded',
-            default => $this->value
-        };
-    }
-
     /**
      * Get next status in the flow.
      */
