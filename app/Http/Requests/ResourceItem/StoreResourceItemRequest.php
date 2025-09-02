@@ -1,13 +1,11 @@
 <?php
-
 namespace App\Http\Requests\ResourceItem;
-
 use App\Enums\LaborCostCategory;
 use App\Enums\ResourceType;
 use App\Enums\WorkTimeCategory;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
-
 class StoreResourceItemRequest extends FormRequest
 {
     /**
@@ -17,7 +15,6 @@ class StoreResourceItemRequest extends FormRequest
     {
         return true;
     }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -28,7 +25,14 @@ class StoreResourceItemRequest extends FormRequest
         return [
             'task_id' => 'required|exists:tasks,id',
             'resource_type' => ['required', new Enum(ResourceType::class)],
-            'description' => 'required|string',
+            'description'   => [
+                'required',
+                Rule::unique('resources')
+                    ->where(fn($q) => $q->where('task_id', $this->task_id)
+                        ->where('unit', $this->unit)
+                        ->where('resource_type', ResourceType::MATERIALS))
+                    ->ignore($this->id),
+            ],
             'unit_count' => 'nullable|integer',
             'quantity' => 'required|regex:/^\d+(\.\d{1,2})?$/',
             'unit' => 'required|string',

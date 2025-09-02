@@ -57,6 +57,7 @@ class ResourceService
                 $request['total_cost'] = $request['quantity'] * $request['unit_cost'];
             }
             $data->fill($request)->save();
+            $data->cascadeUnitCostToOtherResourceItemsWithSameProjectAndUnit();
             $task = BoqItem::findOrFail($request['task_id'])->load(['resources', 'phase']);
             if ($task->can_update_total_amount) {
                 $task->update([

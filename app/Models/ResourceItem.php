@@ -61,8 +61,8 @@ class ResourceItem extends Model
         if ($this->resource_type !== ResourceType::MATERIALS) {
             return;
         }
-        $projectId = $this->task->part->project_id;
-        self::whereHas('task.part', function ($query) use ($projectId) {
+        $projectId = $this->task->phase->project_id;
+        self::whereHas('task.phase', function ($query) use ($projectId) {
             $query->where('project_id', $projectId);
         })
             ->where('resource_type', $this->resource_type)
