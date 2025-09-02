@@ -1,9 +1,6 @@
 <?php
-
 namespace App\Http\Requests\Project;
-
 use Illuminate\Foundation\Http\FormRequest;
-
 class UpdateProjectRequest extends FormRequest
 {
     /**
@@ -13,7 +10,6 @@ class UpdateProjectRequest extends FormRequest
     {
         return true;
     }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -23,16 +19,20 @@ class UpdateProjectRequest extends FormRequest
     {
         return [
             'contract_id' => 'required|string',
-            'code' => 'required|string',
+            'code' => 'nullable|string|unique:projects,code',
             'name' => 'required|string',
             'location' => 'required|string',
-            'amount' => 'required|regex:/^\d+(\.\d{1,2})?$/',
+            'amount' => 'nullable|regex:/^\d+(\.\d{1,2})?$/',
             'contract_date' => 'nullable|date|date_format:Y-m-d',
-            'duration' => 'nullable|string',
+            'duration' => 'nullable|integer',
             'noa_date' => 'nullable|date|date_format:Y-m-d',
             'ntp_date' => 'nullable|date|date_format:Y-m-d',
             'license' => 'nullable|string',
+            'designation' => 'nullable|string|max:255',
             'nature_of_work' => 'nullable|string',
+            'position' => 'nullable|string',
+            'abc' => 'nullable|string',
+            'bid_date' => 'nullable|date_format:Y-m-d',
         ];
     }
 }
