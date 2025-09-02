@@ -36,14 +36,7 @@ class ResourceService
                 $request['total_cost'] = $request['quantity'] * $request['unit_cost'];
             }
             $data = ResourceItem::create($request);
-            $data->cascadeUnitCostToOtherResourceItemsWithSameProjectAndUnit();
-            $task = BoqItem::findOrFail($request['task_id'])->load(['resources', 'phase']);
-            if ($task->can_update_total_amount) {
-                $task->update([
-                    'amount' => $task->resources->sum('total_cost'),
-                ]);
-                self::updateTotalProject($task->phase->project_id);
-            }
+            $data->syncUnitCostAcrossProjectResources();
             return $data;
         });
     }
@@ -57,14 +50,7 @@ class ResourceService
                 $request['total_cost'] = $request['quantity'] * $request['unit_cost'];
             }
             $data->fill($request)->save();
-            $data->cascadeUnitCostToOtherResourceItemsWithSameProjectAndUnit();
-            $task = BoqItem::findOrFail($request['task_id'])->load(['resources', 'phase']);
-            if ($task->can_update_total_amount) {
-                $task->update([
-                    'amount' => $task->resources->sum('total_cost'),
-                ]);
-                self::updateTotalProject($task->phase->project_id);
-            }
+            $data->syncUnitCostAcrossProjectResources();
             return $data;
         });
     }

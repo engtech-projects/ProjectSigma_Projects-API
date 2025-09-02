@@ -56,12 +56,21 @@ class ResourceItem extends Model
     {
         return $query->where('resource_type', 'like', "%{$resourceType}%");
     }
-    public function cascadeUnitCostToOtherResourceItemsWithSameProjectAndUnit(): void
+    public function syncUnitCostAcrossProjectResources(): void
     {
         if ($this->resource_type !== ResourceType::MATERIALS) {
             return;
         }
         $projectId = $this->task->phase->project_id;
+        // ✅ Step 1: Update only matching resources (same project, unit, description)
+        $affectedTaskIds = self::whereHas('task.phase', function ($query) use ($projectId) {
+            $query->where('project_id', $projectId);
+        })
+            ->where('resource_type', $this->resource_type)
+            ->where('unit', $this->unit)
+            ->where('description', $this->description)
+            ->where('id', '!=', $this->id)
+            ->pluck('task_id');
         self::whereHas('task.phase', function ($query) use ($projectId) {
             $query->where('project_id', $projectId);
         })
@@ -73,5 +82,18 @@ class ResourceItem extends Model
                 'unit_cost'  => $this->unit_cost,
                 'total_cost' => DB::raw('quantity * ' . (float) $this->unit_cost),
             ]);
+        // ✅ Step 2: Bulk recalc all affected task amounts (including current one)
+        $taskTotals = self::select('task_id', DB::raw('SUM(total_cost) as total'))
+            ->whereIn('task_id', $affectedTaskIds->push($this->task->id))
+            ->groupBy('task_id')
+            ->pluck('total', 'task_id');
+        foreach ($taskTotals as $taskId => $total) {
+            $task = BoqItem::find($taskId); // BoqItem = tasks
+            if ($task && $task->can_update_total_amount) {
+                $task->update(['amount' => $total]);
+            }
+        }
+        // ✅ Step 3: Update the project total once
+        BoqItem::updateTotalProject($projectId);
     }
 }

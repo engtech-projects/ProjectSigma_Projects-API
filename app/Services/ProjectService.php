@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Services;
-
 use App\Enums\MarketingStage;
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
@@ -17,7 +15,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-
 class ProjectService
 {
     protected $project;
@@ -48,12 +45,24 @@ class ProjectService
     }
     public function changeSummaryRates(array $attr)
     {
+        if (!isset($attr['ids']) || !is_array($attr['ids']) || empty($attr['ids'])) {
+            return new JsonResponse(['message' => 'No IDs provided'], 422);
+        }
+        if (!isset($attr['unit_cost']) || !is_numeric($attr['unit_cost'])) {
+            return new JsonResponse(['message' => 'Invalid unit cost'], 422);
+        }
         return DB::transaction(function () use ($attr) {
-            DB::table('resources')
-                ->whereIn('id', $attr['ids'])
-                ->update(['unit_cost' => $attr['unit_cost']]);
+            $resources = ResourceItem::whereIn('id', $attr['ids'])->get();
+            $affected = 0;
+            foreach ($resources as $resource) {
+                $resource->unit_cost = $attr['unit_cost'];
+                $resource->save();
+                // Call your cascade function
+                $resource->syncUnitCostAcrossProjectResources();
+                $affected++;
+            }
             return new JsonResponse([
-                'message' => 'Summary rates updated successfully, Number of Direct Cost Affected: ' . count($attr['ids']),
+                'message' => "Summary rates updated successfully, Number of Direct Cost Affected: {$affected}",
             ], 200);
         });
     }
@@ -228,17 +237,17 @@ class ProjectService
     public function updateStage(ProjectStage $newStage)
     {
         $isTssUpdate = $this->project->marketing_stage->value === MarketingStage::AWARDED->value
-            && in_array($newStage->value, array_map(fn ($stage) => $stage->value, TssStage::cases()), true);
+            && in_array($newStage->value, array_map(fn($stage) => $stage->value, TssStage::cases()), true);
         if ($isTssUpdate && $this->project->marketing_stage === MarketingStage::AWARDED->value && $this->project->status !== 'approved') {
             throw ValidationException::withMessages([
                 'status' => 'Project must be approved to update TSS stage after marketing is awarded.',
             ]);
         }
         if (!$isTssUpdate) {
-            $flow = array_map(fn ($stage) => $stage->value, MarketingStage::flow());
+            $flow = array_map(fn($stage) => $stage->value, MarketingStage::flow());
             $current = $this->project->marketing_stage->value;
         } else {
-            $flow = array_map(fn ($stage) => $stage->value, TssStage::flow());
+            $flow = array_map(fn($stage) => $stage->value, TssStage::flow());
             $current = $this->project->tss_stage->value;
         }
         $currentIndex = array_search($current, $flow);
@@ -259,7 +268,6 @@ class ProjectService
         }
         $this->project->save();
     }
-
     public function createProjectRevision($status)
     {
         $this->project->loadMissing(['phases.tasks.resources', 'attachments']);

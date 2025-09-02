@@ -141,4 +141,18 @@ class BoqItem extends Model
         }
         return round($this->grand_total / $this->quantity, 2);
     }
+    public static function updateTotalProject(int $projectId): void
+    {
+        $totalAmount = self::whereHas('phase', function ($query) use ($projectId) {
+            $query->where('project_id', $projectId);
+        })->sum('amount');
+        Project::where('id', $projectId)->update(['amount' => $totalAmount]);
+    }
+    public function recalcTaskAmount(): void
+    {
+        if ($this->can_update_total_amount) {
+            $total = $this->resources()->sum('total_cost');
+            $this->update(['amount' => $total]);
+        }
+    }
 }
