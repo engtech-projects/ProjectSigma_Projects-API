@@ -67,7 +67,7 @@ class BoqItem extends Model
     protected function getCanUpdateTotalAmountAttribute()
     {
         $status = $this->phase?->project?->marketing_stage->value;
-        return !in_array($status, ['awarded', 'generate_to_tss']);
+        return !in_array($status, ['awarded']);
     }
 
     public function getUnitPriceWithUnitAttribute()

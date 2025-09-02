@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\MarketingStage;
+use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Enums\RequestStatuses;
 use App\Enums\TssStage;
@@ -104,7 +105,12 @@ class Project extends Model
     // Archive the project
     public function archive(): void
     {
-        $this->updateStatus(ProjectStatus::ARCHIVED);
+        $this->updateStatus(ProjectStatus::COMPLETED);
+    }
+
+    public function complete(): void
+    {
+        $this->updateStatus(ProjectStatus::COMPLETED);
     }
 
     public function phases(): HasMany
@@ -144,7 +150,7 @@ class Project extends Model
 
     public function isApproved(): bool
     {
-        return $this->status == ProjectStatus::APPROVED->value;
+        return $this->status == 'approved';
     }
 
     public function isPending(): bool
@@ -233,7 +239,7 @@ class Project extends Model
     public function scopeAwarded($query)
     {
         return $query->where('marketing_stage', MarketingStage::AWARDED)
-            ->orWhere('tss_stage', TssStage::AWARDED);
+            ->orWhere('tss_stage', TssStage::DUPA_PREPARATION);
     }
 
     public function scopeWithTssStage($query, $status)
@@ -329,14 +335,14 @@ class Project extends Model
                 case MarketingStage::BIDDING->value:
                     $this->marketing_stage = MarketingStage::AWARDED->value;
                     // Transition TSS to awarded when marketing is done
-                    $this->tss_stage = TssStage::AWARDED->value;
+                    $this->tss_stage = TssStage::DUPA_PREPARATION->value;
                     break;
             }
         } else {
             // Handle TSS flow
             switch ($this->tss_stage) {
-                case TssStage::AWARDED->value:
-                    $this->tss_stage = TssStage::ARCHIVED->value;
+                case TssStage::DUPA_PREPARATION->value:
+                    $this->tss_stage = TssStage::COMPLETED->value;
                     break;
             }
         }

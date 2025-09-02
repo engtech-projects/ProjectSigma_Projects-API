@@ -2,13 +2,15 @@
 
 namespace App\Enums;
 
+use App\Enums\Traits\EnumHelper;
+
 enum MarketingStage: string
 {
+    use EnumHelper;
     case DRAFT = 'draft';
     case PROPOSAL = 'proposal';
     case BIDDING = 'bidding';
     case AWARDED = 'awarded';
-    case GENERATETOTSS = 'generate_to_tss';
 
     /**
      * Ordered flow of statuses.
@@ -20,14 +22,13 @@ enum MarketingStage: string
             self::PROPOSAL,
             self::BIDDING,
             self::AWARDED,
-            self::GENERATETOTSS,
         ];
     }
 
     public function display(): string
     {
         return match ($this) {
-            self::GENERATETOTSS => 'awarded',
+            self::AWARDED => 'awarded',
             default => $this->value
         };
     }
@@ -54,11 +55,4 @@ enum MarketingStage: string
         return $index > 0 ? $flow[$index - 1] : null;
     }
 
-    /**
-     * All raw string values
-     */
-    public static function values(): array
-    {
-        return array_column(self::cases(), 'value');
-    }
 }

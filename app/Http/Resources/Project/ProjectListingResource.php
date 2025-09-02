@@ -23,7 +23,7 @@ class ProjectListingResource extends JsonResource
             'stage' => $this->tss_stage === TssStage::PENDING->value
                 ? $this->tss_stage
                 : $this->marketing_stage->display(),
-            'tss_submission' => $this->marketing_stage->value === MarketingStage::GENERATETOTSS->value ? '✅' : '❌',
+            'tss_submission' => $this->marketing_stage->value === MarketingStage::AWARDED->value ? '✅' : '❌',
             'status' => $this->status,
         ];
     }

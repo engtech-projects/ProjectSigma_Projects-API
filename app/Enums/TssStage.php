@@ -2,18 +2,25 @@
 
 namespace App\Enums;
 
+use App\Enums\Traits\EnumHelper;
+
 enum TssStage: string
 {
+    use EnumHelper;
     case PENDING = 'pending';
-    case AWARDED = 'awarded';
-    case ARCHIVED = 'archived';
+    case DUPA_PREPARATION = 'dupa_preparation';
+    case DUPA_TIMELINE = 'dupa_timeline';
+    case LIVE = 'live';
+    case COMPLETED = 'completed';
 
     public static function flow(): array
     {
         return [
             self::PENDING,
-            self::AWARDED,
-            self::ARCHIVED,
+            self::DUPA_PREPARATION,
+            self::DUPA_TIMELINE,
+            self::LIVE,
+            self::COMPLETED,
         ];
     }
 
@@ -33,8 +40,4 @@ enum TssStage: string
         return $index > 0 ? $flow[$index - 1] : null;
     }
 
-    public static function values(): array
-    {
-        return array_column(self::cases(), 'value');
-    }
 }
