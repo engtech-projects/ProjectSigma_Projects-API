@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Models;
+
 use App\Enums\ResourceType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -7,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+
 class ResourceItem extends Model
 {
     use HasFactory;
@@ -56,12 +59,20 @@ class ResourceItem extends Model
     {
         return $query->where('resource_type', 'like', "%{$resourceType}%");
     }
-    public function syncUnitCostAcrossProjectResources(): void
+    public function syncUnitCostAcrossProjectResources(): int
     {
         if ($this->resource_type !== ResourceType::MATERIALS) {
-            return;
+            return 0;
         }
         $projectId = $this->task->phase->project_id;
+        // Step 0: sync current resource totals
+        $selfUpdated = 0;
+        $computed = (float) $this->quantity * (float) $this->unit_cost;
+        if ((float) $this->total_cost !== $computed) {
+            $this->total_cost = $computed;
+            $this->save();
+            $selfUpdated = 1;
+        }
         // ✅ Step 1: Update only matching resources (same project, unit, description)
         $affectedTaskIds = self::whereHas('task.phase', function ($query) use ($projectId) {
             $query->where('project_id', $projectId);
@@ -70,8 +81,9 @@ class ResourceItem extends Model
             ->where('unit', $this->unit)
             ->where('description', $this->description)
             ->where('id', '!=', $this->id)
-            ->pluck('task_id');
-        self::whereHas('task.phase', function ($query) use ($projectId) {
+            ->pluck('task_id')
+            ->unique();
+        $affectedResources = self::whereHas('task.phase', function ($query) use ($projectId) {
             $query->where('project_id', $projectId);
         })
             ->where('resource_type', $this->resource_type)
@@ -84,7 +96,8 @@ class ResourceItem extends Model
             ]);
         // ✅ Step 2: Bulk recalc all affected task amounts (including current one)
         $taskTotals = self::select('task_id', DB::raw('SUM(total_cost) as total'))
-            ->whereIn('task_id', $affectedTaskIds->push($this->task->id))
+        ->whereIn('task_id', $affectedTaskIds->push($this->task->id))
+        ->whereIn('task_id', $affectedTaskIds->push($this->task->id)->unique())
             ->groupBy('task_id')
             ->pluck('total', 'task_id');
         foreach ($taskTotals as $taskId => $total) {
@@ -95,5 +108,6 @@ class ResourceItem extends Model
         }
         // ✅ Step 3: Update the project total once
         BoqItem::updateTotalProject($projectId);
+        return (int) $affectedResources + $selfUpdated;
     }
 }

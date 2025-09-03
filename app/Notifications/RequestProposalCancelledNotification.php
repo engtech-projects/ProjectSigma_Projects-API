@@ -16,7 +16,6 @@ class RequestProposalCancelledNotification extends Notification
     public $token;
     public $model;
 
-
     /**
      * Create a new notification instance.
      */

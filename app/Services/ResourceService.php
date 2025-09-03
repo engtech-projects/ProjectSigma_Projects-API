@@ -1,9 +1,12 @@
 <?php
+
 namespace App\Services;
+
 use App\Models\Project;
 use App\Models\ResourceItem;
 use App\Models\BoqItem;
 use Illuminate\Support\Facades\DB;
+
 class ResourceService
 {
     public static function withPagination($request)

@@ -1,6 +1,10 @@
 <?php
+
 namespace App\Http\Requests\Project;
+
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
 class UpdateProjectRequest extends FormRequest
 {
     /**
@@ -19,12 +23,18 @@ class UpdateProjectRequest extends FormRequest
     {
         return [
             'contract_id' => 'required|string',
-            'code' => 'nullable|string|unique:projects,code',
+            'code' => [
+                'nullable',
+                'string',
+                Rule::unique('projects', 'code')
+                    ->whereNull('deleted_at')
+                    ->ignore($this->route('project')),
+            ],
             'name' => 'required|string',
             'location' => 'required|string',
-            'amount' => 'nullable|regex:/^\d+(\.\d{1,2})?$/',
+            'amount' => 'nullable|numeric|decimal:0,2|min:0',
             'contract_date' => 'nullable|date|date_format:Y-m-d',
-            'duration' => 'nullable|integer',
+            'duration' => 'nullable|integer|min:1',
             'noa_date' => 'nullable|date|date_format:Y-m-d',
             'ntp_date' => 'nullable|date|date_format:Y-m-d',
             'license' => 'nullable|string',
