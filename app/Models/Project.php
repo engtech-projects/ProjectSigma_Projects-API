@@ -336,13 +336,21 @@ class Project extends Model
                     $this->marketing_stage = MarketingStage::AWARDED->value;
                     // Transition TSS to awarded when marketing is done
                     $this->tss_stage = TssStage::DUPA_PREPARATION->value;
+                    $this->status = ProjectStatus::ONGOING->value;
                     break;
             }
         } else {
             // Handle TSS flow
             switch ($this->tss_stage) {
                 case TssStage::DUPA_PREPARATION->value:
+                    $this->tss_stage = TssStage::DUPA_TIMELINE->value;
+                    break;
+                case TssStage::DUPA_TIMELINE->value:
+                    $this->tss_stage = TssStage::LIVE->value;
+                    break;
+                case TssStage::LIVE->value:
                     $this->tss_stage = TssStage::COMPLETED->value;
+                    $this->status = ProjectStatus::COMPLETED->value;
                     break;
             }
         }
