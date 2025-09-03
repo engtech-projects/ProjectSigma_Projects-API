@@ -121,6 +121,10 @@ class Project extends Model
     {
         return $this->belongsTo(Project::class, 'parent_project_id');
     }
+    public function activity(): HasMany
+    {
+        return $this->hasMany(Activity::class);
+    }
     public function isOriginal(): bool
     {
         return $this->is_original == true;

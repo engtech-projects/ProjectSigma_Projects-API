@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ActivityDailyScheduleRequest;
+use App\Http\Resources\ActivityDailyScheduleResource;
+use App\Models\Activity;
 use App\Models\DailySchedule;
-use Illuminate\Http\Request;
 
 class DailyScheduleController extends Controller
 {
@@ -13,6 +15,26 @@ class DailyScheduleController extends Controller
         $this->dailySchedule = DailySchedule::class;
     }
 
+    public function getDailySchedule(Activity $activity)
+    {
+        $dailySchedule = $activity->dailySchedule()->get();
+        return response()->json([
+            'success' => true,
+            'message' => 'Daily schedule retrieved successfully',
+            'daily_schedule' => ActivityDailyScheduleResource::collection($dailySchedule),
+        ], 200);
+    }
+
+    public function updateOrCreateDailySchedule(Activity $activity, ActivityDailyScheduleRequest $request)
+    {
+        $dailySchedule = $activity->dailySchedule()->updateOrCreate($request->validated());
+        return response()->json([
+            'success' => true,
+            'message' => 'Daily schedule updated successfully',
+            'daily_schedule' => ActivityDailyScheduleResource::make($dailySchedule),
+        ], 200);
+    }
+
     public function destroy($dailyScheduleId)
     {
         $dailySchedule = $this->dailySchedule::findOrFail($dailyScheduleId);
@@ -20,7 +42,6 @@ class DailyScheduleController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Daily schedule deleted successfully',
-            'daily_schedule' => $dailySchedule,
         ], 200);
     }
 

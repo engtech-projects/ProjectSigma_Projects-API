@@ -107,8 +107,8 @@ Route::middleware('auth:api')->group(function () {
         Route::patch('{project}/cash-flow', [ProjectController::class, 'updateCashFlow']);
         Route::get('{project}/revisions', [RevisionController::class, 'showProjectRevisions']);
         Route::put('{project}/revert/{revision}', [RevisionController::class, 'revertToRevision']);
-        Route::get('{id}/activities', [ActivityController::class, 'projectActivities']);
-        Route::post('{id}/activities', [ActivityController::class, 'createProjectActivity']);
+        Route::get('{project}/activities', [ActivityController::class, 'projectActivities']);
+        Route::post('{project}/activities', [ActivityController::class, 'createProjectActivity']);
     });
     // ────── Attachments ──────
     Route::prefix('attachments')->group(function () {
@@ -160,12 +160,12 @@ Route::middleware('auth:api')->group(function () {
     // ────── Activities ──────
     Route::resource('activities', ActivityController::class);
     Route::post('activities/{id}/restore', [ActivityController::class, 'restore']);
-    Route::get('activities/{id}/daily', [ActivityController::class, 'getDailySchedule']);
-    Route::post('activities/{id}/daily', [ActivityController::class, 'updateOrCreateDailySchedule']);
 
     // ────── Daily Schedule ──────
     Route::resource('daily-schedule', DailyScheduleController::class);
     Route::post('daily-schedule/{id}/restore', [DailyScheduleController::class, 'restore']);
+    Route::get('activities/{activity}/daily', [DailyScheduleController::class, 'getDailySchedule']);
+    Route::post('activities/{activity}/daily', [DailyScheduleController::class, 'updateOrCreateDailySchedule']);
 });
 // SECRET API KEY ROUTES
 Route::middleware("secret_api")->group(function () {
