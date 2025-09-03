@@ -32,12 +32,10 @@ return new class () extends Migration {
                         $marketing_stage = $project->stage;
                         $tss_stage = TssStage::PENDING->value;
                         break;
-
                     case MarketingStage::AWARDED->value:
                         $marketing_stage = MarketingStage::AWARDED->value;
                         $tss_stage = TssStage::AWARDED->value;
                         break;
-
                     case TssStage::ARCHIVED->value:
                         $marketing_stage = MarketingStage::AWARDED->value;
                         $tss_stage = TssStage::ARCHIVED->value;
@@ -86,7 +84,6 @@ return new class () extends Migration {
                     case MarketingStage::BIDDING->value:
                         $stage = $project->marketing_stage;
                         break;
-
                     case MarketingStage::AWARDED->value:
                         $stage = $project->tss_stage === TssStage::ARCHIVED->value
                             ? TssStage::ARCHIVED->value

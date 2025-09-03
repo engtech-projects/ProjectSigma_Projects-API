@@ -21,17 +21,14 @@ class SyncEmployees extends Controller
         $token = $request->bearerToken();
 
         try {
-
             $response = Http::withToken($token)
                 ->acceptJson()
                 ->get($apiUrl.'/api/employee/list');
 
             if ($response->ok()) {
-
                 $employees = $response->json()['data'] ?? [];
 
                 DB::transaction(function () use ($employees) {
-
                     foreach ($employees as $employee) {
                         Employee::updateOrCreate(
                             ['employee_id' => $employee['id']], // Prevent duplicate employees
@@ -47,10 +44,8 @@ class SyncEmployees extends Controller
                     }
                 });
             }
-
         } catch (\Throwable $e) {
             return ['error' => $e->getMessage()];
         }
-
     }
 }

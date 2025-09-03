@@ -13,7 +13,6 @@ class AssignRolesPermissionsSeeder extends Seeder
      */
     public function run(): void
     {
-
         $this->rolesPermissions();
 
         // $role->
@@ -23,7 +22,6 @@ class AssignRolesPermissionsSeeder extends Seeder
         // $role->syncPermissions($permissions);
 
         // $role = Role::findByName('Marketing');
-
     }
 
     public function rolesPermissions()
@@ -70,7 +68,6 @@ class AssignRolesPermissionsSeeder extends Seeder
         ];
 
         foreach ($roles as $role) {
-
             Role::updateOrCreate([
                 'name' => $role,
                 'guard_name' => 'api',
@@ -98,7 +95,6 @@ class AssignRolesPermissionsSeeder extends Seeder
                 'archive-active-project',
                 'hold-active-project',
             ],
-
         ];
 
         foreach ($permissions as $group => $groupPermissions) {
@@ -107,7 +103,6 @@ class AssignRolesPermissionsSeeder extends Seeder
                     'name' => $permission,
                     'guard_name' => 'api',
                 ]);
-
             }
         }
 
