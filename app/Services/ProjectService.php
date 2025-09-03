@@ -151,7 +151,7 @@ class ProjectService
         return DB::transaction(function () use ($id) {
             $project = Project::findOrFail($id);
             $project->stage = ProjectStage::ARCHIVED->value;
-            $project->status = ProjectStage::ARCHIVED->value;
+            $project->status = ProjectStatus::COMPLETED->value;
             $project->save();
             return true;
         });
