@@ -288,6 +288,9 @@ class ProjectService
         if ($revision->status === ProjectStatus::PENDING->value) {
             $projectData['status'] = ProjectStatus::PENDING->value;
         }
+        if ($revision->status === ProjectStatus::COMPLETED->value) {
+            $projectData['status'] = ProjectStatus::COMPLETED->value;
+        }
         try {
             DB::beginTransaction();
             $this->project->update($projectData);
