@@ -22,17 +22,14 @@ class SyncUsers extends Controller
         $token = $request->bearerToken();
 
         try {
-
             $response = Http::withToken($token)
                 ->acceptJson()
                 ->get(config('services.url.hrms_api_url').'/api/employee/users-list');
 
             if ($response->ok()) {
-
                 $users = $response->json()['data'] ?? [];
 
                 DB::transaction(function () use ($users) {
-
                     foreach ($users as $user) {
                         User::updateOrCreate(
                             ['user_id' => $user['id']], // Prevent duplicate users
@@ -50,7 +47,6 @@ class SyncUsers extends Controller
                     }
                 });
             }
-
         } catch (\Throwable $e) {
             return ['error' => $e->getMessage()];
         }

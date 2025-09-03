@@ -12,7 +12,6 @@ class UomSeeder extends Seeder
      */
     public function run(): void
     {
-
         $uoms = [
             'Meter' => 'm',
             'Kilometer' => 'km',

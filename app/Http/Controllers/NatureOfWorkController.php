@@ -1,11 +1,14 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Http\Requests\StoreNatureOfWorkRequest;
 use App\Http\Requests\UpdateNatureOfWorkRequest;
 use App\Http\Resources\NatureOfWorkListAllResource;
 use App\Http\Resources\NatureOfWorkListResource;
 use App\Models\NatureOfWork;
 use Illuminate\Http\JsonResponse;
+
 class NatureOfWorkController extends Controller
 {
     public function index()

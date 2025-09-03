@@ -26,9 +26,7 @@ class Project extends Model
     use LogsActivity;
     use SoftDeletes;
     use ModelHelpers;
-
     protected $table = 'projects';
-
     // Define which attributes should be logged
     public function getActivitylogOptions(): LogOptions
     {
@@ -36,7 +34,6 @@ class Project extends Model
             ->logAll() // List of attributes to log
             ->setDescriptionForEvent(fn (string $eventName) => "Project has been {$eventName}");
     }
-
     protected $fillable = [
         'parent_project_id',
         'contract_id',
@@ -65,7 +62,6 @@ class Project extends Model
         'created_by',
         'cash_flow',
     ];
-
     protected $casts = [
         'cash_flow' => 'array',
         'contract_date' => 'datetime:Y-m-d',
@@ -76,82 +72,67 @@ class Project extends Model
         'marketing_stage' => MarketingStage::class,
         'tss_stage' => TssStage::class,
     ];
-
     protected $appends = [
         'summary_of_rates',
         'summary_of_bid',
         'created_at_formatted',
         'updated_at_formatted',
     ];
-
     protected static function boot()
     {
         parent::boot();
-
         static::creating(function ($model) {
             if (empty($model->uuid)) {
                 $model->uuid = (string) Str::uuid();
             }
         });
     }
-
     // Update the project status
     public function updateStatus(ProjectStatus $status): void
     {
         $this->update(['status' => $status]);
     }
-
     // Archive the project
     public function archive(): void
     {
         $this->updateStatus(ProjectStatus::ARCHIVED);
     }
-
     public function phases(): HasMany
     {
         return $this->hasMany(BoqPart::class, 'project_id', 'id');
     }
-
     public function attachments(): HasMany
     {
         return $this->hasMany(Attachment::class, 'project_id', 'id');
     }
-
     public function team(): HasMany
     {
         return $this->hasMany(ProjectAssignment::class);
     }
-
     public function revisions(): HasMany
     {
         return $this->hasMany(Revision::class, 'project_id', 'id');
     }
-
     public function projectDesignation(): HasMany
     {
         return $this->hasMany(ProjectDesignation::class);
     }
-
     public function parent(): BelongsTo
     {
         return $this->belongsTo(Project::class, 'parent_project_id');
     }
-
     public function isOriginal(): bool
     {
         return $this->is_original == true;
     }
-
     public function isApproved(): bool
     {
         return $this->status == ProjectStatus::APPROVED->value;
     }
-
     public function isPending(): bool
     {
         return $this->status == ProjectStatus::PENDING->value;
     }
-
     // PROJECT SCOPES
     /**
      * Scope a query to only include original/proposal project.
@@ -160,7 +141,6 @@ class Project extends Model
     {
         return $query->where(['is_original' => true]);
     }
-
     /**
      * Scope a query to only include internal/revised projects
      */
@@ -168,7 +148,6 @@ class Project extends Model
     {
         return $query->where(['is_original' => false]);
     }
-
     /**
      * Scope a query to only include ongoing projects
      */
@@ -176,7 +155,6 @@ class Project extends Model
     {
         return $query->where(['status' => ProjectStatus::ONGOING]);
     }
-
     /**
      * Scope a query to only include ongoing projects
      */
@@ -184,7 +162,6 @@ class Project extends Model
     {
         return $query->where(['status' => ProjectStatus::PENDING]);
     }
-
     /**
      * Scope a query to only include ongoing projects
      */
@@ -193,10 +170,8 @@ class Project extends Model
         if ($val == 'desc') {
             return $query->latest();
         }
-
         return $query->oldest();
     }
-
     /**
      * Scope a query to only include ongoing projects
      */
@@ -207,7 +182,6 @@ class Project extends Model
                 ->orWhere('name', 'LIKE', '%' . $keyword . '%');
         });
     }
-
     public function scopeFilterByStage($query, ?string $stage)
     {
         return $query->when($stage, function ($q) use ($stage) {
@@ -221,7 +195,6 @@ class Project extends Model
             }
         });
     }
-
     /**
      * Scope a query to only include archived projects.
      */
@@ -229,18 +202,15 @@ class Project extends Model
     {
         return $query->onlyTrashed();
     }
-
     public function scopeAwarded($query)
     {
         return $query->where('marketing_stage', MarketingStage::AWARDED)
             ->orWhere('tss_stage', TssStage::AWARDED);
     }
-
     public function scopeWithTssStage($query, $status)
     {
         return $query->where('tss_stage', $status);
     }
-
     public function scopeProjectKey($query, $key)
     {
         return $query->where(function ($q) use ($key) {
@@ -248,19 +218,16 @@ class Project extends Model
                 ->orWhere('code', 'like', "%{$key}%");
         });
     }
-
     public function scopeLatestFirst($query)
     {
         return $query->orderBy('updated_at', 'desc');
     }
-
     public function scopeFilterByTitle($query, $title)
     {
         return $query->when($title, function ($q) use ($title) {
             $q->where('name', 'like', "%{$title}%");
         });
     }
-
     public function scopeFilterByItemId($query, $itemId)
     {
         return $query->when($itemId, function ($q) use ($itemId) {
@@ -269,7 +236,6 @@ class Project extends Model
             });
         });
     }
-
     public function scopeFilterByStatus($query, $status)
     {
         return $query->when($status, function ($q) use ($status) {
@@ -278,7 +244,6 @@ class Project extends Model
             });
         });
     }
-
     public function scopeFilterByDate($query, $dateFrom, $dateTo)
     {
         return $query->when($dateFrom && $dateTo, function ($q) use ($dateFrom, $dateTo) {
@@ -290,12 +255,10 @@ class Project extends Model
             });
         });
     }
-
     public function scopeSortByField($query, $sortBy, $order)
     {
         return $query->orderBy($sortBy ?? 'updated_at', $order ?? 'desc');
     }
-
     public function getSummaryOfBidAttribute()
     {
         $summaryOfBid = [];
@@ -309,10 +272,8 @@ class Project extends Model
                 'total_amount' => $phase->tasks ? $phase->tasks->sum('amount') : 0,
             ];
         }
-
         return $summaryOfBid;
     }
-
     public function completeRequestStatus()
     {
         // Handle marketing stage flow
@@ -321,11 +282,9 @@ class Project extends Model
                 case MarketingStage::DRAFT->value:
                     $this->marketing_stage = MarketingStage::PROPOSAL->value;
                     break;
-
                 case MarketingStage::PROPOSAL->value:
                     $this->marketing_stage = MarketingStage::BIDDING->value;
                     break;
-
                 case MarketingStage::BIDDING->value:
                     $this->marketing_stage = MarketingStage::AWARDED->value;
                     // Transition TSS to awarded when marketing is done
@@ -340,13 +299,11 @@ class Project extends Model
                     break;
             }
         }
-
         // Set request status and persist
         $this->request_status = RequestStatuses::APPROVED->value;
         $this->save();
         $this->refresh();
     }
-
     public function denyRequestStatus()
     {
         // Only allow marketing to backtrack if still pending in TSS
@@ -355,18 +312,15 @@ class Project extends Model
                 case MarketingStage::BIDDING->value:
                     $this->marketing_stage = MarketingStage::PROPOSAL->value;
                     break;
-
                 case MarketingStage::PROPOSAL->value:
                     $this->marketing_stage = MarketingStage::DRAFT->value;
                     break;
             }
         }
-
         $this->request_status = RequestStatuses::DENIED->value;
         $this->save();
         $this->refresh();
     }
-
     public function getSummaryOfRatesAttribute()
     {
         $summary_of_rates = [];
@@ -413,7 +367,6 @@ class Project extends Model
     {
         return Carbon::parse($this->updated_at)->format('F j, Y h:i A');
     }
-
     public function changeRequests()
     {
         return $this->hasMany(ProjectChangeRequest::class);

@@ -57,5 +57,4 @@ class ProjectChangeRequestController extends Controller
             'data' => new ProjectChangeRequestResource($changeRequest),
         ], 200);
     }
-
 }

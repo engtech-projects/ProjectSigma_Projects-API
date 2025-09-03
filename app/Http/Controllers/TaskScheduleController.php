@@ -77,5 +77,4 @@ class TaskScheduleController extends Controller
             ], 422);
         }
     }
-
 }

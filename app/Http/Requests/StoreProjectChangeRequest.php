@@ -35,5 +35,4 @@ class StoreProjectChangeRequest extends FormRequest
             ...$this->storeApprovals(),
         ];
     }
-
 }
