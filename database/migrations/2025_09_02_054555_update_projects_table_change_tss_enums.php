@@ -35,26 +35,19 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('projects', function (Blueprint $table) {
-            $table->enum('tss_stage', [
-                'pending',
-                'awarded',
-                'dupa_preparation',
-                'dupa_timeline',
-                'live',
-                'completed'
-            ])->default('pending')->change();
+            $table->enum('tss_stage', ['pending','awarded','archived','dupa_preparation'])
+                  ->default('pending')
+                  ->change();
         });
         DB::table('projects')
             ->where('tss_stage', TssStage::DUPA_PREPARATION->value)
             ->update([
                 'tss_stage' => 'awarded',
-            ]);
-            Schema::table('projects', function (Blueprint $table) {
-                $table->enum('tss_stage', [
-                    'pending',
-                    'awarded',
-                    'archived'
-                ])->default('pending')->change();
-            });
+        ]);
+        Schema::table('projects', function (Blueprint $table) {
+            $table->enum('tss_stage', ['pending','awarded','archived'])
+                  ->default('pending')
+                  ->change();
+        });
     }
 };

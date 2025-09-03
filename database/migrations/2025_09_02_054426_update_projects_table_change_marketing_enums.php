@@ -12,15 +12,20 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::table('projects', function (Blueprint $table) {
+            $table->enum('marketing_stage', array_merge(MarketingStage::toArray(), ['generate_to_tss']))
+                ->default('draft')
+                ->change();
+        });
         DB::table('projects')
             ->where('marketing_stage', 'generate_to_tss')
             ->update([
                 'marketing_stage' => MarketingStage::AWARDED->value,
-            ]);
+        ]);
         Schema::table('projects', function (Blueprint $table) {
             $table->enum('marketing_stage', MarketingStage::toArray())
-                ->default('draft')
-                ->change();
+                  ->default('draft')
+                  ->change();
         });
     }
 
@@ -30,7 +35,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('projects', function (Blueprint $table) {
-            $table->enum('marketing_stage', MarketingStage::toArray())
+            $table->enum('marketing_stage',array_merge(['generate_to_tss'], MarketingStage::toArray()))
                 ->default('draft')
                 ->change();
         });
