@@ -13,7 +13,6 @@ class StoreProjectRequest extends FormRequest
     {
         return true;
     }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -28,13 +27,15 @@ class StoreProjectRequest extends FormRequest
             'location' => 'required|string',
             'amount' => 'nullable|regex:/^\d+(\.\d{1,2})?$/',
             'contract_date' => 'nullable|date|date_format:Y-m-d',
-            'duration' => 'nullable|string',
+            'duration' => 'nullable|integer',
             'noa_date' => 'nullable|date|date_format:Y-m-d',
             'ntp_date' => 'nullable|date|date_format:Y-m-d',
             'license' => 'nullable|string',
             'designation' => 'nullable|string|max:255',
             'nature_of_work' => 'nullable|string',
             'position' => 'required|string',
+            'abc' => 'nullable|string',
+            'bid_date' => 'nullable|date_format:Y-m-d',
         ];
     }
 }

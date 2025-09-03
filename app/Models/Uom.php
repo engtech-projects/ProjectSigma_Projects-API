@@ -10,13 +10,15 @@ class Uom extends Model
 {
     use HasFactory;
     use SoftDeletes;
-
     protected $table = 'uom';
-
     protected $fillable = [
         'name',
         'symbol',
         'description',
         'source_id',
     ];
+    public function getNameWithSymbolAttribute(): string
+    {
+        return "{$this->name} ({$this->symbol})";
+    }
 }

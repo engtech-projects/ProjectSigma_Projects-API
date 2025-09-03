@@ -30,7 +30,7 @@ class ProjectService
         return DB::transaction(function () use ($attr) {
             $attr['marketing_stage'] = MarketingStage::DRAFT->value;
             $attr['tss_stage'] = TssStage::PENDING->value;
-            $attr['status'] = ProjectStatus::OPEN->value;
+            $attr['status'] = ProjectStatus::PENDING->value;
             $attr['amount'] = $attr['amount'] ?? 0;
             $attr['created_by'] = auth()->user()->id;
             $attr['cash_flow'] = json_encode(array_fill_keys(['wtax', 'q1', 'q2', 'q3', 'q4'], [
@@ -48,12 +48,24 @@ class ProjectService
     }
     public function changeSummaryRates(array $attr)
     {
+        if (!isset($attr['ids']) || !is_array($attr['ids']) || empty($attr['ids'])) {
+            return new JsonResponse(['message' => 'No IDs provided'], 422);
+        }
+        if (!isset($attr['unit_cost']) || !is_numeric($attr['unit_cost'])) {
+            return new JsonResponse(['message' => 'Invalid unit cost'], 422);
+        }
         return DB::transaction(function () use ($attr) {
-            DB::table('resources')
-                ->whereIn('id', $attr['ids'])
-                ->update(['unit_cost' => $attr['unit_cost']]);
+            $resources = ResourceItem::whereIn('id', $attr['ids'])->get();
+            $affected = 0;
+            foreach ($resources as $resource) {
+                $resource->unit_cost = $attr['unit_cost'];
+                $resource->save();
+                // Call your cascade function
+                $resource->syncUnitCostAcrossProjectResources();
+                $affected++;
+            }
             return new JsonResponse([
-                'message' => 'Summary rates updated successfully, Number of Direct Cost Affected: ' . count($attr['ids']),
+                'message' => "Summary rates updated successfully, Number of Direct Cost Affected: {$affected}",
             ], 200);
         });
     }
@@ -109,8 +121,9 @@ class ProjectService
     {
         return DB::transaction(function () use ($id) {
             $project = Project::findOrFail($id);
-            $project->stage = ProjectStage::DRAFT->value;
-            $project->status = ProjectStatus::DRAFT->value;
+            $project->marketing_stage = ProjectStage::DRAFT->value;
+            $project->tss_stage = TssStage::PENDING->value;
+            $project->status = ProjectStatus::PENDING->value;
             $project->save();
             return true;
         });
@@ -129,8 +142,9 @@ class ProjectService
     {
         return DB::transaction(function () use ($id) {
             $project = Project::findOrFail($id);
-            $project->stage = ProjectStage::PROPOSAL->value;
-            $project->status = ProjectStatus::OPEN->value;
+            $project->marketing_stage = ProjectStage::PROPOSAL->value;
+            $project->tss_stage = TssStage::PENDING->value;
+            $project->status = ProjectStatus::PENDING->value;
             $project->save();
             return true;
         });
@@ -173,8 +187,9 @@ class ProjectService
                 'noa_date' => $project->noa_date,
                 'ntp_date' => $project->ntp_date,
                 'license' => $project->license,
-                'stage' => ProjectStage::DRAFT->value,
-                'status' => ProjectStatus::DRAFT->value,
+                'marketing_stage' => MarketingStage::DRAFT->value,
+                'tss_stage' => TssStage::PENDING->value,
+                'status' => ProjectStatus::PENDING->value,
                 'is_original' => 0,
                 'version' => $maxVersion + 1,
                 'project_identifier' => $project->project_identifier,
@@ -229,7 +244,7 @@ class ProjectService
     {
         $isTssUpdate = $this->project->marketing_stage->value === MarketingStage::AWARDED->value
             && in_array($newStage->value, array_map(fn ($stage) => $stage->value, TssStage::cases()), true);
-        if ($isTssUpdate && $this->project->marketing_stage === MarketingStage::AWARDED->value && $this->project->status !== 'approved') {
+        if ($isTssUpdate && $this->project->marketing_stage->value === MarketingStage::AWARDED->value && $this->project->status !== 'approved') {
             throw ValidationException::withMessages([
                 'status' => 'Project must be approved to update TSS stage after marketing is awarded.',
             ]);
@@ -250,8 +265,9 @@ class ProjectService
         }
         if (!$isTssUpdate) {
             $this->project->marketing_stage = $newStage->value;
-            if ($newStage->value === MarketingStage::GENERATETOTSS->value) {
+            if ($newStage->value === MarketingStage::AWARDED->value) {
                 $this->project->tss_stage = TssStage::AWARDED->value;
+                $this->project->status = ProjectStatus::ONGOING->value;
                 $this->createProjectRevision($this->project->status);
             }
         } else {
@@ -259,7 +275,6 @@ class ProjectService
         }
         $this->project->save();
     }
-
     public function createProjectRevision($status)
     {
         $this->project->loadMissing(['phases.tasks.resources', 'attachments']);
@@ -281,6 +296,12 @@ class ProjectService
             ], 400);
         }
         $projectData = json_decode($revision->data, true);
+        if ($revision->status === ProjectStatus::PENDING->value || $revision->status === ProjectStatus::DRAFT->value) {
+            $projectData['status'] = ProjectStatus::PENDING->value;
+        }
+        if ($revision->status === ProjectStatus::ARCHIVED->value) {
+            $projectData['status'] = ProjectStatus::COMPLETED->value;
+        }
         try {
             DB::beginTransaction();
             $this->project->update($projectData);

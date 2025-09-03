@@ -6,29 +6,31 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterUomRequest;
 use App\Http\Requests\StoreUomRequest;
 use App\Http\Requests\UpdateUomRequest;
+use App\Http\Resources\UomListAllResource;
+use App\Http\Resources\UomListResource;
 use App\Models\Uom;
-use App\Services\UomService;
 
 class UomController extends Controller
 {
     public function index(FilterUomRequest $request)
     {
-        $validatedData = $request->validated();
-
-        return response()->json([
-            'message' => 'Units fetched successfully.',
-            'data' => UomService::withPaginate($validatedData),
-        ], 200);
+        $perPage = config('services.pagination.limit', 10);
+        $data = Uom::latest()->paginate($perPage);
+        return UomListResource::collection($data)
+            ->additional([
+                'success' => true,
+                'message' => 'Units fetched successfully.',
+            ]);
     }
-
     public function all()
     {
-        return response()->json([
-            'message' => 'Units fetched successfully.',
-            'data' => UomService::all(),
-        ], 200);
+        $data = Uom::latest()->get();
+        return UomListAllResource::collection($data)
+            ->additional([
+                'success' => true,
+                'message' => 'Data fetched successfully.',
+            ]);
     }
-
     public function store(StoreUomRequest $request)
     {
         return response()->json([
@@ -36,22 +38,18 @@ class UomController extends Controller
             'data' => Uom::create($request->validated()),
         ], 201);
     }
-
     public function update(UpdateUomRequest $request, Uom $uom)
     {
         $validatedRequest = $request->validated();
         $uom->update($validatedRequest);
-
         return response()->json([
             'message' => 'UOM updated successfully.',
             'data' => $uom,
         ], 200);
     }
-
     public function destroy(Uom $uom)
     {
         $uom->delete();
-
         return response()->json([
             'message' => 'UOM deleted successfully.',
             'data' => $uom,

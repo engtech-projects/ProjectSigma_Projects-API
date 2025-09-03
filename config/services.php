@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
@@ -32,7 +31,8 @@ return [
     'url' => [
         'hrms_app_url' => env('HRMS_APP_URL'),
         'hrms_api_url' => env('HRMS_API_URL'),
-        'inventory_api_url' => env('INVENTORY_API_URL'),
+        'hrms_api' => env('HRMS_API_URL'),
+        'inventory_api' => env('INVENTORY_API_URL'),
     ],
 
     'ses' => [
@@ -43,5 +43,4 @@ return [
     'pagination' => [
         'limit' => env('PAGINATION_LIMIT', 5),
     ],
-
 ];
