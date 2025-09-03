@@ -46,5 +46,4 @@ enum MarketingStage: string
 
         return $index > 0 ? $flow[$index - 1] : null;
     }
-
 }
