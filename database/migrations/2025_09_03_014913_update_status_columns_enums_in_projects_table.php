@@ -25,7 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('projects', function (Blueprint $table) {
-            $table->enum('status', ['pending','open','submitted','approved','ongoing','archived','on-hold','cancelled','void','deleted','draft','completed','myProjects'])
+            $table->enum('status', array_merge(ProjectStatus::toArray(), ['open', 'submitted', 'approved', 'archived', 'cancelled', 'void', 'deleted', 'draft', 'myProjects']))
                 ->default('open')
                 ->change();
         });
