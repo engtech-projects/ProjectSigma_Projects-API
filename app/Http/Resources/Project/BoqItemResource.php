@@ -1,16 +1,14 @@
 <?php
-
 namespace App\Http\Resources\Project;
-
 use App\Http\Resources\DetailedEstimateResource;
 use Illuminate\Http\Resources\Json\JsonResource;
-
 class BoqItemResource extends JsonResource
 {
     public function toArray($request)
     {
         return [
             'id' => $this->id,
+            'project_id' => $this->project->id,
             'project_contract_id' => $this->project->contract_id,
             'project_name' => $this->project->name,
             'project_location' => $this->project->location,
