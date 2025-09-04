@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Models;
+
 use App\Enums\MarketingStage;
 use App\Enums\ProjectStatus;
 use App\Enums\RequestStatuses;
@@ -16,6 +18,7 @@ use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use App\Traits\ModelHelpers;
+
 class Project extends Model
 {
     use Filterable;
@@ -29,7 +32,7 @@ class Project extends Model
     {
         return LogOptions::defaults()
             ->logAll() // List of attributes to log
-            ->setDescriptionForEvent(fn(string $eventName) => "Project has been {$eventName}");
+            ->setDescriptionForEvent(fn (string $eventName) => "Project has been {$eventName}");
     }
     protected $fillable = [
         'parent_project_id',
