@@ -12,7 +12,6 @@ enum ProjectStage: string
     case PROPOSAL = 'proposal';
     case BIDDING = 'bidding';
     case AWARDED = 'awarded';
-    case GENERATETOTSS = 'generate_to_tss';
     case ARCHIVED = 'archived';
 
     public static function flow(): array
@@ -22,7 +21,6 @@ enum ProjectStage: string
             self::PROPOSAL,
             self::BIDDING,
             self::AWARDED,
-            self::GENERATETOTSS,
             self::ARCHIVED,
         ];
     }
@@ -42,12 +40,6 @@ enum ProjectStage: string
                 'stage' => 'Cannot move to an earlier stage.',
             ]);
         }
-        if ($newStage === self::GENERATETOTSS->value && $oldStage !== self::AWARDED->value) {
-            throw ValidationException::withMessages([
-                'stage' => 'You must award the project before generating to TSS.',
-            ]);
-        }
-
         return self::from($newStage);
     }
 }

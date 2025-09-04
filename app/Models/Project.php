@@ -95,7 +95,12 @@ class Project extends Model
     // Archive the project
     public function archive(): void
     {
-        $this->updateStatus(ProjectStatus::ARCHIVED);
+        $this->updateStatus(ProjectStatus::COMPLETED);
+    }
+
+    public function complete(): void
+    {
+        $this->updateStatus(ProjectStatus::COMPLETED);
     }
     public function phases(): HasMany
     {
@@ -124,10 +129,6 @@ class Project extends Model
     public function isOriginal(): bool
     {
         return $this->is_original == true;
-    }
-    public function isApproved(): bool
-    {
-        return $this->status == ProjectStatus::APPROVED->value;
     }
     public function isPending(): bool
     {
@@ -204,8 +205,7 @@ class Project extends Model
     }
     public function scopeAwarded($query)
     {
-        return $query->where('marketing_stage', MarketingStage::AWARDED)
-            ->orWhere('tss_stage', TssStage::AWARDED);
+        return $query->where('status', '!=', ProjectStatus::PENDING);
     }
     public function scopeWithTssStage($query, $status)
     {
@@ -288,14 +288,22 @@ class Project extends Model
                 case MarketingStage::BIDDING->value:
                     $this->marketing_stage = MarketingStage::AWARDED->value;
                     // Transition TSS to awarded when marketing is done
-                    $this->tss_stage = TssStage::AWARDED->value;
+                    $this->tss_stage = TssStage::DUPA_PREPARATION->value;
+                    $this->status = ProjectStatus::ONGOING->value;
                     break;
             }
         } else {
             // Handle TSS flow
             switch ($this->tss_stage) {
-                case TssStage::AWARDED->value:
-                    $this->tss_stage = TssStage::ARCHIVED->value;
+                case TssStage::DUPA_PREPARATION->value:
+                    $this->tss_stage = TssStage::DUPA_TIMELINE->value;
+                    break;
+                case TssStage::DUPA_TIMELINE->value:
+                    $this->tss_stage = TssStage::LIVE->value;
+                    break;
+                case TssStage::LIVE->value:
+                    $this->tss_stage = TssStage::COMPLETED->value;
+                    $this->status = ProjectStatus::COMPLETED->value;
                     break;
             }
         }

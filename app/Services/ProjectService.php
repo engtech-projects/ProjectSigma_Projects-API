@@ -76,7 +76,7 @@ class ProjectService
             $query->where('stage', $attr['key']);
         });
         $query->when(isset($attr['status']), function ($query) use ($attr) {
-            if ($attr['status'] === ProjectStatus::DRAFT->value) {
+            if ($attr['status'] === ProjectStatus::PENDING->value) {
                 $query->where('created_by', auth()->user()->id);
             }
             if ($attr['status'] === ProjectStatus::MY_PROJECT->value) {
@@ -163,7 +163,7 @@ class ProjectService
         return DB::transaction(function () use ($id) {
             $project = Project::findOrFail($id);
             $project->stage = ProjectStage::ARCHIVED->value;
-            $project->status = ProjectStatus::ARCHIVED->value;
+            $project->status = ProjectStatus::COMPLETED->value;
             $project->save();
             return true;
         });
@@ -266,7 +266,7 @@ class ProjectService
         if (!$isTssUpdate) {
             $this->project->marketing_stage = $newStage->value;
             if ($newStage->value === MarketingStage::AWARDED->value) {
-                $this->project->tss_stage = TssStage::AWARDED->value;
+                $this->project->tss_stage = TssStage::DUPA_PREPARATION->value;
                 $this->project->status = ProjectStatus::ONGOING->value;
                 $this->createProjectRevision($this->project->status);
             }
@@ -296,10 +296,10 @@ class ProjectService
             ], 400);
         }
         $projectData = json_decode($revision->data, true);
-        if ($revision->status === ProjectStatus::PENDING->value || $revision->status === ProjectStatus::DRAFT->value) {
+        if ($revision->status === ProjectStatus::PENDING->value) {
             $projectData['status'] = ProjectStatus::PENDING->value;
         }
-        if ($revision->status === ProjectStatus::ARCHIVED->value) {
+        if ($revision->status === ProjectStatus::COMPLETED->value) {
             $projectData['status'] = ProjectStatus::COMPLETED->value;
         }
         try {
