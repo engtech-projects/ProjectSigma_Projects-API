@@ -106,6 +106,14 @@ class Project extends Model
     {
         return $this->hasMany(BoqPart::class, 'project_id', 'id');
     }
+    public function resources()
+    {
+        return $this->phases->flatMap(function ($phase) {
+            return $phase->tasks->flatMap(function ($task) {
+                return $task->resources;
+            });
+        })->unique('description')->values();
+    }
     public function attachments(): HasMany
     {
         return $this->hasMany(Attachment::class, 'project_id', 'id');

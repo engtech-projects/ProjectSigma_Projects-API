@@ -11,6 +11,7 @@ use App\Http\Requests\Project\UpdateProjectRequest;
 use App\Http\Requests\SummaryRate\SummaryRateRequest;
 use App\Http\Requests\UpdateCashFlowRequest;
 use App\Http\Requests\UpdateProjectStageRequest;
+use App\Http\Resources\DraftItemListResource;
 use App\Http\Resources\Project\ProjectDetailResource;
 use App\Http\Resources\Project\ProjectListingResource;
 use App\Models\Project;
@@ -19,16 +20,13 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
 
 // use Illuminate\Support\Facades\Gate;
-
 class ProjectController extends Controller
 {
     protected $projectService;
-
     public function __construct(ProjectService $projectService)
     {
         $this->projectService = $projectService;
     }
-
     /**
      * Display a listing of the resource.
      */
@@ -48,7 +46,6 @@ class ProjectController extends Controller
                 'message' => 'Successfully fetched.',
             ]);
     }
-
     public function getOwnedProjects(FilterProjectRequest $request)
     {
         $validated = $request->validated();
@@ -66,7 +63,23 @@ class ProjectController extends Controller
                 'message' => 'Successfully fetched.',
             ]);
     }
-
+    public function getResourcesItems(Project $project)
+    {
+        if (!$project) {
+            throw ValidationException::withMessages([
+                'project_id' => 'The project does not exist.',
+            ]);
+        }
+        $data = $project->resources();
+        if (!$data) {
+            throw new \Exception('No resources found for the project.');
+        }
+        return DraftItemListResource::collection($data)
+            ->additional([
+                'success' => true,
+                'message' => 'Successfully fetched.',
+            ]);
+    }
     public function replicate(ReplicateProjectRequest $request)
     {
         $validatedData = $request->validated();
@@ -88,7 +101,6 @@ class ProjectController extends Controller
             'data' => $result,
         ], 201);
     }
-
     /**
      * Display the specified resource.
      */
@@ -101,7 +113,6 @@ class ProjectController extends Controller
             'data' => new ProjectDetailResource($data),
         ], JsonResponse::HTTP_OK);
     }
-
     public function getLiveProjects()
     {
         $data = Project::ongoing()
@@ -114,7 +125,6 @@ class ProjectController extends Controller
                 'message' => 'Successfully fetched.',
             ]);
     }
-
     /**
      * Update the specified resource in storage.
      */
@@ -127,14 +137,12 @@ class ProjectController extends Controller
             'data' => $result,
         ], 200);
     }
-
     public function changeSummaryRates(SummaryRateRequest $request)
     {
         $validated = $request->validated();
         $summaryOfRates = $this->projectService->changeSummaryRates($validated);
         return $summaryOfRates;
     }
-
     public function updateStage(UpdateProjectStageRequest $request, Project $project)
     {
         $valid = $request->validated();
@@ -156,7 +164,6 @@ class ProjectController extends Controller
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
-
     public function tssProjects(FilterProjectRequest $request)
     {
         $validated = $request->validated();
@@ -173,7 +180,6 @@ class ProjectController extends Controller
                 'message' => 'Successfully fetched.'
             ]);
     }
-
     public function updateCashFlow(UpdateCashFlowRequest $request, Project $project)
     {
         $validated = $request->validated();

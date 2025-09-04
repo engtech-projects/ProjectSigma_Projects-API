@@ -92,6 +92,7 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('projects')->group(function () {
         Route::resource('resource', ProjectController::class);
         Route::get('live', [ProjectController::class, 'getLiveProjects']);
+        Route::get('{project}/resource-items', [ProjectController::class, 'getResourcesItems']);
         Route::get('owned', [ProjectController::class, 'getOwnedProjects']);
         Route::get('tss', [ProjectController::class, 'tssProjects']);
         Route::patch('{project}/status', [ProjectStatusController::class, 'updateStatus']);
@@ -149,7 +150,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('{project_assignment}', [ProjectAssignmentController::class, 'show']);
         Route::post('/', [ProjectAssignmentController::class, 'store']);
     });
-
     // ────── Project Change Requests ──────
     Route::resource('change-requests', ProjectChangeRequestController::class);
 });
