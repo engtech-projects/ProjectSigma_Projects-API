@@ -59,9 +59,7 @@ class BoqItem extends Model
     protected function getCanUpdateTotalAmountAttribute()
     {
         $status = $this->phase?->project?->status;
-        return in_array($status, [
-            ProjectStatus::PENDING->value,
-        ]);
+        return $status != ProjectStatus::ONGOING->value;
     }
     public function getUnitPriceWithUnitAttribute()
     {

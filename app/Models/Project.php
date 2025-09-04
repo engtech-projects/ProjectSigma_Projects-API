@@ -205,8 +205,7 @@ class Project extends Model
     }
     public function scopeAwarded($query)
     {
-        return $query->where('marketing_stage', MarketingStage::AWARDED)
-            ->orWhere('status', '!=', ProjectStatus::ONGOING);
+        return $query->where('status', '!=', ProjectStatus::PENDING);
     }
     public function scopeWithTssStage($query, $status)
     {
