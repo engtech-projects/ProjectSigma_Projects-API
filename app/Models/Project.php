@@ -130,10 +130,6 @@ class Project extends Model
     {
         return $this->is_original == true;
     }
-    public function isApproved(): bool
-    {
-        return $this->status == 'approved';
-    }
     public function isPending(): bool
     {
         return $this->status == ProjectStatus::PENDING->value;
@@ -210,7 +206,7 @@ class Project extends Model
     public function scopeAwarded($query)
     {
         return $query->where('marketing_stage', MarketingStage::AWARDED)
-            ->orWhere('tss_stage', TssStage::DUPA_PREPARATION);
+            ->orWhere('status', '!=', ProjectStatus::ONGOING);
     }
     public function scopeWithTssStage($query, $status)
     {
