@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
@@ -106,6 +107,7 @@ class Project extends Model
     {
         return $this->hasMany(BoqPart::class, 'project_id', 'id');
     }
+
     public function resources()
     {
         return $this->phases->flatMap(function ($phase) {
@@ -129,6 +131,17 @@ class Project extends Model
     public function projectDesignation(): HasMany
     {
         return $this->hasMany(ProjectDesignation::class);
+    }
+    public function detailedEstimates(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            BoqItem::class,
+            BoqPart::class,
+            'project_id',
+            'phase_id',
+            'id',
+            'id'
+        );
     }
     public function parent(): BelongsTo
     {
