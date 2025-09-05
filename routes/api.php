@@ -106,7 +106,6 @@ Route::middleware('auth:api')->group(function () {
         Route::patch('{project}/cash-flow', [ProjectController::class, 'updateCashFlow']);
         Route::get('{project}/revisions', [RevisionController::class, 'showProjectRevisions']);
         Route::put('{project}/revert/{revision}', [RevisionController::class, 'revertToRevision']);
-        Route::get('{project}/detailed-estimates', [ProjectController::class, 'getDetailedEstimates']);
     });
     // ────── Attachments ──────
     Route::prefix('attachments')->group(function () {

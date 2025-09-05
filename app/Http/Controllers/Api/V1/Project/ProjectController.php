@@ -11,7 +11,6 @@ use App\Http\Requests\Project\UpdateProjectRequest;
 use App\Http\Requests\SummaryRate\SummaryRateRequest;
 use App\Http\Requests\UpdateCashFlowRequest;
 use App\Http\Requests\UpdateProjectStageRequest;
-use App\Http\Resources\DetailedEstimateResource;
 use App\Http\Resources\DraftItemListResource;
 use App\Http\Resources\Project\ProjectDetailResource;
 use App\Http\Resources\Project\ProjectListingResource;
@@ -121,18 +120,6 @@ class ProjectController extends Controller
             ->createdByAuth()
             ->paginate(config('services.pagination.limit'));
         return ProjectListingResource::collection($data)
-            ->additional([
-                'success' => true,
-                'message' => 'Successfully fetched.',
-            ]);
-    }
-    public function getDetailedEstimates(Project $project)
-    {
-        $data = $project->detailedEstimates()->get();
-        if ($data->isEmpty()) {
-            throw new \Exception('No detailed estimates found for the project.');
-        }
-        return DetailedEstimateResource::collection($data)
             ->additional([
                 'success' => true,
                 'message' => 'Successfully fetched.',
