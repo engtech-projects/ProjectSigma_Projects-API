@@ -17,32 +17,32 @@ class ActivityController extends Controller
     public function projectActivities(Project $project)
     {
         $activities = $project->activity()->get();
-        return response()->json([
-            'success' => true,
-            'message' => 'Activities retrieved successfully',
-            'activities' => ProjectActivityResource::collection($activities),
-        ], 200);
+        return ProjectActivityResource::collection($activities)
+            ->additional([
+                'success' => true,
+                'message' => 'Activities retrieved successfully',
+            ]);
     }
 
     public function createProjectActivity(Project $project, ProjectActitvityRequest $request)
     {
         $activity = $project->activity()->create($request->validated());
-        return response()->json([
-            'success' => true,
-            'message' => 'Activity created successfully',
-            'activity' => ProjectActivityResource::make($activity),
-        ], 201);
+        return ProjectActivityResource::make($activity)
+            ->additional([
+                'success' => true,
+                'message' => 'Activity created successfully',
+            ]);
     }
 
     public function update($activityId, ProjectActitvityRequest $request)
     {
         $activity = $this->activity::findOrFail($activityId);
         $activity->update($request->validated());
-        return response()->json([
-            'success' => true,
-            'message' => 'Activity updated successfully',
-            'activity' => ProjectActivityResource::make($activity),
-        ], 200);
+        return ProjectActivityResource::make($activity)
+            ->additional([
+                'success' => true,
+                'message' => 'Activity updated successfully',
+            ]);
     }
 
     public function destroy($activityId)

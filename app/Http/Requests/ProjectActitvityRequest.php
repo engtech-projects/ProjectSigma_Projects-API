@@ -22,6 +22,7 @@ class ProjectActitvityRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'item_id' => 'required|exists:tasks,id',
             'reference' => 'nullable|string',
             'quantity' => 'required|numeric',
             'schedule' => 'nullable|string',
