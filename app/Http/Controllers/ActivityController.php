@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProjectActitvityRequest;
+use App\Http\Requests\ProjectActivityRequest;
 use App\Http\Resources\ProjectActivityResource;
 use App\Models\Activity;
 use App\Models\Project;
@@ -24,7 +24,7 @@ class ActivityController extends Controller
             ]);
     }
 
-    public function createProjectActivity(Project $project, ProjectActitvityRequest $request)
+    public function createProjectActivity(Project $project, ProjectActivityRequest $request)
     {
         $activity = $project->activity()->create($request->validated());
         return ProjectActivityResource::make($activity)
@@ -34,7 +34,7 @@ class ActivityController extends Controller
             ]);
     }
 
-    public function update($activityId, ProjectActitvityRequest $request)
+    public function update($activityId, ProjectActivityRequest $request)
     {
         $activity = $this->activity::findOrFail($activityId);
         $activity->update($request->validated());
