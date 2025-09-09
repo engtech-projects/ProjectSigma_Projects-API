@@ -17,6 +17,7 @@ class ResourceItem extends Model
     protected $table = 'resources';
     protected $fillable = [
         'task_id',
+        'setup_item_profile_id',
         'resource_type',
         'description',
         'unit_count',
@@ -30,6 +31,7 @@ class ResourceItem extends Model
         'labor_cost_category',
         'work_time_category',
         'remarks',
+        'status',
     ];
     protected $casts = [
         'resource_type' => ResourceType::class,
@@ -50,6 +52,10 @@ class ResourceItem extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class, 'project_id', 'id');
+    }
+    public function setupItemProfile(): BelongsTo
+    {
+        return $this->belongsTo(SetupItemProfiles::class, 'setup_item_profile_id', 'id');
     }
     public function scopeFilterByTaskId($query, $taskId)
     {

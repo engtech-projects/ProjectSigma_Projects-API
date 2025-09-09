@@ -16,6 +16,7 @@ class ResourceItemResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'setup_item_profile_id' => $this->setup_item_profile_id,
             'task_id' => $this->task_id,
             'resource_type' => $this->resource_type,
             'description' => $this->description,
@@ -30,6 +31,7 @@ class ResourceItemResource extends JsonResource
             'work_time_category' => $this->work_time_category,
             'remarks' => $this->remarks,
             'consumption_unit' => $this->consumption_unit,
+            'status' => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
