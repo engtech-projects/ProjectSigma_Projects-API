@@ -22,5 +22,4 @@ class ResourceMetric extends Model
     {
         return $this->belongsTo(ResourceItem::class, 'resource_id', 'id');
     }
-
 }

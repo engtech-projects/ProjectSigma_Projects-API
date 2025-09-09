@@ -24,7 +24,6 @@ class AuthTokenGuard implements Guard
 
     public function user()
     {
-
         if ($this->user !== null) {
             return $this->user;
         }

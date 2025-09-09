@@ -11,5 +11,4 @@ enum RevisionStatus: string
     case ARCHIVED = 'archived';
     case ACTIVE = 'active';
     case REJECTED = 'rejected';
-
 }

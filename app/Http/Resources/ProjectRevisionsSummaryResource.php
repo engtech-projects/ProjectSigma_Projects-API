@@ -13,7 +13,6 @@ class ProjectRevisionsSummaryResource extends JsonResource
      * @return array<string, mixed>
      */
 
-
     public function toArray(Request $request): array
     {
         $data = is_array($this->data) ? $this->data : json_decode($this->data, true) ?? [];

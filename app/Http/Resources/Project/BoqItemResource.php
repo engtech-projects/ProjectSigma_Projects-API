@@ -11,6 +11,7 @@ class BoqItemResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'project_id' => $this->project->id,
             'project_contract_id' => $this->project->contract_id,
             'project_name' => $this->project->name,
             'project_location' => $this->project->location,

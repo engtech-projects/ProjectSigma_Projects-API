@@ -23,7 +23,6 @@ class RequestProposalForApprovedNotification extends Notification
     {
         $this->token = $token;
         $this->model = $model;
-
     }
 
     /**

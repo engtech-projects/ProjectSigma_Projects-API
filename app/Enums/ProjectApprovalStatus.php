@@ -10,5 +10,4 @@ enum ProjectApprovalStatus: string
     case PENDING = 'pending';
     case APPROVED = 'approved';
     case DENIED = 'denied';
-
 }

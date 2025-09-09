@@ -27,7 +27,6 @@ class SyncUnits extends Controller
             if ($response->ok()) {
                 $units = $response->json()['data'] ?? [];
             }
-
         } catch (\Throwable $e) {
             return ['error' => $e->getMessage()];
         }

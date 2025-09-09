@@ -24,7 +24,6 @@ class ProjectSeeder extends Seeder
         $csv->setHeaderOffset(0); // Use the first row as the header
 
         foreach ($csv as $record) {
-
             Project::updateOrCreate(
                 ['id' => $record['id']], // Prevent duplicate records
                 [

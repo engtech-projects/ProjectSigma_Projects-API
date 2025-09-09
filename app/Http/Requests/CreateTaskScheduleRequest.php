@@ -35,5 +35,4 @@ class CreateTaskScheduleRequest extends FormRequest
             'status' => ['required', Rule::in(TaskStatus::values())]
         ];
     }
-
 }

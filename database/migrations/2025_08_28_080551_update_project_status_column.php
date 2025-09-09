@@ -6,8 +6,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -38,10 +37,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-       if (!Schema::hasColumn('projects', 'status')) {
-           Schema::table('projects', function (Blueprint $table) {
-               $table->enum('status', ProjectStatus::toArray())->default('open');
-           });
-       }
+        if (!Schema::hasColumn('projects', 'status')) {
+            Schema::table('projects', function (Blueprint $table) {
+                $table->enum('status', ProjectStatus::toArray())->default('open');
+            });
+        }
     }
 };

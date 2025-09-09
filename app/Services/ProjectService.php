@@ -48,12 +48,24 @@ class ProjectService
     }
     public function changeSummaryRates(array $attr)
     {
+        if (!isset($attr['ids']) || !is_array($attr['ids']) || empty($attr['ids'])) {
+            return new JsonResponse(['message' => 'No IDs provided'], 422);
+        }
+        if (!isset($attr['unit_cost']) || !is_numeric($attr['unit_cost'])) {
+            return new JsonResponse(['message' => 'Invalid unit cost'], 422);
+        }
         return DB::transaction(function () use ($attr) {
-            DB::table('resources')
-                ->whereIn('id', $attr['ids'])
-                ->update(['unit_cost' => $attr['unit_cost']]);
+            $resources = ResourceItem::whereIn('id', $attr['ids'])->get();
+            $affected = 0;
+            foreach ($resources as $resource) {
+                $resource->unit_cost = $attr['unit_cost'];
+                $resource->save();
+                // Call your cascade function
+                $resource->syncUnitCostAcrossProjectResources();
+                $affected++;
+            }
             return new JsonResponse([
-                'message' => 'Summary rates updated successfully, Number of Direct Cost Affected: ' . count($attr['ids']),
+                'message' => "Summary rates updated successfully, Number of Direct Cost Affected: {$affected}",
             ], 200);
         });
     }
@@ -64,7 +76,7 @@ class ProjectService
             $query->where('stage', $attr['key']);
         });
         $query->when(isset($attr['status']), function ($query) use ($attr) {
-            if ($attr['status'] === ProjectStatus::DRAFT->value) {
+            if ($attr['status'] === ProjectStatus::PENDING->value) {
                 $query->where('created_by', auth()->user()->id);
             }
             if ($attr['status'] === ProjectStatus::MY_PROJECT->value) {
@@ -151,7 +163,7 @@ class ProjectService
         return DB::transaction(function () use ($id) {
             $project = Project::findOrFail($id);
             $project->stage = ProjectStage::ARCHIVED->value;
-            $project->status = ProjectStatus::ARCHIVED->value;
+            $project->status = ProjectStatus::COMPLETED->value;
             $project->save();
             return true;
         });
@@ -232,7 +244,7 @@ class ProjectService
     {
         $isTssUpdate = $this->project->marketing_stage->value === MarketingStage::AWARDED->value
             && in_array($newStage->value, array_map(fn ($stage) => $stage->value, TssStage::cases()), true);
-        if ($isTssUpdate && $this->project->marketing_stage === MarketingStage::AWARDED->value && $this->project->status !== 'approved') {
+        if ($isTssUpdate && $this->project->marketing_stage->value === MarketingStage::AWARDED->value && $this->project->status !== 'approved') {
             throw ValidationException::withMessages([
                 'status' => 'Project must be approved to update TSS stage after marketing is awarded.',
             ]);
@@ -254,7 +266,7 @@ class ProjectService
         if (!$isTssUpdate) {
             $this->project->marketing_stage = $newStage->value;
             if ($newStage->value === MarketingStage::AWARDED->value) {
-                $this->project->tss_stage = TssStage::AWARDED->value;
+                $this->project->tss_stage = TssStage::DUPA_PREPARATION->value;
                 $this->project->status = ProjectStatus::ONGOING->value;
                 $this->createProjectRevision($this->project->status);
             }
@@ -263,7 +275,6 @@ class ProjectService
         }
         $this->project->save();
     }
-
     public function createProjectRevision($status)
     {
         $this->project->loadMissing(['phases.tasks.resources', 'attachments']);
@@ -285,10 +296,10 @@ class ProjectService
             ], 400);
         }
         $projectData = json_decode($revision->data, true);
-        if ($revision->status === ProjectStatus::PENDING->value || $revision->status === ProjectStatus::DRAFT->value) {
+        if ($revision->status === ProjectStatus::PENDING->value) {
             $projectData['status'] = ProjectStatus::PENDING->value;
         }
-        if ($revision->status === ProjectStatus::ARCHIVED->value) {
+        if ($revision->status === ProjectStatus::COMPLETED->value) {
             $projectData['status'] = ProjectStatus::COMPLETED->value;
         }
         try {

@@ -1,8 +1,10 @@
 <?php
+
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Http\Controllers\Actions\Approvals\ApproveApproval;
 use App\Http\Controllers\Actions\Approvals\DisapproveApproval;
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\Api\V1\Accessibility\PermissionController;
 use App\Http\Controllers\Api\V1\Accessibility\RoleController;
 use App\Http\Controllers\Api\V1\Assignment\ProjectAssignmentController;
@@ -18,18 +20,23 @@ use App\Http\Controllers\Api\V1\BoqItem\BoqItemController;
 use App\Http\Controllers\Api\V1\Uom\UomController;
 use App\Http\Controllers\APiSyncController;
 use App\Http\Controllers\ApiServiceController;
+use App\Http\Controllers\CancelApproval;
+use App\Http\Controllers\DailyScheduleController;
 use App\Http\Controllers\DirectCostEstimateController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\NatureOfWorkController;
+use App\Http\Controllers\ProjectChangeRequestController;
 use App\Http\Controllers\ResourceMetricController;
 use App\Http\Controllers\SetupDocumentSignatureController;
 use App\Http\Controllers\SetupListsController;
 use App\Http\Controllers\TaskScheduleController;
+use App\Http\Controllers\VoidApproval;
 use App\Http\Resources\User\UserCollection;
 use App\Models\Uom;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -80,11 +87,14 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('approvals')->group(function () {
         Route::post('approve/{modelName}/{model}', ApproveApproval::class);
         Route::post('disapprove/{modelName}/{model}', DisapproveApproval::class);
+        Route::post('cancel/{modelName}/{model}', CancelApproval::class);
+        Route::post('void/{modelName}/{model}', VoidApproval::class);
     });
     // ────── Projects ──────
     Route::prefix('projects')->group(function () {
         Route::resource('resource', ProjectController::class);
         Route::get('live', [ProjectController::class, 'getLiveProjects']);
+        Route::get('{project}/resource-items', [ProjectController::class, 'getResourcesItems']);
         Route::get('owned', [ProjectController::class, 'getOwnedProjects']);
         Route::get('tss', [ProjectController::class, 'tssProjects']);
         Route::patch('{project}/status', [ProjectStatusController::class, 'updateStatus']);
@@ -98,6 +108,8 @@ Route::middleware('auth:api')->group(function () {
         Route::patch('{project}/cash-flow', [ProjectController::class, 'updateCashFlow']);
         Route::get('{project}/revisions', [RevisionController::class, 'showProjectRevisions']);
         Route::put('{project}/revert/{revision}', [RevisionController::class, 'revertToRevision']);
+        Route::get('{project}/activities', [ActivityController::class, 'projectActivities']);
+        Route::post('{project}/activities', [ActivityController::class, 'createProjectActivity']);
     });
     // ────── Attachments ──────
     Route::prefix('attachments')->group(function () {
@@ -142,6 +154,18 @@ Route::middleware('auth:api')->group(function () {
         Route::get('{project_assignment}', [ProjectAssignmentController::class, 'show']);
         Route::post('/', [ProjectAssignmentController::class, 'store']);
     });
+    // ────── Project Change Requests ──────
+    Route::resource('change-requests', ProjectChangeRequestController::class);
+
+    // ────── Activities ──────
+    Route::resource('activities', ActivityController::class);
+    Route::post('activities/{id}/restore', [ActivityController::class, 'restore']);
+
+    // ────── Daily Schedule ──────
+    Route::resource('daily-schedule', DailyScheduleController::class);
+    Route::post('daily-schedule/{id}/restore', [DailyScheduleController::class, 'restore']);
+    Route::get('activities/{activity}/daily', [DailyScheduleController::class, 'getDailySchedule']);
+    Route::post('activities/{activity}/daily', [DailyScheduleController::class, 'updateOrCreateDailySchedule']);
 });
 // SECRET API KEY ROUTES
 Route::middleware("secret_api")->group(function () {
