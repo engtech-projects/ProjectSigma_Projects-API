@@ -14,7 +14,9 @@ class SetupDocumentSignature extends Model
         'name',
         'position',
         'license',
+        'signatory_source',
         'document_type',
+        'user_id',
     ];
     public const DOCUMENT_TYPES = [
         'bill_of_quantities',

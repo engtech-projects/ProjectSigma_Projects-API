@@ -113,6 +113,7 @@ Route::middleware('auth:api')->group(function () {
     });
     // ────── Phases, Tasks, Resources ──────
     Route::resource('signatures', SetupDocumentSignatureController::class);
+    Route::post('document-signatures', [SetupDocumentSignatureController::class, 'storeOrUpdate']);
     Route::resource('phases', BoqPartController::class);
     Route::resource('tasks', BoqItemController::class);
     Route::prefix('uom')->as('uom.')->group(function () {
