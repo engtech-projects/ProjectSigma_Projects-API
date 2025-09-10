@@ -1,5 +1,4 @@
 <?php
-
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Http\Controllers\Actions\Approvals\ApproveApproval;
@@ -34,7 +33,6 @@ use App\Models\Uom;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -71,13 +69,13 @@ Route::middleware('auth:api')->group(function () {
         });
     });
     // ────── User Info ──────
-    Route::get('/user', fn () => response()->json(new UserCollection(Auth::user()), 200));
+    Route::get('/user', fn() => response()->json(new UserCollection(Auth::user()), 200));
     // ────── Lookups ──────
     Route::prefix('lookups')->group(function () {
-        Route::get('/project-status', fn () => response()->json(ProjectStatus::cases(), 200));
-        Route::get('/project-stage', fn () => response()->json(ProjectStage::cases(), 200));
+        Route::get('/project-status', fn() => response()->json(ProjectStatus::cases(), 200));
+        Route::get('/project-stage', fn() => response()->json(ProjectStage::cases(), 200));
         Route::get('/resource-names', [ResourceItemController::class, 'getResourceType']);
-        Route::get('/uom', fn () => response()->json(Uom::all(), 200));
+        Route::get('/uom', fn() => response()->json(Uom::all(), 200));
         Route::resource('positions', PositionController::class);
         Route::get('/all-position', [PositionController::class, 'all']);
     });
@@ -112,8 +110,14 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('{attachment}/remove', [ProjectAttachmentController::class, 'destroy']);
     });
     // ────── Phases, Tasks, Resources ──────
-    Route::resource('signatures', SetupDocumentSignatureController::class);
-    Route::post('document-signatures', [SetupDocumentSignatureController::class, 'storeOrUpdate']);
+    Route::prefix('document-signatures')->name('document-signatures.')->group(function () {
+        Route::resource('', SetupDocumentSignatureController::class)
+            ->parameters(['signatures' => 'document_signature']);
+        Route::get('type', [SetupDocumentSignatureController::class, 'showByDocumentType'])
+            ->name('by-type');
+        Route::post('store-or-update', [SetupDocumentSignatureController::class, 'storeOrUpdate'])
+            ->name('store-or-update');
+    });
     Route::resource('phases', BoqPartController::class);
     Route::resource('tasks', BoqItemController::class);
     Route::prefix('uom')->as('uom.')->group(function () {

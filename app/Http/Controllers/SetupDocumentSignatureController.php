@@ -1,7 +1,6 @@
 <?php
-
 namespace App\Http\Controllers;
-
+use App\Http\Requests\DocumentTypeRequest;
 use App\Http\Requests\StoreOrUpdateDocumentSignaturesRequest;
 use App\Http\Requests\StoreSetupDocumentSignatureRequest;
 use App\Http\Requests\UpdateSetupDocumentSignatureRequest;
@@ -9,7 +8,6 @@ use App\Http\Resources\SetupDocumentSignatureResource;
 use App\Models\SetupDocumentSignature;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-
 class SetupDocumentSignatureController extends Controller
 {
     public function index()
@@ -23,16 +21,6 @@ class SetupDocumentSignatureController extends Controller
                 'grouped' => $signatures
             ]);
     }
-    public function store(StoreSetupDocumentSignatureRequest $request)
-    {
-        $signature = SetupDocumentSignature::create($request->validated());
-        return SetupDocumentSignatureResource::make($signature)
-            ->additional([
-                'success' => true,
-                'message' => 'Document signature created successfully.',
-            ])
-            ->response();
-    }
     public function show(SetupDocumentSignature $setupDocumentSignature)
     {
         return SetupDocumentSignatureResource::make($setupDocumentSignature)
@@ -42,13 +30,17 @@ class SetupDocumentSignatureController extends Controller
             ])
             ->response();
     }
-    public function update(UpdateSetupDocumentSignatureRequest $request, SetupDocumentSignature $setupDocumentSignature)
+    public function showByDocumentType(DocumentTypeRequest $request)
     {
-        $setupDocumentSignature->update($request->validated());
-        return SetupDocumentSignatureResource::make($setupDocumentSignature)
+        $validated = $request->validated();
+        $documentType = $validated['document_type'];
+        $signatures = SetupDocumentSignature::where('document_type', $documentType)->get();
+        return SetupDocumentSignatureResource::collection($signatures)
             ->additional([
-                'success' => true,
-                'message' => 'Document signature updated successfully.',
+                'success'       => true,
+                'message'       => 'Document signature(s) retrieved successfully.',
+                'document_type' => $documentType,
+                'count'         => $signatures->count(),
             ]);
     }
     public function destroy(SetupDocumentSignature $setupDocumentSignature)
@@ -72,6 +64,7 @@ class SetupDocumentSignatureController extends Controller
                         'name'            => $signatureData['name'] ?? null,
                         'user_id'     => $signatureData['user_id'] ?? null,
                         'position'        => $signatureData['position'] ?? null,
+                        'signature_label'        => $signatureData['signature_label'] ?? null,
                     ]
                 );
             }

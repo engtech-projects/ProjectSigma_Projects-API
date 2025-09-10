@@ -1,11 +1,8 @@
 <?php
-
 namespace App\Http\Requests;
-
 use App\Enums\SignatorySource;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-
 class StoreOrUpdateDocumentSignaturesRequest extends FormRequest
 {
     public function authorize(): bool
@@ -20,6 +17,7 @@ class StoreOrUpdateDocumentSignaturesRequest extends FormRequest
             'signatures'    => 'required|array',
             'signatures.*.id' => 'nullable|integer|exists:setup_document_signatures,id',
             'signatures.*.license' => 'required|string',
+            'signatures.*.signature_label' => 'required|string',
             'signatures.*.signatory_source' => [
                 'required',
                 Rule::in(array_map(fn ($case) => $case->value, SignatorySource::cases()))
