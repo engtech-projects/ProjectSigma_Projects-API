@@ -1,8 +1,11 @@
 <?php
+
 namespace App\Http\Requests;
+
 use App\Enums\SignatorySource;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+
 class StoreOrUpdateDocumentSignaturesRequest extends FormRequest
 {
     public function authorize(): bool

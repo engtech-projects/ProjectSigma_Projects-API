@@ -1,4 +1,5 @@
 <?php
+
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Http\Controllers\Actions\Approvals\ApproveApproval;
@@ -33,6 +34,7 @@ use App\Models\Uom;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -69,13 +71,13 @@ Route::middleware('auth:api')->group(function () {
         });
     });
     // ────── User Info ──────
-    Route::get('/user', fn() => response()->json(new UserCollection(Auth::user()), 200));
+    Route::get('/user', fn () => response()->json(new UserCollection(Auth::user()), 200));
     // ────── Lookups ──────
     Route::prefix('lookups')->group(function () {
-        Route::get('/project-status', fn() => response()->json(ProjectStatus::cases(), 200));
-        Route::get('/project-stage', fn() => response()->json(ProjectStage::cases(), 200));
+        Route::get('/project-status', fn () => response()->json(ProjectStatus::cases(), 200));
+        Route::get('/project-stage', fn () => response()->json(ProjectStage::cases(), 200));
         Route::get('/resource-names', [ResourceItemController::class, 'getResourceType']);
-        Route::get('/uom', fn() => response()->json(Uom::all(), 200));
+        Route::get('/uom', fn () => response()->json(Uom::all(), 200));
         Route::resource('positions', PositionController::class);
         Route::get('/all-position', [PositionController::class, 'all']);
     });
