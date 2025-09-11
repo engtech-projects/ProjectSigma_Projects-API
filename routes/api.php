@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\V1\Uom\UomController;
 use App\Http\Controllers\APiSyncController;
 use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\CancelApproval;
+use App\Http\Controllers\CashflowController;
 use App\Http\Controllers\DailyScheduleController;
 use App\Http\Controllers\DirectCostEstimateController;
 use App\Http\Controllers\EmployeeController;
@@ -110,6 +111,7 @@ Route::middleware('auth:api')->group(function () {
         Route::put('{project}/revert/{revision}', [RevisionController::class, 'revertToRevision']);
         Route::get('{project}/activities', [ActivityController::class, 'projectActivities']);
         Route::post('{project}/activities', [ActivityController::class, 'createProjectActivity']);
+        Route::get('live/{project_id}/cashflows', [CashflowController::class, 'showProjectCashFlows']);
     });
     // ────── Attachments ──────
     Route::prefix('attachments')->group(function () {

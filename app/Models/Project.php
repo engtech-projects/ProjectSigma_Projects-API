@@ -138,6 +138,10 @@ class Project extends Model
     {
         return $this->hasMany(Activity::class);
     }
+    public function cashflow(): HasMany
+    {
+        return $this->hasMany(Cashflow::class);
+    }
     public function isOriginal(): bool
     {
         return $this->is_original == true;
