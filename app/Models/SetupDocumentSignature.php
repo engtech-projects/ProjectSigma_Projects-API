@@ -10,11 +10,15 @@ class SetupDocumentSignature extends Model
 {
     use HasFactory;
     use SoftDeletes;
+
     protected $fillable = [
         'name',
         'position',
         'license',
+        'signatory_source',
         'document_type',
+        'user_id',
+        'signature_label',
     ];
     public const DOCUMENT_TYPES = [
         'bill_of_quantities',
@@ -22,5 +26,10 @@ class SetupDocumentSignature extends Model
         'cash_flow',
         'summary_of_rates',
         'bid_summary',
+    ];
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
     ];
 }

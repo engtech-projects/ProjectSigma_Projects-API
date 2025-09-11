@@ -116,7 +116,15 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('{attachment}/remove', [ProjectAttachmentController::class, 'destroy']);
     });
     // ────── Phases, Tasks, Resources ──────
-    Route::resource('signatures', SetupDocumentSignatureController::class);
+    Route::prefix('document-signatures')->name('document-signatures.')->group(function () {
+        Route::apiResource('document-signatures', SetupDocumentSignatureController::class)
+            ->parameters(['document-signatures' => 'document_signature'])
+            ->only(['index', 'store', 'destroy']);
+        Route::get('type', [SetupDocumentSignatureController::class, 'showByDocumentType'])
+            ->name('by-type');
+        Route::post('store-or-update', [SetupDocumentSignatureController::class, 'storeOrUpdate'])
+            ->name('store-or-update');
+    });
     Route::resource('phases', BoqPartController::class);
     Route::resource('tasks', BoqItemController::class);
     Route::prefix('uom')->as('uom.')->group(function () {

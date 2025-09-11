@@ -18,6 +18,7 @@ class SetupDocumentSignatureResource extends JsonResource
             'position'      => $this->position,
             'license'       => $this->license,
             'document_type' => $this->document_type,
+            'signature_label' => $this->signature_label,
         ];
     }
 }

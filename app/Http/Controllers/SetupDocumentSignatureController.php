@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreSetupDocumentSignatureRequest;
-use App\Http\Requests\UpdateSetupDocumentSignatureRequest;
+use App\Http\Requests\DocumentTypeRequest;
+use App\Http\Requests\StoreOrUpdateDocumentSignaturesRequest;
 use App\Http\Resources\SetupDocumentSignatureResource;
 use App\Models\SetupDocumentSignature;
+use Illuminate\Support\Facades\DB;
 
 class SetupDocumentSignatureController extends Controller
 {
@@ -15,42 +16,72 @@ class SetupDocumentSignatureController extends Controller
             ->groupBy('document_type');
         return SetupDocumentSignatureResource::collection($signatures->flatten())
             ->additional([
-            'success' => true,
-            'message' => 'Document signatures retrieved successfully.',
-            'grouped' => $signatures
+                'success' => true,
+                'message' => 'Document signatures retrieved successfully.',
+                'grouped' => $signatures
             ]);
     }
-    public function store(StoreSetupDocumentSignatureRequest $request)
+    public function showByDocumentType(DocumentTypeRequest $request)
     {
-        $signature = SetupDocumentSignature::create($request->validated());
-        return SetupDocumentSignatureResource::make($signature)
+        $validated = $request->validated();
+        $documentType = $validated['document_type'];
+        $signatures = SetupDocumentSignature::where('document_type', $documentType)->get();
+        return SetupDocumentSignatureResource::collection($signatures)
             ->additional([
-            'success' => true,
-            'message' => 'Document signature created successfully.',
-            ])
-            ->response();
-    }
-    public function show(SetupDocumentSignature $setupDocumentSignature)
-    {
-        return SetupDocumentSignatureResource::make($setupDocumentSignature)
-            ->additional([
-                'success' => true,
-                'message' => 'Document signature retrieved successfully.',
-            ])
-            ->response();
-    }
-    public function update(UpdateSetupDocumentSignatureRequest $request, SetupDocumentSignature $setupDocumentSignature)
-    {
-        $setupDocumentSignature->update($request->validated());
-        return SetupDocumentSignatureResource::make($setupDocumentSignature)
-            ->additional([
-                'success' => true,
-                'message' => 'Document signature updated successfully.',
+                'success'       => true,
+                'message'       => 'Document signature(s) retrieved successfully.',
+                'document_type' => $documentType,
+                'count'         => $signatures->count(),
             ]);
     }
-    public function destroy(SetupDocumentSignature $setupDocumentSignature)
+    public function destroy(SetupDocumentSignature $documentSignature)
     {
-        $setupDocumentSignature->delete();
-        return response()->json(['message' => 'Signature soft deleted']);
+        try {
+            $documentSignature->delete();
+            $documentSignature->refresh();
+            if ($documentSignature->trashed()) {
+                return response()->json([
+                    'message' => 'Signature deleted successfully.'
+                ], 200);
+            }
+            return response()->json([
+                'message' => 'Failed to delete signature.'
+            ], 500);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to delete signature.'
+            ], 500);
+        }
+    }
+    public function storeOrUpdate(StoreOrUpdateDocumentSignaturesRequest $request)
+    {
+        $validated  = $request->validated();
+        DB::beginTransaction();
+        try {
+            foreach ($validated['signatures'] as $signatureData) {
+                SetupDocumentSignature::updateOrCreate(
+                    ['id' => $signatureData['id'] ?? null],
+                    [
+                        'document_type'   => $validated['document_type'],
+                        'license'         => $signatureData['license'],
+                        'signatory_source' => $signatureData['signatory_source'],
+                        'name'            => $signatureData['name'] ?? null,
+                        'user_id'     => $signatureData['user_id'] ?? null,
+                        'position'        => $signatureData['position'] ?? null,
+                        'signature_label'        => $signatureData['signature_label'] ?? null,
+                    ]
+                );
+            }
+            DB::commit();
+            return response()->json([
+                'message' => 'Signatures saved successfully.',
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Failed to save signatures.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
     }
 }

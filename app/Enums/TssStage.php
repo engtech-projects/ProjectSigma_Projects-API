@@ -12,7 +12,6 @@ enum TssStage: string
     case DUPA_TIMELINE = 'dupa_timeline';
     case LIVE = 'live';
     case COMPLETED = 'completed';
-
     public static function flow(): array
     {
         return [
@@ -23,20 +22,16 @@ enum TssStage: string
             self::COMPLETED,
         ];
     }
-
     public function next(): ?self
     {
         $flow = self::flow();
         $index = array_search($this, $flow);
-
         return $flow[$index + 1] ?? null;
     }
-
     public function previous(): ?self
     {
         $flow = self::flow();
         $index = array_search($this, $flow);
-
         return $index > 0 ? $flow[$index - 1] : null;
     }
 }
