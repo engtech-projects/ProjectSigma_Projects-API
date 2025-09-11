@@ -113,8 +113,9 @@ Route::middleware('auth:api')->group(function () {
     });
     // ────── Phases, Tasks, Resources ──────
     Route::prefix('document-signatures')->name('document-signatures.')->group(function () {
-        Route::resource('', SetupDocumentSignatureController::class)
-            ->parameters(['signatures' => 'document_signature']);
+        Route::resource('document-signatures', SetupDocumentSignatureController::class)
+            ->parameters(['document-signatures' => 'document_signature'])
+            ->only(['index', 'store', 'destroy']);
         Route::get('type', [SetupDocumentSignatureController::class, 'showByDocumentType'])
             ->name('by-type');
         Route::post('store-or-update', [SetupDocumentSignatureController::class, 'storeOrUpdate'])

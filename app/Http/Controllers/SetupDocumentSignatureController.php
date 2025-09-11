@@ -1,10 +1,13 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Http\Requests\DocumentTypeRequest;
 use App\Http\Requests\StoreOrUpdateDocumentSignaturesRequest;
 use App\Http\Resources\SetupDocumentSignatureResource;
 use App\Models\SetupDocumentSignature;
 use Illuminate\Support\Facades\DB;
+
 class SetupDocumentSignatureController extends Controller
 {
     public function index()
@@ -31,10 +34,24 @@ class SetupDocumentSignatureController extends Controller
                 'count'         => $signatures->count(),
             ]);
     }
-    public function destroy(SetupDocumentSignature $setupDocumentSignature)
+    public function destroy(SetupDocumentSignature $documentSignature)
     {
-        $setupDocumentSignature->delete();
-        return response()->json(['message' => 'Signature soft deleted']);
+        try {
+            $documentSignature->delete();
+            $documentSignature->refresh();
+            if ($documentSignature->trashed()) {
+                return response()->json([
+                    'message' => 'Signature deleted successfully.'
+                ], 200);
+            }
+            return response()->json([
+                'message' => 'Failed to delete signature.'
+            ], 500);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to delete signature.'
+            ], 500);
+        }
     }
     public function storeOrUpdate(StoreOrUpdateDocumentSignaturesRequest $request)
     {
