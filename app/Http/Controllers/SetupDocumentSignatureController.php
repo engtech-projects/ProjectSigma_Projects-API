@@ -18,15 +18,6 @@ class SetupDocumentSignatureController extends Controller
                 'grouped' => $signatures
             ]);
     }
-    public function show(SetupDocumentSignature $setupDocumentSignature)
-    {
-        return SetupDocumentSignatureResource::make($setupDocumentSignature)
-            ->additional([
-                'success' => true,
-                'message' => 'Document signature retrieved successfully.',
-            ])
-            ->response();
-    }
     public function showByDocumentType(DocumentTypeRequest $request)
     {
         $validated = $request->validated();
