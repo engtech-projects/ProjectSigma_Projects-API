@@ -1,14 +1,10 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Http\Requests\DocumentTypeRequest;
 use App\Http\Requests\StoreOrUpdateDocumentSignaturesRequest;
 use App\Http\Resources\SetupDocumentSignatureResource;
 use App\Models\SetupDocumentSignature;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-
 class SetupDocumentSignatureController extends Controller
 {
     public function index()
@@ -55,7 +51,6 @@ class SetupDocumentSignatureController extends Controller
         DB::beginTransaction();
         try {
             foreach ($validated['signatures'] as $signatureData) {
-                Log::info("Processing signature data: " . $signatureData['signatory_source']);
                 SetupDocumentSignature::updateOrCreate(
                     ['id' => $signatureData['id'] ?? null],
                     [
