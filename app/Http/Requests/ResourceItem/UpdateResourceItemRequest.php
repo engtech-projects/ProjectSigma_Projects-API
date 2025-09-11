@@ -28,7 +28,6 @@ class UpdateResourceItemRequest extends FormRequest
         return [
             'task_id' => 'required|exists:tasks,id',
             'resource_type' => ['required', new Enum(ResourceType::class)],
-            'id' => 'nullable|exists:resources,id',
             'description'   => [
                 'required',
                 Rule::unique('resources')
