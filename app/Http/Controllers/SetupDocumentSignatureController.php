@@ -1,24 +1,27 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Http\Requests\DocumentTypeRequest;
 use App\Http\Requests\StoreOrUpdateDocumentSignaturesRequest;
 use App\Http\Resources\SetupDocumentSignatureResource;
 use App\Models\SetupDocumentSignature;
 use Illuminate\Support\Facades\DB;
-
 class SetupDocumentSignatureController extends Controller
 {
     public function index()
     {
         $signatures = SetupDocumentSignature::all()
             ->groupBy('document_type');
+        $grouped = collect(SetupDocumentSignature::DOCUMENT_TYPES)
+        ->mapWithKeys(function ($type) use ($signatures) {
+            return [
+                $type => $signatures->get($type, collect([])),
+            ];
+        });
         return SetupDocumentSignatureResource::collection($signatures->flatten())
             ->additional([
                 'success' => true,
                 'message' => 'Document signatures retrieved successfully.',
-                'grouped' => $signatures
+                'grouped' => $grouped
             ]);
     }
     public function showByDocumentType(DocumentTypeRequest $request)
