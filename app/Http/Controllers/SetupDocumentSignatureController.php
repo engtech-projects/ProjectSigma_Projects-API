@@ -1,10 +1,13 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Http\Requests\DocumentTypeRequest;
 use App\Http\Requests\StoreOrUpdateDocumentSignaturesRequest;
 use App\Http\Resources\SetupDocumentSignatureResource;
 use App\Models\SetupDocumentSignature;
 use Illuminate\Support\Facades\DB;
+
 class SetupDocumentSignatureController extends Controller
 {
     public function index()

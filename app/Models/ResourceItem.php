@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Models;
+
 use App\Enums\ResourceType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -7,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+
 class ResourceItem extends Model
 {
     use HasFactory;
@@ -115,7 +118,7 @@ class ResourceItem extends Model
      */
     private static function matchingResources(int $projectId, self $resource)
     {
-        return self::whereHas('task.phase', fn($query) => $query->where('project_id', $projectId))
+        return self::whereHas('task.phase', fn ($query) => $query->where('project_id', $projectId))
             ->where('resource_type', $resource->resource_type)
             ->where('unit', $resource->unit)
             ->where('description', $resource->description)
