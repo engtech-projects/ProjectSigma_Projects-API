@@ -15,7 +15,7 @@ class CashflowItemResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            'id' => $this->item->id,
             'name' => $this->item->resource_type,
             'amount' => $this->item->total_cost,
         ];

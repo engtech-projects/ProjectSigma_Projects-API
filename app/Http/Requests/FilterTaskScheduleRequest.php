@@ -24,7 +24,6 @@ class FilterTaskScheduleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'project_id' => 'required|exists;',
             'title' => ['nullable', 'string'],
             'item_id' => ['nullable', 'string'],
             'date_from' => ['nullable', 'date'],
