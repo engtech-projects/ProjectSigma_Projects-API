@@ -3,40 +3,46 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProjectCashFlowRequest;
+use App\Http\Requests\UpdateCashflowItemRequest;
 use App\Http\Resources\ProjectCashFlowResource;
+use App\Http\Resources\UpdateCashflowResource;
 use App\Models\Cashflow;
 use App\Models\Project;
-use App\Services\CashflowService;
 use App\Services\ProjectService;
 
 class CashflowController extends Controller
 {
-
-    public function showProjectCashflows(Project $project_id)
+    public function showProjectCashflows(Project $project)
     {
-        $data = $project_id->cashflow()->with('cashflow_items')->get();
-        return ProjectCashFlowResource::collection($data)
+        $data = $project->cashflows()
+            ->with(['cashflowItems.item'])
+            ->get();
+        return ProjectCashflowResource::collection($data)
             ->additional([
                 'success' => true,
                 'message' => 'Cashflows retrieved successfully',
             ]);
     }
 
-    public function storeProjectCashflow(Project $project_id, StoreProjectCashFlowRequest $request)
+    public function storeProjectCashflows(Project $project, StoreProjectCashFlowRequest $request)
     {
-        $projectService = new ProjectService($project_id);
-        $cashflow = $projectService->createCashflow($request->validated());
+        $projectService = new ProjectService($project);
+        $cashflow = $projectService->storeCashflow($request->validated());
+        $cashflow->load('cashflowItems.item');
         return ProjectCashflowResource::make($cashflow)
             ->additional([
                 'success' => true,
-                'message' => 'Cashflow retrieved successfully',
+                'message' => 'Cashflow created successfully',
             ]);
     }
 
-    public function updateProjectCashflow(Project $project_id, Cashflow $cashflow_id)
+    public function updateProjectCashflow(Project $project, Cashflow $cashflow, UpdateCashflowItemRequest $request)
     {
-        $data = $project_id->cashflow($cashflow_id)->update();
-        return ProjectCashFlowResource::make($data)
+        if ($cashflow->project_id !== $project->id) {
+            abort(403, 'This cashflow does not belong to the given project.');
+        }
+        $cashflow->update($request->validated());
+        return UpdateCashflowResource::make($cashflow)
             ->additional([
                 'success' => true,
                 'message' => 'Cashflow updated successfully',

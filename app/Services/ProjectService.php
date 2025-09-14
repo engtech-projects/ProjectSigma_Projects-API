@@ -12,10 +12,8 @@ use App\Models\BoqPart;
 use App\Models\Project;
 use App\Models\ResourceItem;
 use App\Models\BoqItem;
-use App\Models\Cashflow;
 use App\Models\CashflowItem;
 use App\Models\Revision;
-use Illuminate\Contracts\Support\CanBeEscapedWhenCastToString;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -323,29 +321,31 @@ class ProjectService
             ], 500);
         }
     }
-    public function createCashflow(array $validated)
+    public function storeCashflow(array $validated)
     {
         return DB::transaction(function () use ($validated) {
-            $totalAmount = collect($validated['items'])->sum('amount');
-            return $totalAmount;
-            $cashflow = Cashflow::create([
-                'project_id' => $this->project->id,
-                'date' => $validated['date'],
-                'percent' => $validated['percent'],
-                'total_amount' => $totalAmount,
+            $cashflow = $this->project->cashflows()->create([
+                'date'         => $validated['date'],
+                'percent'      => $validated['percent'],
+                'total_amount' => 0,
             ]);
+            $totalAmount = 0;
             foreach ($validated['items'] as $item) {
+                $itemModel = ResourceItem::findorFail($item['item_id']);
+                $amount = $itemModel->amount ?? $itemModel->total_cost ?? 0;
+                $totalAmount += $amount;
                 CashflowItem::updateOrCreate(
                     [
                         'cashflow_id' => $cashflow->id,
-                        'item_id' => $item['item_id']
+                        'item_id'     => $item['item_id'],
                     ],
                     [
-                        'amount' => $item['amount']
+                        'amount' => $amount,
                     ]
                 );
             }
-            return $cashflow->load('cashflow_items');
+            $cashflow->update(['total_amount' => $totalAmount]);
+            return $cashflow->load('cashflowItems.item');
         });
     }
 }

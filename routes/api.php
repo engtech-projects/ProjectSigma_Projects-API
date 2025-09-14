@@ -48,6 +48,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
 Route::middleware('auth:api')->group(function () {
     // SYNCHRONIZATION ROUTES
     Route::prefix('setup')->group(function () {
@@ -111,8 +112,9 @@ Route::middleware('auth:api')->group(function () {
         Route::put('{project}/revert/{revision}', [RevisionController::class, 'revertToRevision']);
         Route::get('{project}/activities', [ActivityController::class, 'projectActivities']);
         Route::post('{project}/activities', [ActivityController::class, 'createProjectActivity']);
-        Route::get('live/{project_id}/cashflows', [CashflowController::class, 'showProjectCashFlows']);
-        Route::put('live/{project_id}/cashflows/{cashflow_id}', [CashflowController::class, 'updateProjectCashFlow']);
+        Route::get('live/{project}/cashflows', [CashflowController::class, 'showProjectCashflows']);
+        Route::post('live/{project}/cashflows', [CashflowController::class, 'storeProjectCashflows']);
+        Route::put('live/{project}/cashflows/{cashflow}', [CashflowController::class, 'updateProjectCashflow']);
     });
     // ────── Attachments ──────
     Route::prefix('attachments')->group(function () {

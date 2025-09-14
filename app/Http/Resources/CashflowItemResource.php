@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProjectCashflowResource extends JsonResource
+class CashflowItemResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,10 +15,9 @@ class ProjectCashflowResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'date' => $this->date,
-            'percent' => $this->percent,
-            'total_amount' => $this->total_amount,
-            'items' => CashflowItemResource::collection($this->whenLoaded('cashflowItems'))
+            'id' => $this->id,
+            'name' => $this->item->resource_type,
+            'amount' => $this->item->total_cost,
         ];
     }
 }

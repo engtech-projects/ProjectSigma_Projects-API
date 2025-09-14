@@ -57,6 +57,10 @@ class ResourceItem extends Model
     {
         return $this->belongsTo(SetupItemProfiles::class, 'setup_item_profile_id', 'id');
     }
+    public function cashflows()
+    {
+        return $this->hasMany(Cashflow::class);
+    }
     public function scopeFilterByTaskId($query, $taskId)
     {
         return $query->where('task_id', 'like', "%{$taskId}%");
@@ -102,8 +106,8 @@ class ResourceItem extends Model
             ]);
         // ✅ Step 2: Bulk recalc all affected task amounts (including current one)
         $taskTotals = self::select('task_id', DB::raw('SUM(total_cost) as total'))
-        ->whereIn('task_id', $affectedTaskIds->push($this->task->id))
-        ->whereIn('task_id', $affectedTaskIds->push($this->task->id)->unique())
+            ->whereIn('task_id', $affectedTaskIds->push($this->task->id))
+            ->whereIn('task_id', $affectedTaskIds->push($this->task->id)->unique())
             ->groupBy('task_id')
             ->pluck('total', 'task_id');
         foreach ($taskTotals as $taskId => $total) {

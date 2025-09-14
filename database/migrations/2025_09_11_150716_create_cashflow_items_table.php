@@ -12,9 +12,16 @@ return new class () extends Migration {
     {
         Schema::create('cashflow_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('cashflow_id')->constrained("cashflows")->onDelete('restrict')->onUpdate('cascade');
-            $table->foreignId('item_id')->constrained('tasks')->onDelete('restrict')->onUpdate('cascade');
+            $table->foreignId('cashflow_id')
+                ->constrained("cashflows")
+                ->onDelete('restrict')
+                ->onUpdate('cascade');
+            $table->foreignId('item_id')
+                ->constrained('resources')
+                ->onDelete('restrict')
+                ->onUpdate('cascade');
             $table->unique(['cashflow_id', 'item_id']);
+            $table->decimal('amount', 15, 2)->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

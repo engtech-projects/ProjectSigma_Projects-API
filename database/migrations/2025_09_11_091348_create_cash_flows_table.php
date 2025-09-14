@@ -12,10 +12,13 @@ return new class () extends Migration {
     {
         Schema::create('cashflows', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('project_id')->constrained('projects')->onDelete('restrict')->onUpdate('cascade');
-            $table->decimal('percent', 10, 2);
+            $table->foreignId('project_id')
+                ->constrained('projects')
+                ->onDelete('restrict')
+                ->onUpdate('cascade');
+            $table->decimal('percent', 5, 2);
             $table->date('date');
-            $table->decimal('total_amount', 10, 2);
+            $table->decimal('total_amount', 15, 2)->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

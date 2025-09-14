@@ -3,8 +3,6 @@
 namespace App\Services;
 
 use App\Models\Cashflow;
-use App\Models\Employee;
-use DB;
 
 class CashflowService
 {
@@ -14,5 +12,4 @@ class CashflowService
     {
         $this->cashflow = $cashflow;
     }
-
 }

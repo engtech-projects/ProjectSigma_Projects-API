@@ -138,7 +138,7 @@ class Project extends Model
     {
         return $this->hasMany(Activity::class);
     }
-    public function cashflow(): HasMany
+    public function cashflows(): HasMany
     {
         return $this->hasMany(Cashflow::class);
     }
