@@ -24,6 +24,6 @@ class CashflowItem extends Model
 
     public function item(): HasMany
     {
-        return $this->hasMany(BoqItem::class);
+        return $this->hasMany(ResourceItem::class);
     }
 }

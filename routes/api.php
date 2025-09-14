@@ -112,6 +112,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('{project}/activities', [ActivityController::class, 'projectActivities']);
         Route::post('{project}/activities', [ActivityController::class, 'createProjectActivity']);
         Route::get('live/{project_id}/cashflows', [CashflowController::class, 'showProjectCashFlows']);
+        Route::put('live/{project_id}/cashflows/{cashflow_id}', [CashflowController::class, 'updateProjectCashFlow']);
     });
     // ────── Attachments ──────
     Route::prefix('attachments')->group(function () {

@@ -12,7 +12,10 @@ use App\Models\BoqPart;
 use App\Models\Project;
 use App\Models\ResourceItem;
 use App\Models\BoqItem;
+use App\Models\Cashflow;
+use App\Models\CashflowItem;
 use App\Models\Revision;
+use Illuminate\Contracts\Support\CanBeEscapedWhenCastToString;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -319,5 +322,30 @@ class ProjectService
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+    public function createCashflow(array $validated)
+    {
+        return DB::transaction(function () use ($validated) {
+            $totalAmount = collect($validated['items'])->sum('amount');
+            return $totalAmount;
+            $cashflow = Cashflow::create([
+                'project_id' => $this->project->id,
+                'date' => $validated['date'],
+                'percent' => $validated['percent'],
+                'total_amount' => $totalAmount,
+            ]);
+            foreach ($validated['items'] as $item) {
+                CashflowItem::updateOrCreate(
+                    [
+                        'cashflow_id' => $cashflow->id,
+                        'item_id' => $item['item_id']
+                    ],
+                    [
+                        'amount' => $item['amount']
+                    ]
+                );
+            }
+            return $cashflow->load('cashflow_items');
+        });
     }
 }
