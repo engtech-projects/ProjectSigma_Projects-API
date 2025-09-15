@@ -11,11 +11,9 @@ return new class () extends Migration {
     public function up(): void
     {
         Schema::table('setup_document_signatures', function (Blueprint $table) {
-            Schema::table('setup_document_signatures', function (Blueprint $table) {
-                $table->enum('signatory_source', ['internal', 'external'])
-                    ->default('external')
-                    ->after('document_type');
-            });
+            $table->enum('signatory_source', ['internal', 'external'])
+                ->default('external')
+                ->after('document_type');
         });
     }
     /**
@@ -24,9 +22,7 @@ return new class () extends Migration {
     public function down(): void
     {
         Schema::table('setup_document_signatures', function (Blueprint $table) {
-            Schema::table('setup_document_signatures', function (Blueprint $table) {
-                $table->dropColumn('signatory_source');
-            });
+            $table->dropColumn('signatory_source');
         });
     }
 };
