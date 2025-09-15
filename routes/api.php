@@ -117,9 +117,9 @@ Route::middleware('auth:api')->group(function () {
     });
     // ────── Phases, Tasks, Resources ──────
     Route::prefix('document-signatures')->name('document-signatures.')->group(function () {
-        Route::apiResource('document-signatures', SetupDocumentSignatureController::class)
-            ->parameters(['document-signatures' => 'document_signature'])
-            ->only(['index', 'store', 'destroy']);
+        Route::get("/", [SetupDocumentSignatureController::class, 'index'])->name('index');
+        Route::post("/", [SetupDocumentSignatureController::class, 'store'])->name('store');
+        Route::delete("/", [SetupDocumentSignatureController::class, 'destroy'])->name('destroy');
         Route::get('type', [SetupDocumentSignatureController::class, 'showByDocumentType'])
             ->name('by-type');
         Route::post('store-or-update', [SetupDocumentSignatureController::class, 'storeOrUpdate'])
