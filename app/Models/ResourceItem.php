@@ -67,38 +67,40 @@ class ResourceItem extends Model
     }
     public function syncUnitCostAcrossProjectResources(): int
     {
-        $projectId = $this->task->phase->project_id;
-        // Step 0: Always recalc current resource total
-        $selfUpdated = $this->recalculateSelfTotal();
-        // If NOT materials → only recalc totals
-        if ($this->resource_type !== ResourceType::MATERIALS) {
-            $this->updateTaskAndProjectTotals($this->task->id, $projectId);
-            return $selfUpdated;
-        }
-        // ✅ Step 1: Update matching resources (same project, unit, description)
-        $affectedTaskIds = self::matchingResources($projectId, $this)
-            ->pluck('task_id')
-            ->unique();
-        $affectedResources = self::matchingResources($projectId, $this)
-            ->update([
-                'unit_cost'  => $this->unit_cost,
-                'total_cost' => DB::raw('quantity * ' . (float) $this->unit_cost),
-            ]);
-        // ✅ Step 2: Recalc all affected task amounts (including current one)
-        $allTaskIds = $affectedTaskIds->push($this->task->id)->unique();
-        $taskTotals = self::select('task_id', DB::raw('SUM(total_cost) as total'))
-            ->whereIn('task_id', $allTaskIds)
-            ->groupBy('task_id')
-            ->pluck('total', 'task_id');
-        foreach ($taskTotals as $taskId => $total) {
-            $task = BoqItem::find($taskId);
-            if ($task && $task->can_update_total_amount) {
-                $task->update(['amount' => $total]);
+        return DB::transaction(function() {
+            $projectId = $this->task->phase->project_id;
+            // Step 0: Always recalc current resource total
+            $selfUpdated = $this->recalculateSelfTotal();
+            // If NOT materials → only recalc totals
+            if ($this->resource_type !== ResourceType::MATERIALS) {
+                $this->updateTaskAndProjectTotals($this->task->id, $projectId);
+                return $selfUpdated;
             }
-        }
-        // ✅ Step 3: Update project total once
-        BoqItem::updateTotalProject($projectId);
-        return $affectedResources + $selfUpdated;
+            // ✅ Step 1: Update matching resources (same project, unit, description)
+            $affectedTaskIds = self::matchingResources($projectId, $this)
+                ->pluck('task_id')
+                ->unique();
+            $affectedResources = self::matchingResources($projectId, $this)
+                ->update([
+                    'unit_cost'  => $this->unit_cost,
+                    'total_cost' => DB::raw('quantity * ' . (float) $this->unit_cost),
+                ]);
+            // ✅ Step 2: Recalc all affected task amounts (including current one)
+            $allTaskIds = $affectedTaskIds->push($this->task->id)->unique();
+            $taskTotals = self::select('task_id', DB::raw('SUM(total_cost) as total'))
+                ->whereIn('task_id', $allTaskIds)
+                ->groupBy('task_id')
+                ->pluck('total', 'task_id');
+            foreach ($taskTotals as $taskId => $total) {
+                $task = BoqItem::find($taskId);
+                if ($task && $task->can_update_total_amount) {
+                    $task->update(['amount' => $total]);
+                }
+            }
+            // ✅ Step 3: Update project total once
+            BoqItem::updateTotalProject($projectId);
+            return $affectedResources + $selfUpdated;
+        });
     }
     /**
      * Recalculate current resource total if needed.
