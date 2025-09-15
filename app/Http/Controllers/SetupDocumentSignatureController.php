@@ -61,8 +61,7 @@ class SetupDocumentSignatureController extends Controller
     public function storeOrUpdate(StoreOrUpdateDocumentSignaturesRequest $request)
     {
         $validated  = $request->validated();
-        DB::beginTransaction();
-        try {
+        $result = DB::transaction(function () use ($validated) {
             foreach ($validated['signatures'] as $signatureData) {
                 SetupDocumentSignature::updateOrCreate(
                     ['id' => $signatureData['id'] ?? null],
@@ -77,15 +76,15 @@ class SetupDocumentSignatureController extends Controller
                     ]
                 );
             }
-            DB::commit();
+        });
+        if ($result) {
             return response()->json([
                 'message' => 'Signatures saved successfully.',
             ], 200);
-        } catch (\Exception $e) {
-            DB::rollBack();
+        } else {
             return response()->json([
                 'message' => 'Failed to save signatures.',
-                'error'   => $e->getMessage(),
+                'error'   => $result->getMessage(),
             ], 500);
         }
     }
