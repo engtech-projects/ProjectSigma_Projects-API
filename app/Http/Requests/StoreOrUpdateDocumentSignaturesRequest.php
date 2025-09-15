@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\SignatorySource;
+use App\Models\SetupDocumentSignature;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -16,7 +17,7 @@ class StoreOrUpdateDocumentSignaturesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'document_type' => 'required|string|in:bill_of_quantities,detailed_estimates,cash_flow,summary_of_rates,bid_summary',
+            'document_type' => 'required|string|in:' . implode(',', SetupDocumentSignature::DOCUMENT_TYPES),
             'signatures'    => 'required|array',
             'signatures.*.id' => 'nullable|integer|exists:setup_document_signatures,id',
             'signatures.*.license' => 'required|string',
