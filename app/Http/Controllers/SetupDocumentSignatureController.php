@@ -44,7 +44,6 @@ class SetupDocumentSignatureController extends Controller
     {
         try {
             $documentSignature->delete();
-            $documentSignature->refresh();
             if ($documentSignature->trashed()) {
                 return response()->json([
                     'message' => 'Signature deleted successfully.'
