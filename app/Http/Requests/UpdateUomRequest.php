@@ -22,7 +22,6 @@ class UpdateUomRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'required|exists:uom,id',
             'name' => 'required|string',
             'symbol' => 'required|string',
             'description' => 'required|string',
