@@ -35,6 +35,12 @@ class CashflowController extends Controller
 
     public function update(Project $project, Cashflow $cashflow, UpdateCashflowItemRequest $request)
     {
+        if ($cashflow->project_id !== $project->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The specified cashflow does not belong to the given project.',
+            ], 400);
+        }
         $cashflow->update($request->validated());
         return UpdateCashflowResource::make($cashflow)
             ->additional([
