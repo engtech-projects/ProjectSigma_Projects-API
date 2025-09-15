@@ -34,7 +34,7 @@ class StoreResourceItemRequest extends FormRequest
             'setup_item_profile_id' => [
                 'nullable',
                 Rule::requiredIf(function () {
-                    return $this->status === ResourceStatus::ITEM->value && $this->resource_type === ResourceType::MATERIALS->value; ;
+                    return $this->status === ResourceStatus::ITEM->value && $this->resource_type === ResourceType::MATERIALS->value;
                 })
             ],
             'resource_type' => ['required', new Enum(ResourceType::class)],

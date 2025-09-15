@@ -67,7 +67,7 @@ class ResourceItem extends Model
     }
     public function syncUnitCostAcrossProjectResources(): int
     {
-        return DB::transaction(function() {
+        return DB::transaction(function () {
             $projectId = $this->task->phase->project_id;
             // Step 0: Always recalc current resource total
             $selfUpdated = $this->recalculateSelfTotal();
