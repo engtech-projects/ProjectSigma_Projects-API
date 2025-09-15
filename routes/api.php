@@ -113,7 +113,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('{project}/activities', [ActivityController::class, 'projectActivities']);
         Route::post('{project}/activities', [ActivityController::class, 'createProjectActivity']);
         Route::get('{project}/task-schedules', [TaskScheduleController::class, 'getAllTaskScheduleByProject']);
-        Route::resource('live/{project}/cashflows', CashflowController::class);
+        Route::resource('live/{project}/cashflows', [CashflowController::class]);
     });
     // ────── Attachments ──────
     Route::prefix('attachments')->group(function () {
