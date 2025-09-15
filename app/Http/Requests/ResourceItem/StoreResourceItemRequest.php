@@ -3,6 +3,7 @@
 namespace App\Http\Requests\ResourceItem;
 
 use App\Enums\LaborCostCategory;
+use App\Enums\ResourceStatus;
 use App\Enums\ResourceType;
 use App\Enums\WorkTimeCategory;
 use Illuminate\Foundation\Http\FormRequest;
@@ -26,7 +27,16 @@ class StoreResourceItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'task_id' => 'required|exists:tasks,id',
+            'task_id' => [
+                'required',
+                Rule::exists('tasks', 'id')->whereNull('deleted_at'),
+            ],
+            'setup_item_profile_id' => [
+                'nullable',
+                Rule::requiredIf(function () {
+                    return $this->status === ResourceStatus::ITEM->value && $this->resource_type === ResourceType::MATERIALS->value;
+                })
+            ],
             'resource_type' => ['required', new Enum(ResourceType::class)],
             'description'   => [
                 'required',
@@ -37,15 +47,24 @@ class StoreResourceItemRequest extends FormRequest
                     ->ignore($this->id),
             ],
             'unit_count' => 'nullable|integer',
-            'quantity' => 'required|regex:/^\d+(\.\d{1,2})?$/',
+            'quantity' => 'required|decimal:0,2',
             'unit' => 'required|string',
-            'unit_cost' => 'required|regex:/^\d+(\.\d{1,2})?$/',
+            'unit_cost' => 'required|decimal:0,2',
             'resource_count' => 'required|integer',
-            'consumption_rate' => 'nullable|regex:/^\d+(\.\d{1,2})?$/',
+            'consumption_rate' => 'nullable|decimal:0,2',
             'consumption_unit' => 'nullable|string',
             'labor_cost_category' =>  ['nullable', new Enum(LaborCostCategory::class)],
             'work_time_category' => ['nullable', new Enum(WorkTimeCategory::class)],
             'remarks' => 'nullable|string',
+            'status' => ['nullable', new Enum(ResourceStatus::class)]
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'task_id.exists' => 'The task id does not exist',
+            'setup_item_profile_id.required' => 'The setup item profile id is required when status is item and resource type is materials'
         ];
     }
 }

@@ -21,21 +21,22 @@ class StoreProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'contract_id' => 'required|string',
             'code' => 'nullable|string|unique:projects,code',
-            'name' => 'required|string',
             'location' => 'required|string',
-            'amount' => 'nullable|regex:/^\d+(\.\d{1,2})?$/',
-            'contract_date' => 'nullable|date|date_format:Y-m-d',
-            'duration' => 'nullable|integer',
-            'noa_date' => 'nullable|date|date_format:Y-m-d',
-            'ntp_date' => 'nullable|date|date_format:Y-m-d',
-            'license' => 'nullable|string',
-            'designation' => 'nullable|string|max:255',
+            'name' => 'required|string',
             'nature_of_work' => 'nullable|string',
+            'implementing_office' => 'nullable|string|max:255',
+            'contract_id' => 'required|string',
+            'license' => 'nullable|string',
+            'designator' => 'nullable|string|max:255',
             'position' => 'required|string',
             'abc' => 'nullable|string',
             'bid_date' => 'nullable|date_format:Y-m-d',
+            'duration' => 'nullable|integer',
+            'amount' => 'nullable|decimal:0,2',
+            'contract_date' => 'nullable|date|date_format:Y-m-d',
+            'noa_date' => 'nullable|date|date_format:Y-m-d',
+            'ntp_date' => 'nullable|date|date_format:Y-m-d',
         ];
     }
 }

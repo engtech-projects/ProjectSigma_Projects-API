@@ -14,6 +14,7 @@ class BoqItemResource extends JsonResource
             'project_id' => $this->project->id,
             'project_contract_id' => $this->project->contract_id,
             'project_name' => $this->project->name,
+            'project_bid_date' => $this->project->bid_date?->format('Y-m-d'),
             'project_location' => $this->project->location,
             'project_created_at' => $this->project->created_at_formatted,
             'project_created_by' => $this->project->created_by,

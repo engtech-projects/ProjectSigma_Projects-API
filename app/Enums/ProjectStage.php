@@ -13,7 +13,6 @@ enum ProjectStage: string
     case BIDDING = 'bidding';
     case AWARDED = 'awarded';
     case ARCHIVED = 'archived';
-
     public static function flow(): array
     {
         return [
@@ -24,7 +23,6 @@ enum ProjectStage: string
             self::ARCHIVED,
         ];
     }
-
     public static function validateTransition(string $oldStage, string $newStage): ProjectStage
     {
         $flowValues = self::values();
