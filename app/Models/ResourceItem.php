@@ -77,10 +77,10 @@ class ResourceItem extends Model
                 return $selfUpdated;
             }
             // ✅ Step 1: Update matching resources (same project, unit, description)
-            $affectedTaskIds = self::matchingResources($projectId, $this)
+            $affectedTaskIds = $this->matching_resources($projectId, $this)
                 ->pluck('task_id')
                 ->unique();
-            $affectedResources = self::matchingResources($projectId, $this)
+            $affectedResources = $this->matching_resources($projectId, $this)
                 ->update([
                     'unit_cost'  => $this->unit_cost,
                     'total_cost' => DB::raw('quantity * ' . (float) $this->unit_cost),
@@ -118,13 +118,14 @@ class ResourceItem extends Model
     /**
      * Scope-like helper for finding matching resources.
      */
-    private static function matchingResources(int $projectId, self $resource)
+    private function getMatchingResources()
     {
+        $projectId = $this->task->phase->project_id;
         return self::whereHas('task.phase', fn ($query) => $query->where('project_id', $projectId))
-            ->where('resource_type', $resource->resource_type)
-            ->where('unit', $resource->unit)
-            ->where('description', $resource->description)
-            ->where('id', '!=', $resource->id);
+            ->where('resource_type', $this->resource_type)
+            ->where('unit', $this->unit)
+            ->where('description', $this->description)
+            ->where('id', '!=', $this->id);
     }
     /**
      * Update task and project totals (for non-materials).
