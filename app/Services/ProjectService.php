@@ -79,9 +79,6 @@ class ProjectService
         $query->when(isset($attr['status']), function ($query) use ($attr) {
             if ($attr['status'] === ProjectStatus::PENDING->value) {
                 $query->where('created_by', auth()->user()->id);
-            }
-            if ($attr['status'] === ProjectStatus::MY_PROJECT->value) {
-                $query->where('created_by', auth()->user()->id);
             } else {
                 $query->where('stage', $attr['status']);
             }
