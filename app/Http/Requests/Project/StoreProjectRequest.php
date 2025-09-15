@@ -33,7 +33,7 @@ class StoreProjectRequest extends FormRequest
             'abc' => 'nullable|string',
             'bid_date' => 'nullable|date_format:Y-m-d',
             'duration' => 'nullable|integer',
-            'amount' => 'nullable|regex:/^\d+(\.\d{1,2})?$/',
+            'amount' => 'nullable|decimal:0,2',
             'contract_date' => 'nullable|date|date_format:Y-m-d',
             'noa_date' => 'nullable|date|date_format:Y-m-d',
             'ntp_date' => 'nullable|date|date_format:Y-m-d',

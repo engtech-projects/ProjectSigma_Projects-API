@@ -31,7 +31,7 @@ class CreateTaskScheduleRequest extends FormRequest
             'current_start' => ['nullable', 'date', 'before:current_end'],
             'current_end' => ['nullable', 'date', 'after:current_start'],
             'duration_days' => ['nullable', 'integer', 'min:1'],
-            'weight_percent' => ['nullable', 'numeric', 'between:0,100', 'regex:/^\d{1,2}(\.\d{1,2})?$/'],
+            'weight_percent' => ['nullable', 'numeric', 'between:0,100', 'decimal:0,2'],
             'status' => ['required', Rule::in(TaskStatus::values())]
         ];
     }
