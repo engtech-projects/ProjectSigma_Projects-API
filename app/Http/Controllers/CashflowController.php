@@ -12,19 +12,16 @@ use App\Services\ProjectService;
 
 class CashflowController extends Controller
 {
-    public function showProjectCashflows(Project $project)
+    public function index(Project $project)
     {
-        $data = $project->cashflows()
-            ->with(['cashflowItems.item'])
-            ->get();
-        return ProjectCashflowResource::collection($data)
+        return ProjectCashflowResource::collection($project->cashflows()->with('cashflowItems.item')->get())
             ->additional([
                 'success' => true,
                 'message' => 'Cashflows retrieved successfully',
             ]);
     }
 
-    public function storeProjectCashflows(Project $project, StoreProjectCashFlowRequest $request)
+    public function store(Project $project, StoreProjectCashFlowRequest $request)
     {
         $projectService = new ProjectService($project);
         $cashflow = $projectService->storeCashflow($request->validated());
@@ -36,11 +33,8 @@ class CashflowController extends Controller
             ]);
     }
 
-    public function updateProjectCashflow(Project $project, Cashflow $cashflow, UpdateCashflowItemRequest $request)
+    public function update(Project $project, Cashflow $cashflow, UpdateCashflowItemRequest $request)
     {
-        if ($cashflow->project_id !== $project->id) {
-            abort(403, 'This cashflow does not belong to the given project.');
-        }
         $cashflow->update($request->validated());
         return UpdateCashflowResource::make($cashflow)
             ->additional([
