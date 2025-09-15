@@ -56,7 +56,7 @@ class StoreResourceItemRequest extends FormRequest
             'labor_cost_category' =>  ['nullable', new Enum(LaborCostCategory::class)],
             'work_time_category' => ['nullable', new Enum(WorkTimeCategory::class)],
             'remarks' => 'nullable|string',
-            'status' => ['nullable', Rule::in(ResourceStatus::toArray())]
+            'status' => ['nullable', new Enum(ResourceStatus::class)]
         ];
     }
 
