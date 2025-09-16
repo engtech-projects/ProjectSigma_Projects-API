@@ -77,10 +77,10 @@ class ResourceItem extends Model
                 return $selfUpdated;
             }
             // ✅ Step 1: Update matching resources (same project, unit, description)
-            $affectedTaskIds = $this->matching_resources($projectId, $this)
+            $affectedTaskIds = $this->matching_resources
                 ->pluck('task_id')
                 ->unique();
-            $affectedResources = $this->matching_resources($projectId, $this)
+            $affectedResources = $this->matching_resources
                 ->update([
                     'unit_cost'  => $this->unit_cost,
                     'total_cost' => DB::raw('quantity * ' . (float) $this->unit_cost),
