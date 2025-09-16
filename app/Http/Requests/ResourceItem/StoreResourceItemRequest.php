@@ -34,7 +34,7 @@ class StoreResourceItemRequest extends FormRequest
             'setup_item_profile_id' => [
                 'nullable',
                 Rule::requiredIf(function () {
-                    return $this->status === 'item' && $this->resource_type === 'materials' ;
+                    return $this->status === ResourceStatus::ITEM->value && $this->resource_type === ResourceType::MATERIALS->value;
                 })
             ],
             'resource_type' => ['required', new Enum(ResourceType::class)],
@@ -47,16 +47,16 @@ class StoreResourceItemRequest extends FormRequest
                     ->ignore($this->id),
             ],
             'unit_count' => 'nullable|integer',
-            'quantity' => 'required|regex:/^\d+(\.\d{1,2})?$/|numeric',
+            'quantity' => 'required|decimal:0,2',
             'unit' => 'required|string',
-            'unit_cost' => 'required|regex:/^\d+(\.\d{1,2})?$/|numeric',
+            'unit_cost' => 'required|decimal:0,2',
             'resource_count' => 'required|integer',
-            'consumption_rate' => 'nullable|regex:/^\d+(\.\d{1,2})?$/|numeric',
+            'consumption_rate' => 'nullable|decimal:0,2',
             'consumption_unit' => 'nullable|string',
             'labor_cost_category' =>  ['nullable', new Enum(LaborCostCategory::class)],
             'work_time_category' => ['nullable', new Enum(WorkTimeCategory::class)],
             'remarks' => 'nullable|string',
-            'status' => ['nullable', Rule::in(ResourceStatus::toArray())]
+            'status' => ['nullable', new Enum(ResourceStatus::class)]
         ];
     }
 

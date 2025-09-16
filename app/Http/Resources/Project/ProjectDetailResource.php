@@ -17,6 +17,8 @@ class ProjectDetailResource extends JsonResource
             'name' => $this->name,
             'contract_id' => $this->contract_id,
             'location' => $this->location,
+            'position' => $this->position,
+            'designator' => $this->designator,
             'implementing_office' => $this->implementing_office,
             'amount' => $this->amount,
             'nature_of_work' => $this->nature_of_work,

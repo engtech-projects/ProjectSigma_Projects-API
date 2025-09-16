@@ -44,7 +44,6 @@ class SetupDocumentSignatureController extends Controller
     {
         try {
             $documentSignature->delete();
-            $documentSignature->refresh();
             if ($documentSignature->trashed()) {
                 return response()->json([
                     'message' => 'Signature deleted successfully.'
@@ -62,8 +61,7 @@ class SetupDocumentSignatureController extends Controller
     public function storeOrUpdate(StoreOrUpdateDocumentSignaturesRequest $request)
     {
         $validated  = $request->validated();
-        DB::beginTransaction();
-        try {
+        DB::transaction(function () use ($validated) {
             foreach ($validated['signatures'] as $signatureData) {
                 SetupDocumentSignature::updateOrCreate(
                     ['id' => $signatureData['id'] ?? null],
@@ -78,16 +76,9 @@ class SetupDocumentSignatureController extends Controller
                     ]
                 );
             }
-            DB::commit();
-            return response()->json([
-                'message' => 'Signatures saved successfully.',
-            ], 200);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'message' => 'Failed to save signatures.',
-                'error'   => $e->getMessage(),
-            ], 500);
-        }
+        });
+        return response()->json([
+            'message' => 'Signatures saved successfully.',
+        ], 200);
     }
 }

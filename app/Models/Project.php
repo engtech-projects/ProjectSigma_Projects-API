@@ -56,7 +56,7 @@ class Project extends Model
         'implementing_office',
         'current_revision_id',
         'position',
-        'designation',
+        'designator',
         'abc',
         'bid_date',
         'created_by',
@@ -97,7 +97,6 @@ class Project extends Model
     {
         $this->updateStatus(ProjectStatus::COMPLETED);
     }
-
     public function complete(): void
     {
         $this->updateStatus(ProjectStatus::COMPLETED);

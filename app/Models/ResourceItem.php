@@ -71,40 +71,40 @@ class ResourceItem extends Model
     }
     public function syncUnitCostAcrossProjectResources(): int
     {
-        $projectId = $this->task->phase->project_id;
-        // Step 0: Always recalc current resource total
-        $selfUpdated = $this->recalculateSelfTotal();
-        // If NOT materials → only recalc totals
-        if ($this->resource_type !== ResourceType::MATERIALS) {
-            $this->updateTaskAndProjectTotals($this->task->id, $projectId);
-            return $selfUpdated;
-        }
-        // ✅ Step 1: Update matching resources (same project, unit, description)
-        $affectedTaskIds = self::matchingResources($projectId, $this)
-            ->pluck('task_id')
-            ->unique();
-        $affectedResources = self::matchingResources($projectId, $this)
-            ->update([
-                'unit_cost'  => $this->unit_cost,
-                'total_cost' => DB::raw('quantity * ' . (float) $this->unit_cost),
-            ]);
-        // ✅ Step 2: Recalc all affected task amounts (including current one)
-        $allTaskIds = $affectedTaskIds->push($this->task->id)->unique();
-        $taskTotals = self::select('task_id', DB::raw('SUM(total_cost) as total'))
-            ->whereIn('task_id', $affectedTaskIds->push($this->task->id))
-            ->whereIn('task_id', $affectedTaskIds->push($this->task->id)->unique())
-            ->whereIn('task_id', $allTaskIds)
-            ->groupBy('task_id')
-            ->pluck('total', 'task_id');
-        foreach ($taskTotals as $taskId => $total) {
-            $task = BoqItem::find($taskId);
-            if ($task && $task->can_update_total_amount) {
-                $task->update(['amount' => $total]);
+        return DB::transaction(function () {
+            $projectId = $this->task->phase->project_id;
+            // Step 0: Always recalc current resource total
+            $selfUpdated = $this->recalculateSelfTotal();
+            // If NOT materials → only recalc totals
+            if ($this->resource_type !== ResourceType::MATERIALS) {
+                $this->updateTaskAndProjectTotals($this->task->id, $projectId);
+                return $selfUpdated;
             }
-        }
-        // ✅ Step 3: Update project total once
-        BoqItem::updateTotalProject($projectId);
-        return $affectedResources + $selfUpdated;
+            // ✅ Step 1: Update matching resources (same project, unit, description)
+            $affectedTaskIds = $this->matching_resources($projectId, $this)
+                ->pluck('task_id')
+                ->unique();
+            $affectedResources = $this->matching_resources($projectId, $this)
+                ->update([
+                    'unit_cost'  => $this->unit_cost,
+                    'total_cost' => DB::raw('quantity * ' . (float) $this->unit_cost),
+                ]);
+            // ✅ Step 2: Recalc all affected task amounts (including current one)
+            $allTaskIds = $affectedTaskIds->push($this->task->id)->unique();
+            $taskTotals = self::select('task_id', DB::raw('SUM(total_cost) as total'))
+                ->whereIn('task_id', $allTaskIds)
+                ->groupBy('task_id')
+                ->pluck('total', 'task_id');
+            foreach ($taskTotals as $taskId => $total) {
+                $task = BoqItem::find($taskId);
+                if ($task && $task->can_update_total_amount) {
+                    $task->update(['amount' => $total]);
+                }
+            }
+            // ✅ Step 3: Update project total once
+            BoqItem::updateTotalProject($projectId);
+            return $affectedResources + $selfUpdated;
+        });
     }
     /**
      * Recalculate current resource total if needed.
@@ -122,13 +122,14 @@ class ResourceItem extends Model
     /**
      * Scope-like helper for finding matching resources.
      */
-    private static function matchingResources(int $projectId, self $resource)
+    private function getMatchingResources()
     {
+        $projectId = $this->task->phase->project_id;
         return self::whereHas('task.phase', fn ($query) => $query->where('project_id', $projectId))
-            ->where('resource_type', $resource->resource_type)
-            ->where('unit', $resource->unit)
-            ->where('description', $resource->description)
-            ->where('id', '!=', $resource->id);
+            ->where('resource_type', $this->resource_type)
+            ->where('unit', $this->unit)
+            ->where('description', $this->description)
+            ->where('id', '!=', $this->id);
     }
     /**
      * Update task and project totals (for non-materials).
