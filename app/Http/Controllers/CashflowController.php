@@ -42,10 +42,9 @@ class CashflowController extends Controller
             ], 400);
         }
         $cashflow->update($request->validated());
-        return UpdateCashflowResource::make($cashflow)
-            ->additional([
-                'success' => true,
-                'message' => 'Cashflow updated successfully',
-            ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Cashflow updated successfully',
+        ], 200);
     }
 }
