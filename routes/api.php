@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\V1\Uom\UomController;
 use App\Http\Controllers\APiSyncController;
 use App\Http\Controllers\ApiServiceController;
 use App\Http\Controllers\CancelApproval;
+use App\Http\Controllers\CashflowController;
 use App\Http\Controllers\DailyScheduleController;
 use App\Http\Controllers\DirectCostEstimateController;
 use App\Http\Controllers\EmployeeController;
@@ -47,6 +48,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
 Route::middleware('auth:api')->group(function () {
     // SYNCHRONIZATION ROUTES
     Route::prefix('setup')->group(function () {
@@ -93,7 +95,11 @@ Route::middleware('auth:api')->group(function () {
     // ────── Projects ──────
     Route::prefix('projects')->group(function () {
         Route::resource('resource', ProjectController::class);
-        Route::get('live', [ProjectController::class, 'getLiveProjects']);
+        Route::prefix('live')->group(function () {
+            Route::get('/', [ProjectController::class, 'getLiveProjects']);
+            // ───── Direct Cost - Cashflows ─────
+            Route::resource('{project}/cashflows', CashflowController::class);
+        });
         Route::get('{project}/resource-items', [ProjectController::class, 'getResourcesItems']);
         Route::get('owned', [ProjectController::class, 'getOwnedProjects']);
         Route::get('tss', [ProjectController::class, 'tssProjects']);
@@ -110,6 +116,7 @@ Route::middleware('auth:api')->group(function () {
         Route::put('{project}/revert/{revision}', [RevisionController::class, 'revertToRevision']);
         Route::get('{project}/activities', [ActivityController::class, 'projectActivities']);
         Route::post('{project}/activities', [ActivityController::class, 'createProjectActivity']);
+        Route::get('{project}/task-schedules', [TaskScheduleController::class, 'getAllTaskScheduleByProject']);
     });
     // ────── Attachments ──────
     Route::prefix('attachments')->group(function () {

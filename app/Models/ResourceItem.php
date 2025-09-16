@@ -57,6 +57,10 @@ class ResourceItem extends Model
     {
         return $this->belongsTo(SetupItemProfiles::class, 'setup_item_profile_id', 'id');
     }
+    public function cashflows()
+    {
+        return $this->hasMany(Cashflow::class);
+    }
     public function scopeFilterByTaskId($query, $taskId)
     {
         return $query->where('task_id', 'like', "%{$taskId}%");

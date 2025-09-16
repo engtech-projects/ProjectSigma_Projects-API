@@ -12,6 +12,7 @@ use App\Models\BoqPart;
 use App\Models\Project;
 use App\Models\ResourceItem;
 use App\Models\BoqItem;
+use App\Models\CashflowItem;
 use App\Models\Revision;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
@@ -77,9 +78,6 @@ class ProjectService
         });
         $query->when(isset($attr['status']), function ($query) use ($attr) {
             if ($attr['status'] === ProjectStatus::PENDING->value) {
-                $query->where('created_by', auth()->user()->id);
-            }
-            if ($attr['status'] === ProjectStatus::MY_PROJECT->value) {
                 $query->where('created_by', auth()->user()->id);
             } else {
                 $query->where('stage', $attr['status']);
@@ -319,5 +317,32 @@ class ProjectService
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+    public function storeCashflow(array $validated)
+    {
+        return DB::transaction(function () use ($validated) {
+            $cashflow = $this->project->cashflows()->create([
+                'date'         => $validated['date'],
+                'percent'      => $validated['percent'],
+                'total_amount' => 0,
+            ]);
+            $totalAmount = 0;
+            foreach ($validated['items'] as $item) {
+                $itemModel = ResourceItem::findorFail($item['item_id']);
+                $amount = $itemModel->amount ?? $itemModel->total_cost ?? 0;
+                $totalAmount += $amount;
+                CashflowItem::updateOrCreate(
+                    [
+                        'cashflow_id' => $cashflow->id,
+                        'item_id'     => $item['item_id'],
+                    ],
+                    [
+                        'amount' => $amount,
+                    ]
+                );
+            }
+            $cashflow->update(['total_amount' => $totalAmount]);
+            return $cashflow->load('cashflowItems.item');
+        });
     }
 }
