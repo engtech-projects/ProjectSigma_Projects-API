@@ -97,6 +97,7 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('resource', ProjectController::class);
         Route::prefix('live')->group(function () {
             Route::get('/', [ProjectController::class, 'getLiveProjects']);
+            // ───── Direct Cost - Cashflows ─────
             Route::resource('{project}/cashflows', CashflowController::class);
         });
         Route::get('{project}/resource-items', [ProjectController::class, 'getResourcesItems']);
