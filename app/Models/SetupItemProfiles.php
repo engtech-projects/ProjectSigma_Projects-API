@@ -42,4 +42,9 @@ class SetupItemProfiles extends Model
         'active_status',
         'is_approved',
     ];
+
+    public function uoms()
+    {
+        return $this->belongsTo(Uom::class, 'uom');
+    }
 }

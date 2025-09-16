@@ -7,8 +7,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ResourceItem\StoreResourceItemRequest;
 use App\Http\Requests\ResourceItem\UpdateResourceItemRequest;
 use App\Http\Resources\ResourceItemResource;
+use App\Http\Resources\SummarizedItemProfileResource;
 use App\Models\BoqItem;
 use App\Models\ResourceItem;
+use App\Models\SetupItemProfiles;
 use App\Services\ResourceService;
 
 class ResourceItemController extends Controller
@@ -92,5 +94,16 @@ class ResourceItemController extends Controller
             'message' => 'Resources retrieved successfully',
             'data' => ResourceItemResource::collection($resources),
         ], 200);
+    }
+
+    public function getItemProfiles()
+    {
+        return SummarizedItemProfileResource::collection(
+            SetupItemProfiles::with('uoms:id,name')->get()
+        )
+        ->additional([
+            'success' => true,
+            'message' => 'Item profiles retrieved successfully',
+        ]);
     }
 }
