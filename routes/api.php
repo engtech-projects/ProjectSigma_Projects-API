@@ -95,7 +95,10 @@ Route::middleware('auth:api')->group(function () {
     // ────── Projects ──────
     Route::prefix('projects')->group(function () {
         Route::resource('resource', ProjectController::class);
-        Route::get('live', [ProjectController::class, 'getLiveProjects']);
+        Route::prefix('live')->group(function () {
+            Route::get('/', [ProjectController::class, 'getLiveProjects']);
+            Route::resource('{project}/cashflows', CashflowController::class);
+        });
         Route::get('{project}/resource-items', [ProjectController::class, 'getResourcesItems']);
         Route::get('owned', [ProjectController::class, 'getOwnedProjects']);
         Route::get('tss', [ProjectController::class, 'tssProjects']);
@@ -113,7 +116,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('{project}/activities', [ActivityController::class, 'projectActivities']);
         Route::post('{project}/activities', [ActivityController::class, 'createProjectActivity']);
         Route::get('{project}/task-schedules', [TaskScheduleController::class, 'getAllTaskScheduleByProject']);
-        Route::resource('live/{project}/cashflows', CashflowController::class);
     });
     // ────── Attachments ──────
     Route::prefix('attachments')->group(function () {
