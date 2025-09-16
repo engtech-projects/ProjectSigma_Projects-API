@@ -21,7 +21,6 @@ return new class () extends Migration {
                 ->onDelete('restrict')
                 ->onUpdate('cascade');
             $table->unique(['cashflow_id', 'item_id']);
-            $table->decimal('amount', 15, 2)->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
