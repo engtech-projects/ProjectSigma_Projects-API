@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Models;
-
 use App\Enums\ResourceType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +7,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-
 class ResourceItem extends Model
 {
     use HasFactory;
@@ -81,10 +78,10 @@ class ResourceItem extends Model
                 return $selfUpdated;
             }
             // ✅ Step 1: Update matching resources (same project, unit, description)
-            $affectedTaskIds = $this->matching_resources
+            $affectedTaskIds = $this->matchingResources()
                 ->pluck('task_id')
                 ->unique();
-            $affectedResources = $this->matching_resources
+            $affectedResources = $this->matchingResources()
                 ->update([
                     'unit_cost'  => $this->unit_cost,
                     'total_cost' => DB::raw('quantity * ' . (float) $this->unit_cost),
@@ -122,10 +119,11 @@ class ResourceItem extends Model
     /**
      * Scope-like helper for finding matching resources.
      */
-    private function getMatchingResourcesAttribute()
+    protected function matchingResources()
     {
         $projectId = $this->task->phase->project_id;
-        return self::whereHas('task.phase', fn ($query) => $query->where('project_id', $projectId))
+        return self::whereHas('task.phase', fn ($query) =>
+                $query->where('project_id', $projectId))
             ->where('resource_type', $this->resource_type)
             ->where('unit', $this->unit)
             ->where('description', $this->description)
