@@ -23,9 +23,9 @@ class StoreProjectCashFlowRequest extends FormRequest
     {
         return [
             'date' => 'required|date',
-            'percent' => 'required|numeric|min:0|max:1',
             'items' => 'required|array|min:1',
             'items.*.item_id' => 'required|integer|exists:tasks,id',
+            'items.*.percent' => 'required|numeric|min:0|max:100',
         ];
     }
 }

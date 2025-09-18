@@ -323,7 +323,6 @@ class ProjectService
         return DB::transaction(function () use ($validated) {
             $cashflow = $this->project->cashflows()->create([
                 'date'         => $validated['date'],
-                'percent'      => $validated['percent'],
                 'total_amount' => 0,
             ]);
             $totalAmount = 0;
@@ -335,6 +334,7 @@ class ProjectService
                     [
                         'cashflow_id' => $cashflow->id,
                         'item_id'     => $item['item_id'],
+                        'percent'     => $item['percent'],
                     ],
                     [
                         'amount' => $amount,

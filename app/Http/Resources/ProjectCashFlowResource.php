@@ -16,7 +16,6 @@ class ProjectCashflowResource extends JsonResource
     {
         return [
             'date' => $this->date,
-            'percent' => $this->percent,
             'total_amount' => $this->total_amount,
             'items' => CashflowItemResource::collection($this->whenLoaded('cashflowItems'))
         ];
