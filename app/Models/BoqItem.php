@@ -186,7 +186,7 @@ class BoqItem extends Model
             ];
         });
     }
-    public function getItemDirectCostTotalAttribute()
+    public function getResourceItemsTotalAttribute()
     {
         return number_format($this->resources->sum('total_cost'), 2);
     }
