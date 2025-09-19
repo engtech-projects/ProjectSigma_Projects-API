@@ -6,7 +6,6 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Models\ResourceItem;
 
 class SummaryOfDirectEstimateResource extends JsonResource
 {
@@ -27,22 +26,12 @@ class SummaryOfDirectEstimateResource extends JsonResource
             'item_id' => $this->id,
             'pay_item_no.' => $this->name,
             'description' => $this->description,
-            'unit_price' => $this->getFormatted('unit_price', 2),
-            'contract_cost' => [
-                'quantity' => $this->getFormatted('quantity', 3),
-                'unit' => $this->unit,
-                'amount' => $this->getFormatted('amount', 2),
-            ],
-            'direct_cost' => $this->resources->map(function (ResourceItem $item) {
-                return [
-                    'resource_item_id' => $item->id,
-                    'resource_type' => $item->resource_type,
-                    'total_cost' => $item->getFormatted('total_cost', 2),
-                ];
-            }),
-            'total' => $this->getFormattedValue($total, 2),
-            'unit_cost_per_item' => $this->getFormattedValue($unitCostPerItem, 2),
-            'percent' => $this->getFormattedValue($percent, 2) . '%',
+            'unit_price' => $this->item_unit_price,
+            'contract_cost' => $this->contract_cost,
+            'direct_cost' => $this->direct_cost,
+            'total' => $this->item_direct_cost_total,
+            'unit_cost_per_item' => $this->unit_cost_per_item,
+            'percent' => $this->percent,
         ];
     }
 }

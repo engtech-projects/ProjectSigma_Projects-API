@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ProjectStatus;
-use App\Traits\FormatsNumbers;
+use App\Traits\ModelHelpers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +15,7 @@ class BoqItem extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    use FormatsNumbers;
+    use ModelHelpers;
     protected $table = 'tasks';
     protected $fillable = [
         'phase_id',
@@ -160,5 +160,52 @@ class BoqItem extends Model
             $total = $this->resources()->sum('total_cost');
             $this->update(['amount' => $total]);
         }
+    }
+    /**
+     * Accessors for Generation of Summary of Direct Estimate Report
+     */
+    public function getItemUnitPriceAttribute()
+    {
+        return number_format($this->unit_price, 2);
+    }
+    public function getContractCostAttribute()
+    {
+        return [
+            'quantity' => number_format($this->quantity, 3),
+            'unit' => $this->unit,
+            'total' => number_format($this->unit_price * $this->quantity, 2),
+        ];
+    }
+    public function getDirectCostAttribute()
+    {
+        return $this->resources->map(function (ResourceItem $item) {
+            return [
+                'resource_item_id' => $item->id,
+                'resource_type' => $item->resource_type,
+                'total_cost' => number_format($item->total_cost, 2),
+            ];
+        });
+    }
+    public function getItemDirectCostTotalAttribute()
+    {
+        return number_format($this->resources->sum('total_cost'), 2);
+    }
+    public function getUnitCostPerItemAttribute()
+    {
+        if ($this->quantity == 0) {
+            return number_format(0, 2);
+        }
+        $grand_total = $this->resources->sum('total_cost');
+        $unitCostPerItem = $grand_total / $this->quantity;
+        return number_format($unitCostPerItem, 2);
+    }
+    public function getPercentAttribute()
+    {
+        if ($this->quantity == 0 || $this->unit_price == 0) {
+            return number_format(0, 2);
+        }
+        $unitCostPerItem = ($this->resources->sum('total_cost') / $this->quantity);
+        $percent = ($unitCostPerItem / $this->unit_price) * 100;
+        return number_format($percent, 2) . '%';
     }
 }
