@@ -16,12 +16,6 @@ class SummaryOfDirectEstimateResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $total = $this->resources->sum('total_cost');
-        $unitCostPerItem = $this->quantity > 0 ? $total / $this->quantity : 0;
-        $percent = ($this->quantity > 0 && $this->unit_price > 0)
-            ? ($unitCostPerItem / $this->unit_price) * 100
-            : 0;
-
         return [
             'item_id' => $this->id,
             'pay_item_no.' => $this->name,
