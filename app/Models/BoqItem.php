@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\ProjectStatus;
-use App\Traits\ModelHelpers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,7 +14,6 @@ class BoqItem extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    use ModelHelpers;
     protected $table = 'tasks';
     protected $fillable = [
         'phase_id',
