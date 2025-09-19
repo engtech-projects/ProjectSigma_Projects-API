@@ -22,7 +22,7 @@ class SummaryOfDirectEstimateResource extends JsonResource
             'description' => $this->description,
             'unit_price' => $this->item_unit_price,
             'contract_cost' => $this->contract_cost,
-            'direct_cost' => $this->direct_cost,
+            'direct_cost' => $this->resource_items,
             'total' => $this->resource_items_total,
             'unit_cost_per_item' => $this->unit_cost_per_item,
             'percent' => $this->percent,

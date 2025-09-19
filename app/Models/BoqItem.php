@@ -176,7 +176,7 @@ class BoqItem extends Model
             'total' => number_format($this->unit_price * $this->quantity, 2),
         ];
     }
-    public function getDirectCostAttribute()
+    public function getResourceItemsAttribute()
     {
         return $this->resources->map(function (ResourceItem $item) {
             return [
