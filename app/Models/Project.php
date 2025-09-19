@@ -113,6 +113,10 @@ class Project extends Model
             });
         })->unique('description')->values();
     }
+    public function bom(): HasMany
+    {
+        return $this->hasMany(Bom::class, 'project_id', 'id');
+    }
     public function attachments(): HasMany
     {
         return $this->hasMany(Attachment::class, 'project_id', 'id');

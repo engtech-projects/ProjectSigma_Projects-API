@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\V1\BoqItem\BoqItemController;
 use App\Http\Controllers\Api\V1\Uom\UomController;
 use App\Http\Controllers\APiSyncController;
 use App\Http\Controllers\ApiServiceController;
+use App\Http\Controllers\BomController;
 use App\Http\Controllers\CancelApproval;
 use App\Http\Controllers\CashflowController;
 use App\Http\Controllers\DailyScheduleController;
@@ -99,6 +100,8 @@ Route::middleware('auth:api')->group(function () {
             Route::get('/', [ProjectController::class, 'getLiveProjects']);
             // ───── Direct Cost - Cashflows ─────
             Route::resource('{project}/cashflows', CashflowController::class);
+            // ───── Bill of Materials ─────
+            Route::resource('{project}/bom', BomController::class);
         });
         Route::get('{project}/resource-items', [ProjectController::class, 'getResourcesItems']);
         Route::get('owned', [ProjectController::class, 'getOwnedProjects']);
