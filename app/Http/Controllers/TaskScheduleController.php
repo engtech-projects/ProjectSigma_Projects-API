@@ -8,6 +8,7 @@ use App\Http\Requests\FilterTaskScheduleRequest;
 use App\Http\Requests\UpdateTaskScheduleRequest;
 use App\Http\Resources\ProjectTaskScheduleResource;
 use App\Http\Resources\TaskScheduleResource;
+use App\Models\Project;
 use App\Services\TaskScheduleService;
 use Illuminate\Validation\ValidationException;
 
@@ -35,6 +36,16 @@ class TaskScheduleController extends Controller
                 'message' => $e->getMessage(),
             ], 422);
         }
+    }
+
+    public function getAllTaskScheduleByProject(Project $project)
+    {
+        $schedules = $this->taskScheduleService->getAllTaskScheduleByProject($project);
+        return  TaskScheduleResource::collection($schedules)
+            ->additional([
+                'success' => true,
+                'message' => 'Task schedules retrieved successfully.',
+            ]);
     }
 
     public function store(CreateTaskScheduleRequest $request)
