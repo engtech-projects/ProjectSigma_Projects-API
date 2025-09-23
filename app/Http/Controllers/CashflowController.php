@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProjectCashFlowRequest;
 use App\Http\Requests\UpdateCashflowItemRequest;
-use App\Http\Resources\ProjectCashFlowResource;
+use App\Http\Resources\ProjectCashflowResource;
 use App\Models\Cashflow;
 use App\Models\Project;
 use App\Services\ProjectService;
