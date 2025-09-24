@@ -191,4 +191,12 @@ class ProjectController extends Controller
             'data' => $project,
         ], 200);
     }
+    public function generateBillOfMaterials()
+    {
+        $this->projectService->generateBillOfMaterials();
+        return response()->json([
+            'success' => true,
+            'message' => 'Bill of Materials generated successfully.',
+        ], 200);
+    }
 }
