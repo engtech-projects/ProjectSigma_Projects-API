@@ -323,7 +323,6 @@ class ProjectService
         return DB::transaction(function () use ($validated) {
             $cashflow = $this->project->cashflows()->create([
                 'date'         => $validated['date'],
-                'percent'      => $validated['percent'],
                 'total_amount' => 0,
             ]);
             $totalAmount = 0;
@@ -335,6 +334,7 @@ class ProjectService
                     [
                         'cashflow_id' => $cashflow->id,
                         'item_id'     => $item['item_id'],
+                        'percent'     => $item['percent'],
                     ],
                     [
                         'amount' => $amount,
@@ -344,5 +344,47 @@ class ProjectService
             $cashflow->update(['total_amount' => $totalAmount]);
             return $cashflow->load('cashflowItems.item');
         });
+    }
+    public function getTasksWithResources()
+    {
+        return $this->project->phases()
+            ->with('tasks.resources')
+            ->get()
+            ->pluck('tasks')
+            ->flatten();
+    }
+    public function calculateDirectCostDistribution($tasks)
+    {
+        $resources = $tasks->flatMap->resources;
+        $distribution = $resources->groupBy('resource_type')->map->sum('total_cost');
+        $directCostTotal = $distribution->sum();
+        $grandTotal = (float) $tasks->sum('amount');
+        $orderedTypes = ['materials', 'labor_expense', 'equipment_rental', 'fuel_oil_cost', 'overhead_cost'];
+        $result = [];
+        foreach ($orderedTypes as $label) {
+            if (isset($distribution[$label])) {
+                $total = (float) $distribution[$label];
+                $percent = $grandTotal ? ($total / $grandTotal) * 100 : 0;
+                $result[$label] = [
+                    'total (PHP)' => number_format($total, 2),
+                    'percent'     => number_format($percent, 2) . '%',
+                ];
+            }
+        }
+        foreach ($distribution as $type => $total) {
+            if (!isset($result[$type])) {
+                $percent = $grandTotal ? ($total / $grandTotal) * 100 : 0;
+                $result[$type] = [
+                    'total (PHP)' => number_format($total, 2),
+                    'percent'     => number_format($percent, 2) . '%',
+                ];
+            }
+        }
+        $directPercent = $grandTotal ? ($directCostTotal / $grandTotal) * 100 : 0;
+        $result['Direct Cost Total'] = [
+            'total (PHP)' => number_format($directCostTotal, 2),
+            'percent'     => number_format($directPercent, 2) . '%',
+        ];
+        return $result;
     }
 }

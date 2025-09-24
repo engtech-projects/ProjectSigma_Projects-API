@@ -16,7 +16,9 @@ class CashflowItemResource extends JsonResource
     {
         return [
             'id' => $this->item->id,
+            'code' => $this->item->setupItemProfile->item_code ?? 'N/A',
             'name' => $this->item->resource_type,
+            'percent' => $this->percent,
             'amount' => $this->item->total_cost,
         ];
     }
