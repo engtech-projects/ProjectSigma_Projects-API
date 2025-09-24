@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBomRequest;
+use App\Http\Requests\UpdateBomRequest;
 use App\Http\Resources\BomResource;
 use App\Models\Bom;
 use App\Models\Project;
@@ -37,7 +38,7 @@ class BomController extends Controller
                 'message' => 'Bill of Material item retrieved successfully',
             ]);
     }
-    public function update(Project $project, $bomId, StoreBomRequest $request)
+    public function update(Project $project, $bomId, UpdateBomRequest $request)
     {
         $bom = $project->boms()->findOrFail($bomId);
         $bom->update($request->validated());
