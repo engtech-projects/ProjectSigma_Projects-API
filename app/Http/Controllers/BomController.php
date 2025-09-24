@@ -40,8 +40,7 @@ class BomController extends Controller
     {
         $bomItem = $project->boms()->findOrFail($bomId);
         $bomItem->update($request->validated());
-        return (new BomResource($bomItem))
-            ->additional([
+        return response()->json([
                 'success' => true,
                 'message' => 'Bill of Material item updated successfully',
             ]);
