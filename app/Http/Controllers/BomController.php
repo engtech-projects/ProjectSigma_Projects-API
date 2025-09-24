@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBomRequest;
 use App\Http\Resources\BomResource;
+use App\Models\Bom;
 use App\Models\Project;
 use Illuminate\Http\Request;
 
@@ -21,7 +22,7 @@ class BomController extends Controller
     public function store(Project $project, StoreBomRequest $request)
     {
         $bomItem = $project->boms()->create($request->validated());
-        return (new BomResource($bomItem))
+        return BomResource::make($bomItem)
             ->additional([
                 'success' => true,
                 'message' => 'Bill of Material item created successfully',
@@ -30,7 +31,7 @@ class BomController extends Controller
     public function show(Project $project, $bomId)
     {
         $bomItem = $project->boms()->findOrFail($bomId);
-        return (new BomResource($bomItem))
+        return BomResource::make($bomItem)
             ->additional([
                 'success' => true,
                 'message' => 'Bill of Material item retrieved successfully',
