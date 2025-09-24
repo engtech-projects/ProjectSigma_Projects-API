@@ -21,17 +21,17 @@ class BomController extends Controller
     }
     public function store(Project $project, StoreBomRequest $request)
     {
-        $bomItem = $project->boms()->create($request->validated());
-        return BomResource::make($bomItem)
+        $bom = $project->boms()->create($request->validated());
+        return BomResource::make($bom)
             ->additional([
                 'success' => true,
-                'message' => 'Bill of Material item created successfully',
+                'message' => 'Bill of Material created successfully',
             ]);
     }
     public function show(Project $project, $bomId)
     {
-        $bomItem = $project->boms()->findOrFail($bomId);
-        return BomResource::make($bomItem)
+        $bom = $project->boms()->findOrFail($bomId);
+        return BomResource::make($bom)
             ->additional([
                 'success' => true,
                 'message' => 'Bill of Material item retrieved successfully',
@@ -39,8 +39,8 @@ class BomController extends Controller
     }
     public function update(Project $project, $bomId, StoreBomRequest $request)
     {
-        $bomItem = $project->boms()->findOrFail($bomId);
-        $bomItem->update($request->validated());
+        $bom = $project->boms()->findOrFail($bomId);
+        $bom->update($request->validated());
         return response()->json([
                 'success' => true,
                 'message' => 'Bill of Material item updated successfully',
@@ -48,8 +48,8 @@ class BomController extends Controller
     }
     public function destroy(Project $project, $bomId)
     {
-        $bomItem = $project->boms()->findOrFail($bomId);
-        $bomItem->delete();
+        $bom = $project->boms()->findOrFail($bomId);
+        $bom->delete();
         return response()->json([
             'success' => true,
             'message' => 'Bill of Material item deleted successfully',
