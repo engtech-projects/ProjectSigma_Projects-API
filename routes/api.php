@@ -103,8 +103,7 @@ Route::middleware('auth:api')->group(function () {
             // ───── Generate Summary Of Estimate Direct Cost ─────
             Route::get('{project}/direct-cost/summary', [ProjectController::class, 'generateSummaryOfDirectEstimate']);
             // ───── Bill of Materials ─────
-            Route::resource('{project}/bill-of-materials', ProjectController::class);
-            Route::post('{project}/bill-of-materials/generate', [ProjectController::class, 'generateBillOfMaterials']);
+            Route::resource('{project}/bom', BomController::class);
         });
         Route::get('{project}/resource-items', [ProjectController::class, 'getResourcesItems']);
         Route::get('owned', [ProjectController::class, 'getOwnedProjects']);
