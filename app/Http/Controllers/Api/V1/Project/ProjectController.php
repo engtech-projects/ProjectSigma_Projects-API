@@ -14,6 +14,7 @@ use App\Http\Requests\UpdateProjectStageRequest;
 use App\Http\Resources\DraftItemListResource;
 use App\Http\Resources\Project\ProjectDetailResource;
 use App\Http\Resources\Project\ProjectListingResource;
+use App\Http\Resources\SummaryOfDirectEstimateResource;
 use App\Models\Project;
 use App\Services\ProjectService;
 use Illuminate\Http\JsonResponse;
@@ -190,6 +191,21 @@ class ProjectController extends Controller
             'message' => 'Cash flow updated successfully.',
             'data' => $project,
         ], 200);
+    }
+    public function generateSummaryOfDirectEstimate(Project $project)
+    {
+        $projectService = new ProjectService($project);
+        $summary = $projectService->getTasksWithResources();
+        $distributionOfDirectCost = $projectService->calculateDirectCostDistribution($summary);
+        return SummaryOfDirectEstimateResource::collection($summary)
+            ->additional([
+                'success' => true,
+                'message' => 'Successfully fetched summary of direct estimate.',
+                'project_code' => $project->code,
+                'project_name' => $project->name,
+                'location' => $project->location,
+                'distribution_of_direct_cost' => $distributionOfDirectCost,
+            ]);
     }
     public function generateBillOfMaterials()
     {
