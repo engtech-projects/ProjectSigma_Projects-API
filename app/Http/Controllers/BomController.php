@@ -6,7 +6,6 @@ use App\Http\Requests\StoreBomRequest;
 use App\Http\Requests\UpdateBomRequest;
 use App\Http\Resources\BomResource;
 use App\Http\Resources\GenerateBomResource;
-use App\Models\Bom;
 use App\Models\Project;
 
 class BomController extends Controller
