@@ -387,29 +387,4 @@ class ProjectService
         ];
         return $result;
     }
-    public function generateBillOfMaterials()
-    {
-        $this->project->load('phases.tasks.resources');
-        foreach ($this->project->phases as $phase) {
-            foreach ($phase->tasks as $task) {
-                foreach ($task->resources as $resource) {
-                    $existingBom = $this->project->bom()
-                        ->where('task_id', $task->id)
-                        ->where('resource_id', $resource->id)
-                        ->first();
-                    if (!$existingBom) {
-                        $this->project->bom()->create([
-                            'task_id'       => $task->id,
-                            'resource_id'   => $resource->id,
-                            'material_name' => $resource->description,
-                            'quantity'      => $resource->quantity,
-                            'unit'          => $resource->unit,
-                            'unit_price'    => $resource->unit_cost,
-                            'source_type'   => 'system_generated',
-                        ]);
-                    }
-                }
-            }
-        }
-    }
 }

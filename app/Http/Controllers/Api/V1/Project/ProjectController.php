@@ -207,12 +207,4 @@ class ProjectController extends Controller
                 'distribution_of_direct_cost' => $distributionOfDirectCost,
             ]);
     }
-    public function generateBillOfMaterials()
-    {
-        $this->projectService->generateBillOfMaterials();
-        return response()->json([
-            'success' => true,
-            'message' => 'Bill of Materials generated successfully.',
-        ], 200);
-    }
 }
