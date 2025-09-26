@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBomRequest;
 use App\Http\Requests\UpdateBomRequest;
 use App\Http\Resources\BomResource;
-use App\Models\Bom;
 use App\Models\Project;
-use Illuminate\Http\Request;
 
 class BomController extends Controller
 {
