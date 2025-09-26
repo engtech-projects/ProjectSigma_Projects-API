@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBomRequest;
 use App\Http\Requests\UpdateBomRequest;
 use App\Http\Resources\BomResource;
+use App\Http\Resources\GenerateBomResource;
 use App\Models\Project;
 
 class BomController extends Controller
@@ -52,5 +53,17 @@ class BomController extends Controller
             'success' => true,
             'message' => 'Bill of Material item deleted successfully',
         ], 200);
+    }
+    public function generateBillOfMaterials(Project $project)
+    {
+        return GenerateBomResource::collection($project->boms()->get())
+            ->additional([
+                'success' => true,
+                'message' => 'Bill of Materials generated successfully',
+                'project_code' => $project->code,
+                'project_name' => $project->name,
+                'location' => $project->location,
+                'scope_of_work' => $project->nature_of_work,
+            ]);
     }
 }
