@@ -18,16 +18,6 @@ class TaskScheduleService
         $this->taskSchedule = $taskSchedule;
     }
 
-    public function getAllTaskScheduleByProject(Project $project)
-    {
-        $project = Project::with('phases.tasks.schedules')
-            ->findOrFail($project->id);
-        $schedules = $project->phases
-            ->flatMap->tasks
-            ->flatMap->schedules;
-        return $schedules;
-    }
-
     public function searchAndFilter(array $filter)
     {
         return Project::with('phases.tasks.schedules')

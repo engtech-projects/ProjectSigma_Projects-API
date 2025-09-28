@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\V1\BoqItem\BoqItemController;
 use App\Http\Controllers\Api\V1\Uom\UomController;
 use App\Http\Controllers\APiSyncController;
 use App\Http\Controllers\ApiServiceController;
+use App\Http\Controllers\BomController;
 use App\Http\Controllers\CancelApproval;
 use App\Http\Controllers\CashflowController;
 use App\Http\Controllers\DailyScheduleController;
@@ -111,6 +112,9 @@ Route::middleware('auth:api')->group(function () {
                 Route::get('my-approvals', [DirectCostRequestController ::class, 'myApprovals']);
                 Route::get('approved', [DirectCostRequestController ::class, 'approved']);
             });
+            // ───── Bill of Materials ─────
+            Route::get('{project}/bom/generate-bom', [BomController::class, 'generateBillOfMaterials']);
+            Route::resource('{project}/bom', BomController::class);
         });
         Route::get('{project}/resource-items', [ProjectController::class, 'getResourcesItems']);
         Route::get('owned', [ProjectController::class, 'getOwnedProjects']);

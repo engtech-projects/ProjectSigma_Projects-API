@@ -24,11 +24,10 @@ class TaskScheduleController extends Controller
     public function filterProjectTaskSchedules(FilterTaskScheduleRequest $request)
     {
         try {
-            $projects = $this->taskScheduleService->searchAndFilter($request->validated());
-            return response()->json([
+            $taskSchedules = $this->taskScheduleService->searchAndFilter($request->validated());
+            return ProjectTaskScheduleResource::collection($taskSchedules)->additional([
                 'success' => true,
-                'message' => 'Task schedules fetched successfully.',
-                'data' => ProjectTaskScheduleResource::collection($projects),
+                'message' => 'Task schedules of projects retrieved successfully.',
             ], 200);
         } catch (ValidationException $e) {
             return response()->json([
@@ -40,11 +39,11 @@ class TaskScheduleController extends Controller
 
     public function getAllTaskScheduleByProject(Project $project)
     {
-        $schedules = $this->taskScheduleService->getAllTaskScheduleByProject($project);
-        return  TaskScheduleResource::collection($schedules)
+        $taskSchedules = $project->with('phases.tasks.schedules')->findOrFail($project->id);
+        return ProjectTaskScheduleResource::make($taskSchedules)
             ->additional([
                 'success' => true,
-                'message' => 'Task schedules retrieved successfully.',
+                'message' => 'Task schedules of a project retrieved successfully.',
             ]);
     }
 
