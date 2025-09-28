@@ -1,14 +1,12 @@
 <?php
-
 namespace App\Http\Requests\ResourceItem;
-
 use App\Enums\LaborCostCategory;
+use App\Enums\ResourceStatus;
 use App\Enums\ResourceType;
 use App\Enums\WorkTimeCategory;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
-
 class UpdateResourceItemRequest extends FormRequest
 {
     /**
@@ -27,6 +25,12 @@ class UpdateResourceItemRequest extends FormRequest
     {
         return [
             'task_id' => 'required|exists:tasks,id',
+            'setup_item_profile_id' => [
+                'nullable',
+                Rule::requiredIf(function () {
+                    return $this->status === ResourceStatus::ITEM->value && $this->resource_type === ResourceType::MATERIALS->value;
+                })
+            ],
             'resource_type' => ['required', new Enum(ResourceType::class)],
             'description'   => [
                 'required',

@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Models;
-
 use App\Enums\ProjectStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +7,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
-
 class BoqItem extends Model
 {
     use HasFactory;
@@ -106,6 +103,26 @@ class BoqItem extends Model
     public function getTotalFuelOilAmountAttribute()
     {
         return $this->resources()->where('resource_type', 'fuel_oil_cost')
+            ->sum('total_cost');
+    }
+    public function getTotalGovernmentPremiumsAmountAttribute()
+    {
+        return $this->resources()->where('resource_type', 'government_premiums')
+            ->sum('total_cost');
+    }
+    public function getTotalMiscellaneousCostAmountAttribute()
+    {
+        return $this->resources()->where('resource_type', 'miscellaneous_cost')
+            ->sum('total_cost');
+    }
+    public function getTotalOtherExpensesAmountAttribute()
+    {
+        return $this->resources()->where('resource_type', 'other_expenses')
+            ->sum('total_cost');
+    }
+    public function getTotalProjectAllowanceAmountAttribute()
+    {
+        return $this->resources()->where('resource_type', 'project_allowance')
             ->sum('total_cost');
     }
     public function getTotalOverheadAmountAttribute()

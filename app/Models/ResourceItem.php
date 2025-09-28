@@ -119,7 +119,7 @@ class ResourceItem extends Model
     /**
      * Scope-like helper for finding matching resources.
      */
-    public function getMatchingResourcesAttribute()
+    public function matchingResources()
     {
         $projectId = $this->task->phase->project_id;
         return self::whereHas('task.phase', fn ($query) =>

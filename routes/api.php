@@ -82,6 +82,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/uom', fn () => response()->json(Uom::all(), 200));
         Route::resource('positions', PositionController::class);
         Route::get('/all-position', [PositionController::class, 'all']);
+        Route::get('item-profiles', [SetupListsController::class, 'getAllItemProfileList']);
     });
     // ────── Approvals ──────
     Route::prefix('approvals')->group(function () {

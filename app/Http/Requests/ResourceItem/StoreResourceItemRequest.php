@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Requests\ResourceItem;
-
 use App\Enums\LaborCostCategory;
 use App\Enums\ResourceStatus;
 use App\Enums\ResourceType;
@@ -9,7 +7,6 @@ use App\Enums\WorkTimeCategory;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
-
 class StoreResourceItemRequest extends FormRequest
 {
     /**
@@ -59,7 +56,6 @@ class StoreResourceItemRequest extends FormRequest
             'status' => ['nullable', new Enum(ResourceStatus::class)]
         ];
     }
-
     public function messages()
     {
         return [

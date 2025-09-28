@@ -1,10 +1,7 @@
 <?php
-
 namespace App\Http\Resources;
-
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-
 class ResourceItemListResource extends JsonResource
 {
     /**
@@ -16,6 +13,7 @@ class ResourceItemListResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'setup_item_profile_id' => $this->setup_item_profile_id,
             'task_id' => $this->task_id,
             'resource_type' => $this->resource_type,
             'description' => $this->description,
