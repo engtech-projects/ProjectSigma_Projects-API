@@ -1,10 +1,13 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Http\Resources\ItemProfileAllListResource;
 use App\Http\Resources\ItemProfileListResource;
 use App\Http\Resources\UomListResource;
 use App\Models\SetupItemProfiles;
 use App\Models\Uom;
+
 class SetupListsController extends Controller
 {
     public function getUomList()

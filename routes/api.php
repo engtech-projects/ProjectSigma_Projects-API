@@ -1,4 +1,5 @@
 <?php
+
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Http\Controllers\Actions\Approvals\ApproveApproval;
@@ -29,7 +30,6 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\NatureOfWorkController;
 use App\Http\Controllers\ProjectChangeRequestController;
 use App\Http\Controllers\ResourceMetricController;
-use App\Http\Controllers\SetupDocumentSignatureController;
 use App\Http\Controllers\SetupListsController;
 use App\Http\Controllers\TaskScheduleController;
 use App\Http\Controllers\VoidApproval;
@@ -38,6 +38,7 @@ use App\Models\Uom;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -106,11 +107,11 @@ Route::middleware('auth:api')->group(function () {
             Route::resource('change-requests', ProjectChangeRequestController::class);
             // ───── allRequest, myRequest, myApprovals, ApprovedRequests ─────
             Route::prefix('direct-cost-requests')->group(function () {
-                Route::get('/', [DirectCostRequestController ::class, 'index']);
-                Route::get('all-requests', [DirectCostRequestController ::class, 'allRequests']);
-                Route::get('my-requests', [DirectCostRequestController ::class, 'myRequests']);
-                Route::get('my-approvals', [DirectCostRequestController ::class, 'myApprovals']);
-                Route::get('approved', [DirectCostRequestController ::class, 'approved']);
+                Route::get('/', [DirectCostRequestController::class, 'index']);
+                Route::get('all-requests', [DirectCostRequestController::class, 'allRequests']);
+                Route::get('my-requests', [DirectCostRequestController::class, 'myRequests']);
+                Route::get('my-approvals', [DirectCostRequestController::class, 'myApprovals']);
+                Route::get('approved', [DirectCostRequestController::class, 'approved']);
             });
             // ───── Bill of Materials ─────
             Route::get('{project}/bom/generate-bom', [BomController::class, 'generateBillOfMaterials']);

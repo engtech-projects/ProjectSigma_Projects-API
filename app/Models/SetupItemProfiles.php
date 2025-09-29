@@ -1,9 +1,12 @@
 <?php
+
 namespace App\Models;
+
 use App\Traits\ModelHelpers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+
 class SetupItemProfiles extends Model
 {
     use HasFactory;
@@ -37,7 +40,7 @@ class SetupItemProfiles extends Model
         'active_status',
         'is_approved',
     ];
-   public function uomRelation()
+    public function uomRelation()
     {
         return $this->belongsTo(Uom::class, 'uom', 'id');
     }

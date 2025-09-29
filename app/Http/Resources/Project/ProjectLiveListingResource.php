@@ -1,6 +1,9 @@
 <?php
+
 namespace App\Http\Resources\Project;
+
 use Illuminate\Http\Resources\Json\JsonResource;
+
 class ProjectLiveListingResource extends JsonResource
 {
     public function toArray($request)
