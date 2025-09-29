@@ -31,6 +31,7 @@ use App\Http\Controllers\ProjectChangeRequestController;
 use App\Http\Controllers\ResourceMetricController;
 use App\Http\Controllers\SetupDocumentSignatureController;
 use App\Http\Controllers\SetupListsController;
+use App\Http\Controllers\SetupUomController;
 use App\Http\Controllers\TaskScheduleController;
 use App\Http\Controllers\VoidApproval;
 use App\Http\Resources\User\UserCollection;
@@ -187,6 +188,9 @@ Route::middleware('auth:api')->group(function () {
     Route::post('daily-schedule/{id}/restore', [DailyScheduleController::class, 'restore']);
     Route::get('activities/{activity}/daily', [DailyScheduleController::class, 'getDailySchedule']);
     Route::post('activities/{activity}/daily', [DailyScheduleController::class, 'updateOrCreateDailySchedule']);
+
+    // ────── Setup Uom ──────
+    Route::resource('setup-uom', SetupUomController::class);
 });
 // SECRET API KEY ROUTES
 Route::middleware("secret_api")->group(function () {
