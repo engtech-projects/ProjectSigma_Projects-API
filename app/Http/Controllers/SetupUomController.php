@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSetupUomRequest;
 use App\Http\Requests\UpdateSetupUomRequest;
 use App\Http\Resources\SetupUomResource;
 use App\Models\SetupUom;
-use Illuminate\Http\Request;
 
 class SetupUomController extends Controller
 {
@@ -21,7 +19,7 @@ class SetupUomController extends Controller
     public function index(SetupUom $setupUom)
     {
         return SetupUomResource::collection($setupUom->get())
-            ->additional([ 
+            ->additional([
                 'success' => true,
                 'message' => 'All SetupUom fetched successfully',
             ]);
@@ -58,9 +56,9 @@ class SetupUomController extends Controller
     public function destroy(SetupUom $setupUom)
     {
         $setupUom->delete();
-         return response()->json([
-            'success' => true,
-            'message' => 'Setup Uom deleted successfully',
+        return response()->json([
+           'success' => true,
+           'message' => 'Setup Uom deleted successfully',
         ]);
     }
 }
