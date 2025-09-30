@@ -17,6 +17,7 @@ class SetupUomResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'symbol' => $this->symbol
         ];
     }
 }
