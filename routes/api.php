@@ -141,6 +141,7 @@ Route::middleware('auth:api')->group(function () {
     });
     Route::resource('phases', BoqPartController::class);
     Route::resource('tasks', BoqItemController::class);
+    Route::patch('{task}/update-draft-unit-price', [BoqItemController::class, 'updateDraftUnitPrice']);
     Route::prefix('uom')->as('uom.')->group(function () {
         Route::resource('resource', UomController::class);
         Route::get('all', [UomController::class, 'all']);

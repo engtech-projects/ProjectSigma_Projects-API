@@ -105,6 +105,10 @@ class Project extends Model
     {
         return $this->hasMany(BoqPart::class, 'project_id', 'id');
     }
+    public function tasks()
+    {
+        return $this->hasManyThrough(BoqItem::class, BoqPart::class);
+    }
     public function resources()
     {
         return $this->phases->flatMap(function ($phase) {

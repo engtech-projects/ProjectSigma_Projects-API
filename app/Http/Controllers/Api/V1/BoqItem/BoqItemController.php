@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Api\V1\BoqItem;
 
+use App\Enums\Accessibility;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BoqItem\StoreBoqItemRequest;
 use App\Http\Requests\BoqItem\UpdateBoqItemRequest;
+use App\Http\Requests\UpdateDraftUnitPriceRequest;
 use App\Http\Resources\Project\BoqItemResource;
+use App\Http\Traits\CheckAccessibility;
 use App\Models\BoqPart;
 use App\Models\BoqItem;
 use App\Services\BoqItemService;
@@ -16,6 +19,8 @@ class BoqItemController extends Controller
     /**
      * Display a listing of the resource.
      */
+    use CheckAccessibility;
+
     public function index(Request $request)
     {
         if ($request->has('phase_id')) {
@@ -42,11 +47,12 @@ class BoqItemController extends Controller
      */
     public function show(BoqItem $task)
     {
-        $task->load('resources');
-        return response()->json([
-            'message' => 'Project Item fetched successfully.',
-            'data' => new BoqItemResource($task),
-        ], 200);
+        $task->load(['project', 'resources']);
+        return BoqItemResource::make($task)
+            ->additional([
+                'success' => true,
+                'message' => 'BOQ Item retrieved successfully.',
+            ]);
     }
     /**
      * Update the specified resource in storage.
@@ -71,5 +77,19 @@ class BoqItemController extends Controller
             'message' => 'Project Task has been deleted',
             'data' => $task,
         ], 200);
+    }
+
+    public function updateDraftUnitPrice(BoqItem $task, UpdateDraftUnitPriceRequest $request)
+    {
+        if (!$this->checkUserAccess([
+            ...Accessibility::marketingGroup(),
+        ])) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+        $task->update($request->validated());
+        return response()->json([
+            'success' => true,
+            'message' => 'Draft unit price updated successfully.',
+        ]);
     }
 }
