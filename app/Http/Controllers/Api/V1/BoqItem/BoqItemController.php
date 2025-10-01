@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\BoqItem;
 
-use App\Enums\Accessibility;
+use App\Enums\AccessibilityProjects;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BoqItem\StoreBoqItemRequest;
 use App\Http\Requests\BoqItem\UpdateBoqItemRequest;
@@ -82,7 +82,7 @@ class BoqItemController extends Controller
     public function updateDraftUnitPrice(BoqItem $task, UpdateDraftUnitPriceRequest $request)
     {
         if (!$this->checkUserAccess([
-            ...Accessibility::marketingGroup(),
+            ...AccessibilityProjects::marketingGroup(),
         ])) {
             return response()->json(['message' => 'Forbidden'], 403);
         }

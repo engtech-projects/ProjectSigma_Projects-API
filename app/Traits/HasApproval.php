@@ -2,7 +2,7 @@
 
 namespace App\Traits;
 
-use App\Enums\Accessibility;
+use App\Enums\AccessibilitySigma;
 use App\Enums\RequestStatuses;
 use App\Http\Traits\CheckAccessibility;
 use App\Models\User;
@@ -194,7 +194,7 @@ trait HasApproval
                 $approval['status'] = RequestStatuses::APPROVED;
                 $approval['date_approved'] = Carbon::now()->format('F j, Y h:i A');
             }
-            if ($this->checkUserAccess([Accessibility::SUPERADMIN->value])) {
+            if ($this->checkUserAccess([AccessibilitySigma::SUPERADMIN->value])) {
                 $approval['remarks'] = 'Approved by Super Admin';
             }
 
@@ -247,7 +247,7 @@ trait HasApproval
         }
         $currentApproval = $this->getNextPendingApproval();
         // CHECK IF THERE IS A CURRENT APPROVAL AND IF IS FOR THE LOGGED IN USER
-        if (empty($currentApproval) || ($currentApproval['user_id'] != auth()->user()->id && ! $this->checkUserAccess([Accessibility::SUPERADMIN]))) {
+        if (empty($currentApproval) || ($currentApproval['user_id'] != auth()->user()->id && ! $this->checkUserAccess([AccessibilitySigma::SUPERADMIN]))) {
             return [
                 'approvals' => $this->approvals,
                 'success' => false,

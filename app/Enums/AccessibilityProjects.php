@@ -4,10 +4,12 @@ namespace App\Enums;
 
 use App\Enums\Traits\EnumHelper;
 
-enum Accessibility: string
+enum AccessibilityProjects: string
 {
     use EnumHelper;
-    case SUPERADMIN = 'project sigma:super admin';
+
+    case PROJECTMONITORING_DASHBOARD = "project monitoring:dashboard";
+    case PROJECTMONITORING_PROJECT = "project monitoring:projects";
     case PROJECTMONITORING_MARKETING = "project monitoring:marketing";
     case PROJECTMONITORING_MARKETING_MYPROJECTS = "project monitoring:marketing_my projects";
     case PROJECTMONITORING_MARKETING_BIDDINGLIST = "project monitoring:marketing_bidding list";
@@ -22,6 +24,15 @@ enum Accessibility: string
     case PROJECTMONITORING_MARKETING_SUMMARYOFBID = "project monitoring:marketing_summary of bid";
     case PROJECTMONITORING_MARKETING_CASHFLOW = "project monitoring:marketing_cashflow";
     case PROJECTMONITORING_MARKETING_ATTACHMENT = "project monitoring:marketing_attachment";
+    case PROJECTMONITORING_TSS = "project monitoring:tss";
+    case PROJECTMONITORING_TSS_LIVEPROJECTS = "project monitoring:tss_live projects";
+    case PROJECTMONITORING_TSS_BILLOFMATERIALS = "project monitoring:tss_bill of materials";
+    case PROJECTMONITORING_TSS_DUPA = "project monitoring:tss_dupa";
+    case PROJECTMONITORING_TSS_CASHFLOW = "project monitoring:tss_cashflow";
+    case PROJECTMONITORING_TSS_PROJECTDETAILS = "project monitoring:tss_project details";
+    case PROJECTMONITORING_SETUP_APPROVALS = "project monitoring:setup_approvals";
+    case PROJECTMONITORING_SETUP_POSITION = "project monitoring:setup_position";
+    case PROJECTMONITORING_SETUP_SYNCHRONIZATION = "project monitoring:setup_synchronization";
 
     public static function marketingGroup(): array
     {
@@ -40,6 +51,18 @@ enum Accessibility: string
             self::PROJECTMONITORING_MARKETING_SUMMARYOFBID->value,
             self::PROJECTMONITORING_MARKETING_CASHFLOW->value,
             self::PROJECTMONITORING_MARKETING_ATTACHMENT->value,
+        ];
+    }
+
+    public static function tssGroup(): array
+    {
+        return [
+            self::PROJECTMONITORING_TSS->value,
+            self::PROJECTMONITORING_TSS_LIVEPROJECTS->value,
+            self::PROJECTMONITORING_TSS_BILLOFMATERIALS->value,
+            self::PROJECTMONITORING_TSS_DUPA->value,
+            self::PROJECTMONITORING_TSS_CASHFLOW->value,
+            self::PROJECTMONITORING_TSS_PROJECTDETAILS->value,
         ];
     }
 }
