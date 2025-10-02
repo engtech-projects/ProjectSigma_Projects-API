@@ -199,7 +199,7 @@ class BoqItem extends Model
         if ($this->quantity == 0) {
             return number_format(0, 2);
         }
-        $grand_total = $this->resources->sum('total_cost');
+        $grand_total = $this->direct_cost_items->sum('total_cost');
         $unitCostPerItem = $grand_total / $this->quantity;
         return number_format($unitCostPerItem, 2);
     }
@@ -208,7 +208,7 @@ class BoqItem extends Model
         if ($this->quantity == 0 || $this->unit_price == 0) {
             return number_format(0, 2) . '%';
         }
-        $unitCostPerItem = ($this->resources->sum('total_cost') / $this->quantity);
+        $unitCostPerItem = ($this->direct_cost_items->sum('total_cost') / $this->quantity);
         $percent = ($unitCostPerItem / $this->unit_price) * 100;
         return number_format($percent, 2) . '%';
     }
