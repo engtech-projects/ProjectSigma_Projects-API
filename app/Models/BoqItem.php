@@ -174,20 +174,26 @@ class BoqItem extends Model
             'total' => number_format($this->unit_price * $this->quantity, 2),
         ];
     }
-    public function getResourceItemsAttribute()
+    public function getDirectCostItemsAttribute()
     {
         return $this->resources->map(function (ResourceItem $item) {
+            $totalCost = ($item->resource_type->value === "materials" && $item->setup_item_profile_id === null)
+                ? 0
+                : $item->total_cost;
             return [
                 'resource_item_id' => $item->id,
+                'setup_item_profile_id' => $item->setup_item_profile_id,
                 'resource_type' => $item->resource_type,
-                'total_cost' => number_format($item->total_cost, 2),
+                'total_cost' => $totalCost,
             ];
-        });
+        })->values();
     }
     public function getResourceItemsTotalAttribute()
     {
-        return number_format($this->resources->sum('total_cost'), 2);
+        $total = $this->direct_cost_items->sum('total_cost');
+        return number_format($total, 2);
     }
+
     public function getUnitCostPerItemAttribute()
     {
         if ($this->quantity == 0) {
@@ -200,7 +206,7 @@ class BoqItem extends Model
     public function getPercentAttribute()
     {
         if ($this->quantity == 0 || $this->unit_price == 0) {
-            return number_format(0, 2);
+            return number_format(0, 2) . '%';
         }
         $unitCostPerItem = ($this->resources->sum('total_cost') / $this->quantity);
         $percent = ($unitCostPerItem / $this->unit_price) * 100;

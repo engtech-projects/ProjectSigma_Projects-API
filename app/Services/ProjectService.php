@@ -356,7 +356,18 @@ class ProjectService
     public function calculateDirectCostDistribution($tasks)
     {
         $resources = $tasks->flatMap->resources;
-        $distribution = $resources->groupBy('resource_type')->map->sum('total_cost');
+        $resources = $resources->map(function ($item) {
+            $totalCost = ($item->resource_type->value === "materials" && $item->setup_item_profile_id === null)
+                ? 0
+                : (float) $item->total_cost;
+            return [
+                'resource_type' => strtolower($item->resource_type->value),
+                'total_cost'    => $totalCost,
+            ];
+        });
+        $distribution = $resources->groupBy('resource_type')->map(function ($group) {
+            return $group->sum('total_cost');
+        });
         $directCostTotal = $distribution->sum();
         $grandTotal = (float) $tasks->sum('amount');
         $orderedTypes = ['materials', 'labor_expense', 'equipment_rental', 'fuel_oil_cost', 'overhead_cost'];
@@ -366,15 +377,6 @@ class ProjectService
                 $total = (float) $distribution[$label];
                 $percent = $grandTotal ? ($total / $grandTotal) * 100 : 0;
                 $result[$label] = [
-                    'total (PHP)' => number_format($total, 2),
-                    'percent'     => number_format($percent, 2) . '%',
-                ];
-            }
-        }
-        foreach ($distribution as $type => $total) {
-            if (!isset($result[$type])) {
-                $percent = $grandTotal ? ($total / $grandTotal) * 100 : 0;
-                $result[$type] = [
                     'total (PHP)' => number_format($total, 2),
                     'percent'     => number_format($percent, 2) . '%',
                 ];
