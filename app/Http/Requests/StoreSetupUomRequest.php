@@ -23,7 +23,7 @@ class StoreSetupUomRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
-            'symbol' => 'required|string'
+            'symbol' => 'required|string|max:10',
         ];
     }
 }

@@ -13,7 +13,7 @@ return new class () extends Migration {
         Schema::create('setup_uoms', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('symbol');
+            $table->string('symbol', 10);
             $table->timestamps();
             $table->softDeletes();
         });
