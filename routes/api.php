@@ -25,11 +25,11 @@ use App\Http\Controllers\CancelApproval;
 use App\Http\Controllers\CashflowController;
 use App\Http\Controllers\DailyScheduleController;
 use App\Http\Controllers\DirectCostEstimateController;
+use App\Http\Controllers\DirectCostRequestController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\NatureOfWorkController;
 use App\Http\Controllers\ProjectChangeRequestController;
 use App\Http\Controllers\ResourceMetricController;
-use App\Http\Controllers\SetupDocumentSignatureController;
 use App\Http\Controllers\SetupListsController;
 use App\Http\Controllers\SetupUomController;
 use App\Http\Controllers\TaskScheduleController;
@@ -50,7 +50,6 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
 Route::middleware('auth:api')->group(function () {
     // SYNCHRONIZATION ROUTES
     Route::prefix('setup')->group(function () {
@@ -86,6 +85,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/uom', fn () => response()->json(Uom::all(), 200));
         Route::resource('positions', PositionController::class);
         Route::get('/all-position', [PositionController::class, 'all']);
+        Route::get('item-profiles', [SetupListsController::class, 'getAllItemProfileList']);
     });
     // ────── Approvals ──────
     Route::prefix('approvals')->group(function () {
@@ -99,17 +99,27 @@ Route::middleware('auth:api')->group(function () {
         Route::resource('resource', ProjectController::class);
         Route::prefix('live')->group(function () {
             Route::get('/', [ProjectController::class, 'getLiveProjects']);
+            Route::get('{project}/details', [ProjectController::class, 'getProjectDetails']);
             // ───── Direct Cost - Cashflows ─────
             Route::resource('{project}/cashflows', CashflowController::class);
             // ───── Generate Summary Of Estimate Direct Cost ─────
             Route::get('{project}/direct-cost/summary', [ProjectController::class, 'generateSummaryOfDirectEstimate']);
+            // ───── Change Requests ─────
+            Route::resource('change-requests', ProjectChangeRequestController::class);
+            // ───── allRequest, myRequest, myApprovals, ApprovedRequests ─────
+            Route::prefix('direct-cost-requests')->group(function () {
+                Route::get('/', [DirectCostRequestController::class, 'index']);
+                Route::get('all-requests', [DirectCostRequestController::class, 'allRequests']);
+                Route::get('my-requests', [DirectCostRequestController::class, 'myRequests']);
+                Route::get('my-approvals', [DirectCostRequestController::class, 'myApprovals']);
+                Route::get('approved', [DirectCostRequestController::class, 'approved']);
+            });
             // ───── Bill of Materials ─────
             Route::get('{project}/bom/generate-bom', [BomController::class, 'generateBillOfMaterials']);
             Route::resource('{project}/bom', BomController::class);
         });
         Route::get('{project}/resource-items', [ProjectController::class, 'getResourcesItems']);
         Route::get('owned', [ProjectController::class, 'getOwnedProjects']);
-        Route::get('tss', [ProjectController::class, 'tssProjects']);
         Route::patch('{project}/status', [ProjectStatusController::class, 'updateStatus']);
         Route::patch('{project}/update-stage', [ProjectController::class, 'updateStage']);
         Route::post('{project}/archive', [ProjectStatusController::class, 'archive']);
@@ -130,15 +140,6 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('{attachment}/remove', [ProjectAttachmentController::class, 'destroy']);
     });
     // ────── Phases, Tasks, Resources ──────
-    Route::prefix('document-signatures')->name('document-signatures.')->group(function () {
-        Route::get("/", [SetupDocumentSignatureController::class, 'index'])->name('index');
-        Route::post("/", [SetupDocumentSignatureController::class, 'store'])->name('store');
-        Route::delete("/", [SetupDocumentSignatureController::class, 'destroy'])->name('destroy');
-        Route::get('type', [SetupDocumentSignatureController::class, 'showByDocumentType'])
-            ->name('by-type');
-        Route::post('store-or-update', [SetupDocumentSignatureController::class, 'storeOrUpdate'])
-            ->name('store-or-update');
-    });
     Route::resource('phases', BoqPartController::class);
     Route::resource('tasks', BoqItemController::class);
     Route::prefix('uom')->as('uom.')->group(function () {
@@ -176,13 +177,9 @@ Route::middleware('auth:api')->group(function () {
         Route::get('{project_assignment}', [ProjectAssignmentController::class, 'show']);
         Route::post('/', [ProjectAssignmentController::class, 'store']);
     });
-    // ────── Project Change Requests ──────
-    Route::resource('change-requests', ProjectChangeRequestController::class);
-
     // ────── Activities ──────
     Route::resource('activities', ActivityController::class);
     Route::post('activities/{id}/restore', [ActivityController::class, 'restore']);
-
     // ────── Daily Schedule ──────
     Route::resource('daily-schedule', DailyScheduleController::class);
     Route::post('daily-schedule/{id}/restore', [DailyScheduleController::class, 'restore']);

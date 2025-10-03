@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ProjectStatus;
+use App\Enums\ResourceType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -86,7 +87,7 @@ class BoqItem extends Model
     }
     public function getTotalMaterialsAmountAttribute()
     {
-        return $this->resources()->where('resource_type', 'materials')
+        return $this->resources()->where('resource_type', ResourceType::MATERIALS->value)
             ->sum('total_cost');
     }
     public function getTotalDirectCostAttribute()
@@ -95,22 +96,42 @@ class BoqItem extends Model
     }
     public function getTotalEquipmentAmountAttribute()
     {
-        return $this->resources()->where('resource_type', 'equipment_rental')
+        return $this->resources()->where('resource_type', ResourceType::EQUIPMENT_RENTAL->value)
             ->sum('total_cost');
     }
     public function getTotalLaborAmountAttribute()
     {
-        return $this->resources()->where('resource_type', 'labor_expense')
+        return $this->resources()->where('resource_type', ResourceType::LABOR_EXPENSE->value)
             ->sum('total_cost');
     }
     public function getTotalFuelOilAmountAttribute()
     {
-        return $this->resources()->where('resource_type', 'fuel_oil_cost')
+        return $this->resources()->where('resource_type', ResourceType::FUEL_OIL_COST->value)
+            ->sum('total_cost');
+    }
+    public function getTotalGovernmentPremiumsAmountAttribute()
+    {
+        return $this->resources()->where('resource_type', ResourceType::GOVERNMENT_PREMIUMS->value)
+            ->sum('total_cost');
+    }
+    public function getTotalMiscellaneousCostAmountAttribute()
+    {
+        return $this->resources()->where('resource_type', ResourceType::MISCELLANEOUS_COST->value)
+            ->sum('total_cost');
+    }
+    public function getTotalOtherExpensesAmountAttribute()
+    {
+        return $this->resources()->where('resource_type', ResourceType::OTHER_EXPENSES->value)
+            ->sum('total_cost');
+    }
+    public function getTotalProjectAllowanceAmountAttribute()
+    {
+        return $this->resources()->where('resource_type', ResourceType::PROJECT_ALLOWANCE->value)
             ->sum('total_cost');
     }
     public function getTotalOverheadAmountAttribute()
     {
-        return $this->resources()->where('resource_type', 'overhead_cost')
+        return $this->resources()->where('resource_type', ResourceType::OVERHEAD_COST->value)
             ->sum('total_cost');
     }
     public function getOcmAttribute()

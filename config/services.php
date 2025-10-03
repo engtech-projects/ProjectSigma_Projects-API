@@ -12,35 +12,30 @@ return [
     | a conventional file to locate the various service credentials.
     |
     */
-
     'sigma' => [
         'secret_key' => env('SIGMA_SECRET_KEY'),
     ],
-
     'mailgun' => [
         'domain' => env('MAILGUN_DOMAIN'),
         'secret' => env('MAILGUN_SECRET'),
         'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
         'scheme' => 'https',
     ],
-
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],
-
     'url' => [
         'hrms_app_url' => env('HRMS_APP_URL'),
         'hrms_api_url' => env('HRMS_API_URL'),
         'hrms_api' => env('HRMS_API_URL'),
         'inventory_api' => env('INVENTORY_API_URL'),
     ],
-
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
     'pagination' => [
-        'limit' => env('PAGINATION_LIMIT', 5),
+        'limit' => env('PAGINATION_LIMIT', 15),
     ],
 ];

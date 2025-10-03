@@ -59,7 +59,6 @@ class StoreResourceItemRequest extends FormRequest
             'status' => ['nullable', new Enum(ResourceStatus::class)]
         ];
     }
-
     public function messages()
     {
         return [

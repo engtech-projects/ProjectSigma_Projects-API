@@ -12,9 +12,7 @@ class SetupItemProfiles extends Model
     use HasFactory;
     use SoftDeletes;
     use ModelHelpers;
-
     protected $table = 'setup_item_profile';
-
     protected $fillable = [
         'item_code',
         'item_description',
@@ -42,4 +40,16 @@ class SetupItemProfiles extends Model
         'active_status',
         'is_approved',
     ];
+    public function uomRelation()
+    {
+        return $this->belongsTo(Uom::class, 'uom', 'id');
+    }
+    public function getUomNameAttribute()
+    {
+        return $this->uomRelation?->name;
+    }
+    public function getUomSymbolAttribute()
+    {
+        return $this->uomRelation?->symbol;
+    }
 }
