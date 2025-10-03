@@ -27,6 +27,7 @@ class UpdateBoqItemRequest extends FormRequest
             'quantity' => 'required|numeric',
             'unit' => 'required|string',
             'unit_price' => 'nullable|numeric',
+            'draft_unit_price' => 'nullable|numeric',
             'amount' => 'nullable|numeric',
         ];
     }
