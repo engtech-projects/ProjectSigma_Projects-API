@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ChangeRequestType;
+use App\Enums\ProjectStatus;
 use App\Http\Resources\Project\ProjectLiveListingResource;
 use App\Models\Project;
 use App\Models\ProjectChangeRequest;
@@ -10,9 +12,9 @@ class DirectCostRequestController extends Controller
 {
     public function index()
     {
-        $data = Project::where('status', 'ongoing')
+        $data = Project::where('status', ProjectStatus::ONGOING->value)
             ->whereDoesntHave('changeRequests', function ($query) {
-                $query->where('request_type', 'directcost_approval_request');
+                $query->where('request_type', ChangeRequestType::DIRECTCOST_APPROVAL_REQUEST->value);
             })
             ->latest('created_at')
             ->paginate(config('services.pagination.limit'));
@@ -24,8 +26,8 @@ class DirectCostRequestController extends Controller
     }
     public function allRequests()
     {
-        $data = ProjectChangeRequest::where('request_type', "directcost_approval")
-            ->where('request_status', "Pending")
+        $data = ProjectChangeRequest::where('request_type', ChangeRequestType::DIRECTCOST_APPROVAL_REQUEST->value)
+            ->isPending()
             ->with('project')
             ->latest('created_at')
             ->paginate(config('services.pagination.limit'));
@@ -38,8 +40,8 @@ class DirectCostRequestController extends Controller
     public function myRequests()
     {
         $userId = auth()->id();
-        $data = ProjectChangeRequest::where('request_type', "directcost_approval")
-            ->where('request_status', "Pending")
+        $data = ProjectChangeRequest::where('request_type', ChangeRequestType::DIRECTCOST_APPROVAL_REQUEST->value)
+            ->isPending()
             ->where('created_by', $userId)
             ->with('project')
             ->latest('created_at')
@@ -53,8 +55,8 @@ class DirectCostRequestController extends Controller
     public function myApprovals()
     {
         $userId = auth()->id();
-        $data = ProjectChangeRequest::where('request_type', "directcost_approval")
-            ->where('request_status', "Pending")
+        $data = ProjectChangeRequest::where('request_type', ChangeRequestType::DIRECTCOST_APPROVAL_REQUEST->value)
+            ->isPending()
             ->whereJsonContains('approvals', ['user_id' => $userId])
             ->with('project')
             ->latest('created_at')
@@ -67,9 +69,9 @@ class DirectCostRequestController extends Controller
     }
     public function approved()
     {
-        $data = ProjectChangeRequest::where('request_type', "directcost_approval")
+        $data = ProjectChangeRequest::where('request_type', ChangeRequestType::DIRECTCOST_APPROVAL_REQUEST->value)
             ->where('request_status', "Approved")
-            ->with('project')
+            ->isApproved()
             ->latest('created_at')
             ->paginate(config('services.pagination.limit'));
         return ProjectLiveListingResource::collection($data)
