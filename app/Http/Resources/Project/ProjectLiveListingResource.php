@@ -12,7 +12,8 @@ class ProjectLiveListingResource extends JsonResource
             'id'          => $this->id,
             'name'        => $this->name,
             'location'    => $this->location,
-            'amount'      => number_format((float) $this->amount, 2, '.', ','), // 👈 formatted
+            'amount'      => (float) $this->amount,
+            'amount_formatted' => number_format((float) $this->amount, 2, '.', ','),
             'code'        => $this->code,
             'contract_id' => $this->contract_id,
             'created_at'  => $this->created_at_formatted,

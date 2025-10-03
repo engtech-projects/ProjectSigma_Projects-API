@@ -32,7 +32,8 @@ class SetupListsController extends Controller
     }
     public function getAllItemProfileList()
     {
-        $fetch = SetupItemProfiles::latest()
+        $fetch = SetupItemProfiles::with('uomRelation')
+            ->latest()
             ->get();
         return ItemProfileAllListResource::collection($fetch)
             ->additional([

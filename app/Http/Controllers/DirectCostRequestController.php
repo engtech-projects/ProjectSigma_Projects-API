@@ -1,10 +1,13 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Enums\ChangeRequestType;
 use App\Enums\ProjectStatus;
 use App\Http\Resources\Project\ProjectLiveListingResource;
 use App\Models\Project;
 use App\Models\ProjectChangeRequest;
+
 class DirectCostRequestController extends Controller
 {
     public function index()
@@ -61,7 +64,8 @@ class DirectCostRequestController extends Controller
     }
     public function approved()
     {
-        $data = ProjectChangeRequest::where('request_type', ChangeRequestType::DIRECTCOST_APPROVAL_REQUEST->value)
+        $data = ProjectChangeRequest::with('project')
+            ->where('request_type', ChangeRequestType::DIRECTCOST_APPROVAL_REQUEST->value)
             ->isApproved()
             ->latest('created_at')
             ->paginate(config('services.pagination.limit'));
