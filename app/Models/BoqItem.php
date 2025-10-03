@@ -199,8 +199,8 @@ class BoqItem extends Model
         if ($this->quantity == 0) {
             return number_format(0, 2);
         }
-        $grand_total = $this->direct_cost_items->sum('total_cost');
-        $unitCostPerItem = $grand_total / $this->quantity;
+        $grandTotal = $this->direct_cost_items->sum('total_cost');
+        $unitCostPerItem = $grandTotal / $this->quantity;
         return number_format($unitCostPerItem, 2);
     }
     public function getPercentAttribute()
