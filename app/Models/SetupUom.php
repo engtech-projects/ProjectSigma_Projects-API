@@ -13,5 +13,6 @@ class SetupUom extends Model
 
     protected $fillable = [
         'name',
+        'symbol'
     ];
 }
