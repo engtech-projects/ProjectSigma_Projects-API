@@ -24,7 +24,6 @@ class DirectCostRequestController extends Controller
     public function allRequests()
     {
         $data = ProjectChangeRequest::where('request_type', ChangeRequestType::DIRECTCOST_APPROVAL_REQUEST->value)
-            ->isPending()
             ->with('project')
             ->latest('created_at')
             ->paginate(config('services.pagination.limit'));
@@ -63,7 +62,6 @@ class DirectCostRequestController extends Controller
     public function approved()
     {
         $data = ProjectChangeRequest::where('request_type', ChangeRequestType::DIRECTCOST_APPROVAL_REQUEST->value)
-            ->where('request_status', "Approved")
             ->isApproved()
             ->latest('created_at')
             ->paginate(config('services.pagination.limit'));
