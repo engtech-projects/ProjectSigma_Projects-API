@@ -59,11 +59,10 @@ class BoqItemController extends Controller
      */
     public function update(UpdateBoqItemRequest $request, BoqItem $task)
     {
-        $validated = $request->validated();
-        $task->update($validated);
+        $task->update($request->validated());
         return response()->json([
+            'success' => true,
             'message' => 'Project item has been updated',
-            'data' => $task,
         ], 200);
     }
 
@@ -74,8 +73,8 @@ class BoqItemController extends Controller
     {
         $task->delete();
         return response()->json([
+            'success' => true,
             'message' => 'Project Task has been deleted',
-            'data' => $task,
         ], 200);
     }
 
