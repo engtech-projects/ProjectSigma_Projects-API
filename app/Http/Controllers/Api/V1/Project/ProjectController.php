@@ -14,6 +14,8 @@ use App\Http\Requests\UpdateProjectStageRequest;
 use App\Http\Resources\DraftItemListResource;
 use App\Http\Resources\Project\ProjectDetailResource;
 use App\Http\Resources\Project\ProjectListingResource;
+use App\Http\Resources\Project\ProjectLiveDetailResource;
+use App\Http\Resources\Project\ProjectLiveListingResource;
 use App\Http\Resources\SummaryOfDirectEstimateResource;
 use App\Models\Project;
 use App\Services\ProjectService;
@@ -114,13 +116,24 @@ class ProjectController extends Controller
             'data' => new ProjectDetailResource($data),
         ], JsonResponse::HTTP_OK);
     }
-    public function getLiveProjects()
+    public function getProjectDetails(Project $project)
     {
+        $data = $project->load('phases.tasks', 'attachments');
+        return new JsonResponse([
+            'success' => true,
+            'message' => "Successfully fetched.",
+            'data' => new ProjectLiveDetailResource($data),
+        ], JsonResponse::HTTP_OK);
+    }
+    public function getLiveProjects(FilterProjectRequest $request)
+    {
+        $validated = $request->validated();
+        $projectKey = $validated['project_key'] ?? null;
         $data = Project::ongoing()
+            ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
             ->latestFirst()
-            ->createdByAuth()
             ->paginate(config('services.pagination.limit'));
-        return ProjectListingResource::collection($data)
+        return ProjectLiveListingResource::collection($data)
             ->additional([
                 'success' => true,
                 'message' => 'Successfully fetched.',
@@ -164,22 +177,6 @@ class ProjectController extends Controller
                 'errors' => $e->errors(),
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
-    }
-    public function tssProjects(FilterProjectRequest $request)
-    {
-        $validated = $request->validated();
-        $projectKey = $validated['project_key'] ?? null;
-        $status = $validated['stage_status'] ?? null;
-        $projects = Project::query()
-            ->when($status, fn ($query) => $query->awarded())
-            ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
-            ->latestFirst()
-            ->paginate(config('services.pagination.limit'));
-        return ProjectListingResource::collection($projects)
-            ->additional([
-                'success' => true,
-                'message' => 'Successfully fetched.'
-            ]);
     }
     public function updateCashFlow(UpdateCashFlowRequest $request, Project $project)
     {
