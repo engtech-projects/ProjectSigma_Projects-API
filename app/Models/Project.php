@@ -105,7 +105,7 @@ class Project extends Model
     {
         return $this->hasMany(BoqPart::class, 'project_id', 'id');
     }
-    public function tasks()
+    public function tasks(): HasManyThrough
     {
         return $this->hasManyThrough(BoqItem::class, BoqPart::class);
     }
