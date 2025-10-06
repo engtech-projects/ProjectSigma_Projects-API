@@ -247,7 +247,7 @@ trait HasApproval
         }
         $currentApproval = $this->getNextPendingApproval();
         // CHECK IF THERE IS A CURRENT APPROVAL AND IF IS FOR THE LOGGED IN USER
-        if (empty($currentApproval) || ($currentApproval['user_id'] != auth()->user()->id && ! $this->checkUserAccess([AccessibilitySigma::SUPERADMIN]))) {
+        if (empty($currentApproval) || ($currentApproval['user_id'] != auth()->user()->id && ! $this->checkUserAccess([AccessibilitySigma::SUPERADMIN->value]))) {
             return [
                 'approvals' => $this->approvals,
                 'success' => false,
