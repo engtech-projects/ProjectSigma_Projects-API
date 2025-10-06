@@ -16,6 +16,7 @@ class DetailedEstimateResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'setup_item_profile_id' => $this->setup_item_profile_id,
             'project_id' => $this->project_id,
             'task_id' => $this->task_id,
             'description' => $this->description,

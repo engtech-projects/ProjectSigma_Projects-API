@@ -18,7 +18,6 @@ class ProjectChangeRequestController extends Controller
             'data' => ProjectChangeRequestResource::collection($changeRequests),
         ], 200);
     }
-
     public function store(StoreProjectChangeRequest $request)
     {
         $changeRequest = ProjectChangeRequest::create($request->validated());
@@ -28,7 +27,6 @@ class ProjectChangeRequestController extends Controller
             'data' => new ProjectChangeRequestResource($changeRequest),
         ], 201);
     }
-
     public function show(ProjectChangeRequest $changeRequest)
     {
         return response()->json([
@@ -37,7 +35,6 @@ class ProjectChangeRequestController extends Controller
             'data' => new ProjectChangeRequestResource($changeRequest),
         ], 200);
     }
-
     public function update(UpdateProjectChangeRequest $request, ProjectChangeRequest $changeRequest)
     {
         $changeRequest->update($request->validated());
@@ -47,7 +44,6 @@ class ProjectChangeRequestController extends Controller
             'data' => new ProjectChangeRequestResource($changeRequest),
         ], 200);
     }
-
     public function destroy(ProjectChangeRequest $changeRequest)
     {
         $changeRequest->delete();

@@ -83,7 +83,6 @@ class ResourceItemController extends Controller
             'data' => $result,
         ], 200);
     }
-
     public function billOfMaterialsResources(BoqItem $item_id)
     {
         $resources = $item_id->resources()->get();
