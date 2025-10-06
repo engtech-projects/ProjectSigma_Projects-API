@@ -36,33 +36,17 @@ enum AccessibilityProjects: string
 
     public static function marketingGroup(): array
     {
-        return [
-            self::PROJECTMONITORING_MARKETING->value,
-            self::PROJECTMONITORING_MARKETING_MYPROJECTS->value,
-            self::PROJECTMONITORING_MARKETING_BIDDINGLIST->value,
-            self::PROJECTMONITORING_MARKETING_PROPOSALLIST->value,
-            self::PROJECTMONITORING_MARKETING_ARCHIVEDLIST->value,
-            self::PROJECTMONITORING_MARKETING_ONHOLDLIST->value,
-            self::PROJECTMONITORING_MARKETING_AWARDEDLIST->value,
-            self::PROJECTMONITORING_MARKETING_DRAFTLIST->value,
-            self::PROJECTMONITORING_MARKETING_PROJECTCATALOGLIST->value,
-            self::PROJECTMONITORING_MARKETING_BILLOFQUANTITIES->value,
-            self::PROJECTMONITORING_MARKETING_SUMMARYOFRATES->value,
-            self::PROJECTMONITORING_MARKETING_SUMMARYOFBID->value,
-            self::PROJECTMONITORING_MARKETING_CASHFLOW->value,
-            self::PROJECTMONITORING_MARKETING_ATTACHMENT->value,
-        ];
+        return array_filter(
+            array_map(fn($case) => $case->value, self::cases()),
+            fn($value) => str_contains($value, ':marketing')
+        );
     }
 
     public static function tssGroup(): array
     {
-        return [
-            self::PROJECTMONITORING_TSS->value,
-            self::PROJECTMONITORING_TSS_LIVEPROJECTS->value,
-            self::PROJECTMONITORING_TSS_BILLOFMATERIALS->value,
-            self::PROJECTMONITORING_TSS_DUPA->value,
-            self::PROJECTMONITORING_TSS_CASHFLOW->value,
-            self::PROJECTMONITORING_TSS_PROJECTDETAILS->value,
-        ];
+        return array_filter(
+            array_map(fn($case) => $case->value, self::cases()),
+            fn($value) => str_contains($value, ':tss')
+        );
     }
 }
