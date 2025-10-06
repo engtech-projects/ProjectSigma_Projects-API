@@ -3,7 +3,7 @@
 namespace App\Services\ApiServices;
 
 use App\Models\SetupItemProfiles;
-use App\Models\Uom;
+use App\Models\SetupUom;
 use Illuminate\Support\Facades\Http;
 
 class InventoryService
@@ -42,7 +42,7 @@ class InventoryService
             "updated_at" => $uom['updated_at'],
             "deleted_at" => $uom['deleted_at'],
         ], $uoms);
-        Uom::upsert(
+        SetupUom::upsert(
             $uoms,
             ['id'],
             [
