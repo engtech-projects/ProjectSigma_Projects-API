@@ -38,10 +38,11 @@ class BoqItem extends Model
             }
         });
         static::saving(function ($model) {
-            $model->draft_amount = $model->quantity * $model->draft_unit_price;
-            $model->amount = $model->quantity * $model->unit_price;
+            if ($model->isDirty(['quantity', 'draft_unit_price', 'unit_price'])) {
+                $model->amount = $model->quantity * $model->unit_price ?? 0;
+                $model->draft_amount = $model->quantity * $model->draft_unit_price ?? 0;
+            }
         });
-        static::saving(function ($model) {});
     }
     public function phase(): BelongsTo
     {
