@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Enums\ProjectStatus;
 use App\Enums\ResourceType;
-use App\Enums\Traits\FormatNumbers;
+use App\Traits\FormatNumbers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -38,14 +38,10 @@ class BoqItem extends Model
             }
         });
         static::saving(function ($model) {
-            $quantity = $model->quantity ?? 0;
-            $draft_unit_price = $model->draft_unit_price ?? 0;
-            $model->draft_amount = $quantity * $draft_unit_price;
+            $model->draft_amount = $model->quantity * $model->draft_unit_price;
             $model->amount = $model->quantity * $model->unit_price;
         });
-        static::saving(function ($model) {
-
-        });
+        static::saving(function ($model) {});
     }
     public function phase(): BelongsTo
     {
