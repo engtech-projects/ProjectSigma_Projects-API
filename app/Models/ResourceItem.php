@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ResourceType;
+use App\Traits\FormatNumbers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,6 +15,7 @@ class ResourceItem extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use FormatNumbers;
     protected $table = 'resources';
     protected $fillable = [
         'task_id',
@@ -68,6 +70,22 @@ class ResourceItem extends Model
     public function scopeFilterByResourceType($query, $resourceType)
     {
         return $query->where('resource_type', 'like', "%{$resourceType}%");
+    }
+    public function getFormattedQuantityAttribute()
+    {
+        return $this->formatted($this->quantity);
+    }
+    public function getFormattedUnitCountAttribute()
+    {
+        return $this->formatted($this->unit_count);
+    }
+    public function getFormattedUnitCostAttribute()
+    {
+        return $this->formatted($this->unit_cost);
+    }
+    public function getFormattedTotalCostAttribute()
+    {
+        return $this->formatted($this->total_cost);
     }
     public function syncUnitCostAcrossProjectResources(): int
     {
@@ -126,7 +144,7 @@ class ResourceItem extends Model
     {
         $projectId = $this->task->phase->project_id;
         return self::whereHas('task.phase', fn ($query) =>
-                $query->where('project_id', $projectId))
+        $query->where('project_id', $projectId))
             ->where('resource_type', $this->resource_type)
             ->where('unit', $this->unit)
             ->where('description', $this->description)

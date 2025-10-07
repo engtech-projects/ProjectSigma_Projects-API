@@ -25,6 +25,7 @@ class BoqItemResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'quantity' => $this->quantity,
+            'formatted_quantity' => $this->formatted_quantity,
             'unit' => $this->unit,
             'unit_price' => $this->unit_price,
             'draft_unit_price' => $this->draft_unit_price,

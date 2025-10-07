@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ProjectStatus;
 use App\Enums\ResourceType;
+use App\Traits\FormatNumbers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,6 +16,7 @@ class BoqItem extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use FormatNumbers;
     protected $table = 'tasks';
     protected $fillable = [
         'phase_id',
@@ -36,9 +38,10 @@ class BoqItem extends Model
             }
         });
         static::saving(function ($model) {
-            $quantity = $model->quantity ?? 0;
-            $draft_unit_price = $model->draft_unit_price ?? 0;
-            $model->draft_amount = $quantity * $draft_unit_price;
+            if ($model->isDirty(['quantity', 'draft_unit_price', 'unit_price'])) {
+                $model->amount = ($model->quantity ?? 0) * ($model->unit_price ?? 0);
+                $model->draft_amount = ($model->quantity ?? 0) * ($model->draft_unit_price ?? 0);
+            }
         });
     }
     public function phase(): BelongsTo
@@ -63,6 +66,10 @@ class BoqItem extends Model
             'phase_id',
             'project_id'
         );
+    }
+    public function getFormattedQuantityAttribute()
+    {
+        return $this->formatted($this->quantity);
     }
     protected function getCanUpdateTotalAmountAttribute()
     {

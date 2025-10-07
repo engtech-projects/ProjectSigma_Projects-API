@@ -21,11 +21,15 @@ class DetailedEstimateResource extends JsonResource
             'task_id' => $this->task_id,
             'description' => $this->description,
             'unit_count' => $this->unit_count,
+            'formatted_unit_count' => $this->formatted_unit_count,
             'quantity' => $this->quantity,
+            'formatted_quantity' => $this->formatted_quantity,
             'unit' => $this->unit,
             'unit_cost' => $this->unit_cost,
+            'formatted_unit_cost' => $this->formatted_unit_cost,
             'resource_count' => $this->resource_count,
             'total_cost' => $this->total_cost,
+            'formatted_total_cost' => $this->formatted_total_cost,
             'resource_name' => $this->resource_type->displayName(),
             'resource_type' => $this->resource_type
         ];

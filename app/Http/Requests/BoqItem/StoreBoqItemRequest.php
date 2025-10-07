@@ -25,10 +25,10 @@ class StoreBoqItemRequest extends FormRequest
             'phase_id' => 'required|exists:phases,id',
             'name' => 'required|string',
             'description' => 'required|string',
-            'quantity' => 'required|numeric',
+            'quantity' => 'required|numeric|min:0',
             'unit' => 'required|string',
-            'unit_price' => 'nullable|numeric',
-            'draft_unit_price' => 'nullable|numeric',
+            'unit_price' => 'nullable|numeric|min:0',
+            'draft_unit_price' => 'nullable|numeric|min:0',
         ];
     }
 }
