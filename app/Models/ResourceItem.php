@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ResourceType;
+use App\Traits\FormatNumbers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,6 +15,7 @@ class ResourceItem extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use FormatNumbers;
     protected $table = 'resources';
     protected $fillable = [
         'task_id',
@@ -71,19 +73,19 @@ class ResourceItem extends Model
     }
     public function getFormattedQuantityAttribute()
     {
-        return number_format($this->quantity, 2);
+        return $this->formatted($this->quantity);
     }
     public function getFormattedUnitCountAttribute()
     {
-        return number_format($this->unit_count, 2);
+        return $this->formatted($this->unit_count);
     }
     public function getFormattedUnitCostAttribute()
     {
-        return number_format($this->unit_cost, 2);
+        return $this->formatted($this->unit_cost);
     }
     public function getFormattedTotalCostAttribute()
     {
-        return number_format($this->total_cost, 2);
+        return $this->formatted($this->total_cost);
     }
     public function syncUnitCostAcrossProjectResources(): int
     {
