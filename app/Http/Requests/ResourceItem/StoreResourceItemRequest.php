@@ -41,7 +41,7 @@ class StoreResourceItemRequest extends FormRequest
             'description'   => [
                 'required',
                 Rule::unique('resources')
-                    ->where(fn($q) => $q->where('task_id', $this->task_id)
+                    ->where(fn ($q) => $q->where('task_id', $this->task_id)
                         ->where('unit', $this->unit)
                         ->where('resource_type', ResourceType::MATERIALS))
                     ->ignore($this->id),
