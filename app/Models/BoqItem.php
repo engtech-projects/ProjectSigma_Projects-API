@@ -25,6 +25,8 @@ class BoqItem extends Model
         'quantity',
         'unit',
         'unit_price',
+        'draft_unit_price',
+        'draft_amount',
         'amount',
     ];
     protected static function boot()
@@ -36,7 +38,13 @@ class BoqItem extends Model
             }
         });
         static::saving(function ($model) {
+            $quantity = $model->quantity ?? 0;
+            $draft_unit_price = $model->draft_unit_price ?? 0;
+            $model->draft_amount = $quantity * $draft_unit_price;
             $model->amount = $model->quantity * $model->unit_price;
+        });
+        static::saving(function ($model) {
+
         });
     }
     public function phase(): BelongsTo
