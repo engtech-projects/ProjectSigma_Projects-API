@@ -6,23 +6,23 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BoqItem\StoreBoqItemRequest;
 use App\Http\Requests\BoqItem\UpdateBoqItemRequest;
 use App\Http\Resources\Project\BoqItemResource;
-use App\Models\BoqPart;
+use App\Http\Resources\SummarizedBoqItemResource;
 use App\Models\BoqItem;
 use App\Services\BoqItemService;
-use Illuminate\Http\Request;
 
 class BoqItemController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-        if ($request->has('phase_id')) {
-            $phase = BoqPart::find($request->phase_id);
-            return response()->json($phase->load('tasks.resources'), 200);
-        }
-        return response()->json(BoqItem::all()->load('resources'), 200);
+        $boqItems = BoqItem::with('resources')->get();
+        return SummarizedBoqItemResource::collection($boqItems)
+            ->additional([
+                'success' => true,
+                'message' => 'All BOQ items retrieved successfully.',
+            ]);
     }
 
     /**
@@ -56,8 +56,8 @@ class BoqItemController extends Controller
         $validated = $request->validated();
         $task->update($validated);
         return response()->json([
+            'success' => true,
             'message' => 'Project item has been updated',
-            'data' => $task,
         ], 200);
     }
 
@@ -68,8 +68,8 @@ class BoqItemController extends Controller
     {
         $task->delete();
         return response()->json([
+            'success' => true,
             'message' => 'Project Task has been deleted',
-            'data' => $task,
         ], 200);
     }
 }

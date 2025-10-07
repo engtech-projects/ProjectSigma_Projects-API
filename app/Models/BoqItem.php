@@ -33,6 +33,9 @@ class BoqItem extends Model
                 $model->uuid = (string) Str::uuid();
             }
         });
+        static::saving(function ($model) {
+            $model->amount = $model->quantity * $model->unit_price;
+        });
     }
     public function phase(): BelongsTo
     {
@@ -56,6 +59,11 @@ class BoqItem extends Model
             'phase_id',
             'project_id'
         );
+    }
+    public function getFormattedQuantityAttribute()
+    {
+        $formatted = number_format((float) $this->quantity, 8, '.', ',');
+        return rtrim(rtrim($formatted, '0'), '.');
     }
     protected function getCanUpdateTotalAmountAttribute()
     {

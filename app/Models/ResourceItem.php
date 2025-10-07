@@ -69,6 +69,26 @@ class ResourceItem extends Model
     {
         return $query->where('resource_type', 'like', "%{$resourceType}%");
     }
+    public function getFormattedQuantityAttribute()
+    {
+        $formatted = number_format((float) $this->quantity, 8, '.', ',');
+        return rtrim(rtrim($formatted, '0'), '.');
+    }
+    public function getFormattedUnitCountAttribute()
+    {
+        $formatted = number_format((float) $this->unit_count, 8, '.', ',');
+        return rtrim(rtrim($formatted, '0'), '.');
+    }
+    public function getFormattedUnitCostAttribute()
+    {
+        $formatted = number_format((float) $this->unit_cost, 8, '.', ',');
+        return rtrim(rtrim($formatted, '0'), '.');
+    }
+    public function getFormattedTotalCostAttribute()
+    {
+        $formatted = number_format((float) $this->total_cost, 8, '.', ',');
+        return rtrim(rtrim($formatted, '0'), '.');
+    }
     public function syncUnitCostAcrossProjectResources(): int
     {
         return DB::transaction(function () {
@@ -126,7 +146,7 @@ class ResourceItem extends Model
     {
         $projectId = $this->task->phase->project_id;
         return self::whereHas('task.phase', fn ($query) =>
-                $query->where('project_id', $projectId))
+        $query->where('project_id', $projectId))
             ->where('resource_type', $this->resource_type)
             ->where('unit', $this->unit)
             ->where('description', $this->description)
