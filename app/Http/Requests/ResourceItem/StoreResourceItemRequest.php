@@ -41,17 +41,17 @@ class StoreResourceItemRequest extends FormRequest
             'description'   => [
                 'required',
                 Rule::unique('resources')
-                    ->where(fn ($q) => $q->where('task_id', $this->task_id)
+                    ->where(fn($q) => $q->where('task_id', $this->task_id)
                         ->where('unit', $this->unit)
                         ->where('resource_type', ResourceType::MATERIALS))
                     ->ignore($this->id),
             ],
             'unit_count' => 'nullable|integer|min:0',
-            'quantity' => 'required|decimal|min:0',
+            'quantity' => 'required|numeric|min:0',
             'unit' => 'required|string',
-            'unit_cost' => 'required|decimal|min:0',
+            'unit_cost' => 'required|numeric|min:0',
             'resource_count' => 'required|integer|min:0',
-            'consumption_rate' => 'nullable|decimal|min:0',
+            'consumption_rate' => 'nullable|numeric|min:0',
             'consumption_unit' => 'nullable|string',
             'labor_cost_category' =>  ['nullable', new Enum(LaborCostCategory::class)],
             'work_time_category' => ['nullable', new Enum(WorkTimeCategory::class)],
