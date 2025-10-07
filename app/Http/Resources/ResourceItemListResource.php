@@ -16,6 +16,7 @@ class ResourceItemListResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'setup_item_profile_id' => $this->setup_item_profile_id,
             'task_id' => $this->task_id,
             'resource_type' => $this->resource_type,
             'description' => $this->description,

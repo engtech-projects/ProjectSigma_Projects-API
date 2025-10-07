@@ -105,6 +105,10 @@ class Project extends Model
     {
         return $this->hasMany(BoqPart::class, 'project_id', 'id');
     }
+    public function tasks(): HasManyThrough
+    {
+        return $this->hasManyThrough(BoqItem::class, BoqPart::class);
+    }
     public function resources()
     {
         return $this->phases->flatMap(function ($phase) {
@@ -112,6 +116,10 @@ class Project extends Model
                 return $task->resources;
             });
         })->unique('description')->values();
+    }
+    public function boms()
+    {
+        return $this->hasMany(Bom::class, 'project_id', 'id');
     }
     public function attachments(): HasMany
     {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1\BoqItem;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BoqItem\StoreBoqItemRequest;
 use App\Http\Requests\BoqItem\UpdateBoqItemRequest;
+use App\Http\Requests\UpdateDraftUnitPriceRequest;
 use App\Http\Resources\Project\BoqItemResource;
 use App\Models\BoqPart;
 use App\Models\BoqItem;
@@ -16,6 +17,7 @@ class BoqItemController extends Controller
     /**
      * Display a listing of the resource.
      */
+
     public function index(Request $request)
     {
         if ($request->has('phase_id')) {
@@ -42,22 +44,22 @@ class BoqItemController extends Controller
      */
     public function show(BoqItem $task)
     {
-        $task->load('resources');
-        return response()->json([
-            'message' => 'Project Item fetched successfully.',
-            'data' => new BoqItemResource($task),
-        ], 200);
+        $task->load(['project', 'resources']);
+        return BoqItemResource::make($task)
+            ->additional([
+                'success' => true,
+                'message' => 'BOQ Item retrieved successfully.',
+            ]);
     }
     /**
      * Update the specified resource in storage.
      */
     public function update(UpdateBoqItemRequest $request, BoqItem $task)
     {
-        $validated = $request->validated();
-        $task->update($validated);
+        $task->update($request->validated());
         return response()->json([
+            'success' => true,
             'message' => 'Project item has been updated',
-            'data' => $task,
         ], 200);
     }
 
@@ -68,8 +70,17 @@ class BoqItemController extends Controller
     {
         $task->delete();
         return response()->json([
+            'success' => true,
             'message' => 'Project Task has been deleted',
-            'data' => $task,
         ], 200);
+    }
+
+    public function updateDraftUnitPrice(BoqItem $task, UpdateDraftUnitPriceRequest $request)
+    {
+        $task->update($request->validated());
+        return response()->json([
+            'success' => true,
+            'message' => 'Draft unit price updated successfully.',
+        ]);
     }
 }

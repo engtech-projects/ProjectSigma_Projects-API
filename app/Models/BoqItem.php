@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ProjectStatus;
+use App\Enums\ResourceType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,6 +23,8 @@ class BoqItem extends Model
         'quantity',
         'unit',
         'unit_price',
+        'draft_unit_price',
+        'draft_amount',
         'amount',
     ];
     protected static function boot()
@@ -31,6 +34,11 @@ class BoqItem extends Model
             if (empty($model->uuid)) {
                 $model->uuid = (string) Str::uuid();
             }
+        });
+        static::saving(function ($model) {
+            $quantity = $model->quantity ?? 0;
+            $draft_unit_price = $model->draft_unit_price ?? 0;
+            $model->draft_amount = $quantity * $draft_unit_price;
         });
     }
     public function phase(): BelongsTo
@@ -86,7 +94,7 @@ class BoqItem extends Model
     }
     public function getTotalMaterialsAmountAttribute()
     {
-        return $this->resources()->where('resource_type', 'materials')
+        return $this->resources()->where('resource_type', ResourceType::MATERIALS->value)
             ->sum('total_cost');
     }
     public function getTotalDirectCostAttribute()
@@ -95,22 +103,42 @@ class BoqItem extends Model
     }
     public function getTotalEquipmentAmountAttribute()
     {
-        return $this->resources()->where('resource_type', 'equipment_rental')
+        return $this->resources()->where('resource_type', ResourceType::EQUIPMENT_RENTAL->value)
             ->sum('total_cost');
     }
     public function getTotalLaborAmountAttribute()
     {
-        return $this->resources()->where('resource_type', 'labor_expense')
+        return $this->resources()->where('resource_type', ResourceType::LABOR_EXPENSE->value)
             ->sum('total_cost');
     }
     public function getTotalFuelOilAmountAttribute()
     {
-        return $this->resources()->where('resource_type', 'fuel_oil_cost')
+        return $this->resources()->where('resource_type', ResourceType::FUEL_OIL_COST->value)
+            ->sum('total_cost');
+    }
+    public function getTotalGovernmentPremiumsAmountAttribute()
+    {
+        return $this->resources()->where('resource_type', ResourceType::GOVERNMENT_PREMIUMS->value)
+            ->sum('total_cost');
+    }
+    public function getTotalMiscellaneousCostAmountAttribute()
+    {
+        return $this->resources()->where('resource_type', ResourceType::MISCELLANEOUS_COST->value)
+            ->sum('total_cost');
+    }
+    public function getTotalOtherExpensesAmountAttribute()
+    {
+        return $this->resources()->where('resource_type', ResourceType::OTHER_EXPENSES->value)
+            ->sum('total_cost');
+    }
+    public function getTotalProjectAllowanceAmountAttribute()
+    {
+        return $this->resources()->where('resource_type', ResourceType::PROJECT_ALLOWANCE->value)
             ->sum('total_cost');
     }
     public function getTotalOverheadAmountAttribute()
     {
-        return $this->resources()->where('resource_type', 'overhead_cost')
+        return $this->resources()->where('resource_type', ResourceType::OVERHEAD_COST->value)
             ->sum('total_cost');
     }
     public function getOcmAttribute()
@@ -158,5 +186,58 @@ class BoqItem extends Model
             $total = $this->resources()->sum('total_cost');
             $this->update(['amount' => $total]);
         }
+    }
+    /**
+     * Accessors for Generation of Summary of Direct Estimate Report
+     */
+    public function getItemUnitPriceAttribute()
+    {
+        return number_format($this->unit_price, 2);
+    }
+    public function getContractCostAttribute()
+    {
+        return [
+            'quantity' => number_format($this->quantity, 3),
+            'unit' => $this->unit,
+            'total' => number_format($this->unit_price * $this->quantity, 2),
+        ];
+    }
+    public function getDirectCostItemsAttribute()
+    {
+        return $this->resources->map(function (ResourceItem $item) {
+            $totalCost = ($item->resource_type->value === "materials" && $item->setup_item_profile_id === null)
+                ? 0
+                : $item->total_cost;
+            return [
+                'resource_item_id' => $item->id,
+                'setup_item_profile_id' => $item->setup_item_profile_id,
+                'resource_type' => $item->resource_type,
+                'total_cost' => $totalCost,
+            ];
+        })->values();
+    }
+    public function getResourceItemsTotalAttribute()
+    {
+        $total = $this->direct_cost_items->sum('total_cost');
+        return number_format($total, 2);
+    }
+
+    public function getUnitCostPerItemAttribute()
+    {
+        if ($this->quantity == 0) {
+            return number_format(0, 2);
+        }
+        $grandTotal = $this->direct_cost_items->sum('total_cost');
+        $unitCostPerItem = $grandTotal / $this->quantity;
+        return number_format($unitCostPerItem, 2);
+    }
+    public function getPercentAttribute()
+    {
+        if ($this->quantity == 0 || $this->unit_price == 0) {
+            return number_format(0, 2) . '%';
+        }
+        $unitCostPerItem = ($this->direct_cost_items->sum('total_cost') / $this->quantity);
+        $percent = ($unitCostPerItem / $this->unit_price) * 100;
+        return number_format($percent, 2) . '%';
     }
 }

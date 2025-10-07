@@ -345,4 +345,48 @@ class ProjectService
             return $cashflow->load('cashflowItems.item');
         });
     }
+    public function getTasksWithResources()
+    {
+        return $this->project->phases()
+            ->with('tasks.resources')
+            ->get()
+            ->pluck('tasks')
+            ->flatten();
+    }
+    public function calculateDirectCostDistribution($tasks)
+    {
+        $resources = $tasks->flatMap->resources;
+        $resources = $resources->map(function ($item) {
+            $totalCost = ($item->resource_type->value === "materials" && $item->setup_item_profile_id === null)
+                ? 0
+                : (float) $item->total_cost;
+            return [
+                'resource_type' => strtolower($item->resource_type->value),
+                'total_cost'    => $totalCost,
+            ];
+        });
+        $distribution = $resources->groupBy('resource_type')->map(function ($group) {
+            return $group->sum('total_cost');
+        });
+        $directCostTotal = $distribution->sum();
+        $grandTotal = (float) $tasks->sum('amount');
+        $orderedTypes = ['materials', 'labor_expense', 'equipment_rental', 'fuel_oil_cost', 'overhead_cost'];
+        $result = [];
+        foreach ($orderedTypes as $label) {
+            if (isset($distribution[$label])) {
+                $total = (float) $distribution[$label];
+                $percent = $grandTotal ? ($total / $grandTotal) * 100 : 0;
+                $result[$label] = [
+                    'total (PHP)' => number_format($total, 2),
+                    'percent'     => number_format($percent, 2) . '%',
+                ];
+            }
+        }
+        $directPercent = $grandTotal ? ($directCostTotal / $grandTotal) * 100 : 0;
+        $result['Direct Cost Total'] = [
+            'total (PHP)' => number_format($directCostTotal, 2),
+            'percent'     => number_format($directPercent, 2) . '%',
+        ];
+        return $result;
+    }
 }
