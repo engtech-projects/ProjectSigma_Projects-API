@@ -67,7 +67,7 @@ class BoqItem extends Model
     }
     public function getFormattedQuantityAttribute()
     {
-        return number_format($this->quantity);
+        return rtrim(rtrim(number_format($this->quantity, 8, '.', ','), '0'), '.');
     }
     protected function getCanUpdateTotalAmountAttribute()
     {

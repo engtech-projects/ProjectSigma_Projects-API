@@ -71,19 +71,19 @@ class ResourceItem extends Model
     }
     public function getFormattedQuantityAttribute()
     {
-        return number_format($this->quantity);
+        return rtrim(rtrim(number_format($this->quantity, 8, '.', ','), '0'), '.');
     }
     public function getFormattedUnitCountAttribute()
     {
-        return number_format($this->unit_count);
+        return rtrim(rtrim(number_format($this->unit_count, 8, '.', ','), '0'), '.');
     }
     public function getFormattedUnitCostAttribute()
     {
-        return number_format($this->unit_cost);
+        return rtrim(rtrim(number_format($this->unit_cost, 8, '.', ','), '0'), '.');
     }
     public function getFormattedTotalCostAttribute()
     {
-        return number_format($this->total_cost);
+        return rtrim(rtrim(number_format($this->total_cost, 8, '.', ','), '0'), '.');
     }
     public function syncUnitCostAcrossProjectResources(): int
     {
