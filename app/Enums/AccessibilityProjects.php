@@ -37,16 +37,16 @@ enum AccessibilityProjects: string
     public static function marketingGroup(): array
     {
         return array_filter(
-            array_map(fn($case) => $case->value, self::cases()),
-            fn($value) => str_contains($value, ':marketing')
+            array_map(fn ($case) => $case->value, self::cases()),
+            fn ($value) => str_contains($value, ':marketing')
         );
     }
 
     public static function tssGroup(): array
     {
         return array_filter(
-            array_map(fn($case) => $case->value, self::cases()),
-            fn($value) => str_contains($value, ':tss')
+            array_map(fn ($case) => $case->value, self::cases()),
+            fn ($value) => str_contains($value, ':tss')
         );
     }
 }
