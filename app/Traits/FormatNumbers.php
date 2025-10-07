@@ -25,7 +25,7 @@ trait FormatNumbers
             }
             return "{$wholeFormatted}.{$decimal}";
         }
-        return number_format((int) $value) . '.00';
+        return number_format((int) $value, 2);
     }
     /**
      * Format a model attribute using formatDecimal.
