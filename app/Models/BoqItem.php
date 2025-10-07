@@ -39,8 +39,8 @@ class BoqItem extends Model
         });
         static::saving(function ($model) {
             if ($model->isDirty(['quantity', 'draft_unit_price', 'unit_price'])) {
-                $model->amount = $model->quantity * $model->unit_price ?? 0;
-                $model->draft_amount = $model->quantity * $model->draft_unit_price ?? 0;
+                $model->amount = ($model->quantity ?? 0) * ($model->unit_price ?? 0);
+                $model->draft_amount = ($model->quantity ?? 0) * ($model->draft_unit_price ?? 0);
             }
         });
     }
