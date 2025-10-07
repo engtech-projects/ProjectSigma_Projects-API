@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ResourceType;
+use App\Enums\Traits\FormatNumbers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,6 +15,7 @@ class ResourceItem extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use FormatNumbers;
     protected $table = 'resources';
     protected $fillable = [
         'task_id',
@@ -71,23 +73,19 @@ class ResourceItem extends Model
     }
     public function getFormattedQuantityAttribute()
     {
-        $formatted = number_format((float) $this->quantity, 8, '.', ',');
-        return rtrim(rtrim($formatted, '0'), '.');
+        return $this->formatted('quantity');
     }
     public function getFormattedUnitCountAttribute()
     {
-        $formatted = number_format((float) $this->unit_count, 8, '.', ',');
-        return rtrim(rtrim($formatted, '0'), '.');
+        return $this->formatted('unit_count');
     }
     public function getFormattedUnitCostAttribute()
     {
-        $formatted = number_format((float) $this->unit_cost, 8, '.', ',');
-        return rtrim(rtrim($formatted, '0'), '.');
+        return $this->formatted('unit_cost');
     }
     public function getFormattedTotalCostAttribute()
     {
-        $formatted = number_format((float) $this->total_cost, 8, '.', ',');
-        return rtrim(rtrim($formatted, '0'), '.');
+        return $this->formatted('total_cost');
     }
     public function syncUnitCostAcrossProjectResources(): int
     {
@@ -145,7 +143,7 @@ class ResourceItem extends Model
     public function matchingResources()
     {
         $projectId = $this->task->phase->project_id;
-        return self::whereHas('task.phase', fn ($query) =>
+        return self::whereHas('task.phase', fn($query) =>
         $query->where('project_id', $projectId))
             ->where('resource_type', $this->resource_type)
             ->where('unit', $this->unit)
