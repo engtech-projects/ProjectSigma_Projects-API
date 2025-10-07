@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Enums\ProjectStatus;
 use App\Enums\ResourceType;
-use App\Traits\FormatNumbers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,7 +15,6 @@ class BoqItem extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    use FormatNumbers;
     protected $table = 'tasks';
     protected $fillable = [
         'phase_id',
@@ -69,7 +67,7 @@ class BoqItem extends Model
     }
     public function getFormattedQuantityAttribute()
     {
-        return $this->formatted('quantity');
+        return number_format($this->quantity);
     }
     protected function getCanUpdateTotalAmountAttribute()
     {
