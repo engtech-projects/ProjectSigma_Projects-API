@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ResourceType;
-use App\Enums\Traits\FormatNumbers;
+use App\Traits\FormatNumbers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -143,7 +143,7 @@ class ResourceItem extends Model
     public function matchingResources()
     {
         $projectId = $this->task->phase->project_id;
-        return self::whereHas('task.phase', fn($query) =>
+        return self::whereHas('task.phase', fn ($query) =>
         $query->where('project_id', $projectId))
             ->where('resource_type', $this->resource_type)
             ->where('unit', $this->unit)
