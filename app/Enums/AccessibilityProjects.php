@@ -10,7 +10,7 @@ enum AccessibilityProjects: string
 
     case PROJECTMONITORING_DASHBOARD = "project monitoring:dashboard";
     case PROJECTMONITORING_PROJECT = "project monitoring:projects";
-    case PROJECTMONITORING_MARKETING = "project monitoring:marketing";
+    case PROJECTMONITORING_MARKETING_GROUP = "project monitoring:marketing_";
     case PROJECTMONITORING_MARKETING_MYPROJECTS = "project monitoring:marketing_my projects";
     case PROJECTMONITORING_MARKETING_BIDDINGLIST = "project monitoring:marketing_bidding list";
     case PROJECTMONITORING_MARKETING_PROPOSALLIST = "project monitoring:marketing_proposal list";
@@ -24,7 +24,7 @@ enum AccessibilityProjects: string
     case PROJECTMONITORING_MARKETING_SUMMARYOFBID = "project monitoring:marketing_summary of bid";
     case PROJECTMONITORING_MARKETING_CASHFLOW = "project monitoring:marketing_cashflow";
     case PROJECTMONITORING_MARKETING_ATTACHMENT = "project monitoring:marketing_attachment";
-    case PROJECTMONITORING_TSS = "project monitoring:tss";
+    case PROJECTMONITORING_TSS_GROUP = "project monitoring:tss_";
     case PROJECTMONITORING_TSS_LIVEPROJECTS = "project monitoring:tss_live projects";
     case PROJECTMONITORING_TSS_BILLOFMATERIALS = "project monitoring:tss_bill of materials";
     case PROJECTMONITORING_TSS_DUPA = "project monitoring:tss_dupa";
