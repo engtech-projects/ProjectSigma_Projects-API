@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers\Api\V1\BoqItem;
 
-use App\Enums\AccessibilityProjects;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BoqItem\StoreBoqItemRequest;
 use App\Http\Requests\BoqItem\UpdateBoqItemRequest;
 use App\Http\Requests\UpdateDraftUnitPriceRequest;
 use App\Http\Resources\Project\BoqItemResource;
-use App\Http\Traits\CheckAccessibility;
 use App\Models\BoqPart;
 use App\Models\BoqItem;
 use App\Services\BoqItemService;
@@ -19,7 +17,6 @@ class BoqItemController extends Controller
     /**
      * Display a listing of the resource.
      */
-    use CheckAccessibility;
 
     public function index(Request $request)
     {
@@ -80,11 +77,6 @@ class BoqItemController extends Controller
 
     public function updateDraftUnitPrice(BoqItem $task, UpdateDraftUnitPriceRequest $request)
     {
-        if (!$this->checkUserAccess([
-            ...AccessibilityProjects::marketingGroup(),
-        ])) {
-            return response()->json(['message' => 'Forbidden'], 403);
-        }
         $task->update($request->validated());
         return response()->json([
             'success' => true,
