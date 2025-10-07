@@ -28,7 +28,7 @@ class Bom extends Model
     {
         static::saving(function ($bom) {
             if ($bom->isDirty(['quantity', 'unit_price'])) {
-                $bom->amount = $bom->quantity * $bom->unit_price ?? 0;
+                $bom->amount = ($bom->quantity ?? 0) * ($bom->unit_price ?? 0);
             }
         });
     }
