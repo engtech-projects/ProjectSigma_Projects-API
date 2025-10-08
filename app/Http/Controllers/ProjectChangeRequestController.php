@@ -1,12 +1,9 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Http\Requests\StoreProjectChangeRequest;
 use App\Http\Requests\UpdateProjectChangeRequest;
 use App\Http\Resources\ProjectChangeRequestResource;
 use App\Models\ProjectChangeRequest;
-
 class ProjectChangeRequestController extends Controller
 {
     public function index()
@@ -20,7 +17,9 @@ class ProjectChangeRequestController extends Controller
     }
     public function store(StoreProjectChangeRequest $request)
     {
-        $changeRequest = ProjectChangeRequest::create($request->validated());
+        $validated = $request->validated();
+        $validated['created_by'] = auth()->id();
+        $changeRequest = ProjectChangeRequest::create($validated);
         return response()->json([
             'success' => true,
             'message' => 'Project change request created successfully',
