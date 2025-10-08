@@ -38,17 +38,17 @@ class NatureOfWorkController extends Controller
             'data' => $natureOfWork,
         ], 201);
     }
-    public function update(UpdateNatureOfWorkRequest $request, NatureOfWork $nature_of_work): JsonResponse
+    public function update(UpdateNatureOfWorkRequest $request, NatureOfWork $resource): JsonResponse
     {
-        $nature_of_work->update($request->validated());
+        $resource->update($request->validated());
         return response()->json([
             'message' => 'Nature of Work updated successfully',
-            'data' => $nature_of_work,
+            'data' => $resource,
         ]);
     }
-    public function destroy(NatureOfWork $nature_of_work): JsonResponse
+    public function destroy(NatureOfWork $resource): JsonResponse
     {
-        $nature_of_work->delete();
+        $resource->delete();
         return response()->json([
             'message' => 'Nature of Work deleted successfully',
         ]);
