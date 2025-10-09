@@ -43,4 +43,9 @@ class BoqPart extends Model
     {
         return $this->hasMany(BoqItem::class, 'phase_id', 'id');
     }
+
+    public function getFormattedTotalCostAttribute()
+    {
+        return number_format($this->tasks->sum('amount'), 2);
+    }
 }
