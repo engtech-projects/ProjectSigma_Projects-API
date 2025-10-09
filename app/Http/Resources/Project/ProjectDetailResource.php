@@ -1,10 +1,7 @@
 <?php
-
 namespace App\Http\Resources\Project;
-
 use App\Http\Resources\AttachmentResource;
 use Illuminate\Http\Resources\Json\JsonResource;
-
 class ProjectDetailResource extends JsonResource
 {
     public function toArray($request)
@@ -23,6 +20,8 @@ class ProjectDetailResource extends JsonResource
             'amount' => $this->amount,
             'nature_of_work' => $this->nature_of_work,
             'contract_date' => $this->contract_date?->format('Y-m-d'),
+            'ntp_date' => $this->ntp_date?->format('Y-m-d'),
+            'noa_date' => $this->noa_date?->format('Y-m-d'),
             'duration' => $this->duration,
             'license' => $this->license,
             'stage' => $this->marketing_stage,

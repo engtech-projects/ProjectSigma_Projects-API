@@ -1,10 +1,7 @@
 <?php
-
 namespace App\Http\Requests\Project;
-
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-
 class UpdateProjectRequest extends FormRequest
 {
     /**
@@ -39,9 +36,9 @@ class UpdateProjectRequest extends FormRequest
             'ntp_date' => 'nullable|date|date_format:Y-m-d',
             'license' => 'nullable|string',
             'designator' => 'nullable|string|max:255',
+            'position' => 'nullable|string',
             'nature_of_work' => 'nullable|string',
             'implementing_office' => 'nullable|string|max:255',
-            'position' => 'nullable|string',
             'abc' => 'nullable|string',
             'bid_date' => 'nullable|date_format:Y-m-d',
         ];
