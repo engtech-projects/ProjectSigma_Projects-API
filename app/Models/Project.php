@@ -18,6 +18,7 @@ use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use App\Traits\ModelHelpers;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Project extends Model
 {
@@ -32,7 +33,7 @@ class Project extends Model
     {
         return LogOptions::defaults()
             ->logAll() // List of attributes to log
-            ->setDescriptionForEvent(fn (string $eventName) => "Project has been {$eventName}");
+            ->setDescriptionForEvent(fn(string $eventName) => "Project has been {$eventName}");
     }
     protected $fillable = [
         'parent_project_id',
@@ -281,6 +282,10 @@ class Project extends Model
     public function scopeSortByField($query, $sortBy, $order)
     {
         return $query->orderBy($sortBy ?? 'updated_at', $order ?? 'desc');
+    }
+    public function getFormattedTotalCostAttribute()
+    {
+        return number_format($this->phases->sum('total_cost'), 2);
     }
     public function getSummaryOfBidAttribute()
     {
