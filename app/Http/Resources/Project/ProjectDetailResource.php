@@ -1,7 +1,10 @@
 <?php
+
 namespace App\Http\Resources\Project;
+
 use App\Http\Resources\AttachmentResource;
 use Illuminate\Http\Resources\Json\JsonResource;
+
 class ProjectDetailResource extends JsonResource
 {
     public function toArray($request)
@@ -38,6 +41,7 @@ class ProjectDetailResource extends JsonResource
             'phases' => BoqPartResource::collection($this->whenLoaded('phases')),
             'attachments' => AttachmentResource::collection($this->whenLoaded('attachments')),
             'total_cost' => $this->total_task_amount,
+            'draft_total_cost' => $this->total_draft_task_amount,
             'formatted_total_cost' => $this->formatted_total_cost,
             'abc' => $this->abc,
             'bid_date' => $this->bid_date?->format('Y-m-d'),

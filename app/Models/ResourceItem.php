@@ -120,6 +120,8 @@ class ResourceItem extends Model
                     $task->update([
                         'amount'     => $total,
                         'unit_price' => $task->unit_cost_per,
+                        'draft_amount'     => $total,
+                        'draft_unit_price' => $task->unit_cost_per,
                     ]);
                 }
             }
@@ -162,7 +164,12 @@ class ResourceItem extends Model
         $taskTotal = self::where('task_id', $taskId)->sum('total_cost');
         $task = BoqItem::find($taskId);
         if ($task && $task->can_update_total_amount) {
-            $task->update(['amount' => $taskTotal, 'unit_price' => (float) $task->unit_cost_per]);
+            $task->update([
+                'amount'     => $taskTotal,
+                'unit_price' => $task->unit_cost_per,
+                'draft_amount'     => $taskTotal,
+                'draft_unit_price' => $task->unit_cost_per,
+            ]);
         }
         BoqItem::updateTotalProject($projectId);
     }

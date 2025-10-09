@@ -365,6 +365,14 @@ class Project extends Model
         // Sum the 'amount' of all tasks as float
         return $allTasks->sum(fn ($task) => (float) $task->amount);
     }
+    public function getTotalDraftTaskAmountAttribute()
+    {
+        $allTasks = $this->relationLoaded('phases')
+            ? $this->phases->flatMap(fn ($phase) => $phase->tasks)
+            : $this->phases()->with('tasks')->get()->flatMap(fn ($phase) => $phase->tasks);
+        // Sum the 'amount' of all tasks as float
+        return $allTasks->sum(fn ($task) => (float) $task->draft_amount);
+    }
     public function getSummaryOfRatesAttribute()
     {
         $summary_of_rates = [];
