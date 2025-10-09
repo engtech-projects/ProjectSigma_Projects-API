@@ -49,6 +49,7 @@ class StoreResourceItemRequest extends FormRequest
             'unit_count' => 'nullable|integer|min:0',
             'quantity' => 'required|decimal:0,8|min:0',
             'unit' => 'required|string',
+            'unit_name' => 'required|string',
             'unit_cost' => 'required|decimal:0,8|min:0',
             'resource_count' => 'required|integer|min:0',
             'consumption_rate' => 'nullable|decimal:0,8|min:0',

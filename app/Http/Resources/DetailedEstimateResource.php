@@ -25,6 +25,7 @@ class DetailedEstimateResource extends JsonResource
             'quantity' => $this->quantity,
             'formatted_quantity' => $this->formatted_quantity,
             'unit' => $this->unit,
+            'unit_name' => $this->unit_name,
             'unit_cost' => $this->unit_cost,
             'formatted_unit_cost' => $this->formatted_unit_cost,
             'resource_count' => $this->resource_count,

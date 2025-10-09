@@ -25,6 +25,7 @@ class ResourceItem extends Model
         'unit_count',
         'quantity',
         'unit',
+        'unit_name',
         'unit_cost',
         'resource_count',
         'total_cost',
@@ -116,7 +117,12 @@ class ResourceItem extends Model
             foreach ($taskTotals as $taskId => $total) {
                 $task = BoqItem::find($taskId);
                 if ($task && $task->can_update_total_amount) {
-                    $task->update(['amount' => $total]);
+                    $task->update([
+                        'amount'     => $total,
+                        'unit_price' => $task->unit_cost_per,
+                        'draft_amount'     => $total,
+                        'draft_unit_price' => $task->unit_cost_per,
+                    ]);
                 }
             }
             // ✅ Step 3: Update project total once
@@ -158,7 +164,12 @@ class ResourceItem extends Model
         $taskTotal = self::where('task_id', $taskId)->sum('total_cost');
         $task = BoqItem::find($taskId);
         if ($task && $task->can_update_total_amount) {
-            $task->update(['amount' => $taskTotal]);
+            $task->update([
+                'amount'     => $taskTotal,
+                'unit_price' => $task->unit_cost_per,
+                'draft_amount'     => $taskTotal,
+                'draft_unit_price' => $task->unit_cost_per,
+            ]);
         }
         BoqItem::updateTotalProject($projectId);
     }
