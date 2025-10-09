@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Models;
+
 use App\Enums\ResourceType;
 use App\Traits\FormatNumbers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -8,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+
 class ResourceItem extends Model
 {
     use HasFactory;
@@ -114,7 +117,10 @@ class ResourceItem extends Model
             foreach ($taskTotals as $taskId => $total) {
                 $task = BoqItem::find($taskId);
                 if ($task && $task->can_update_total_amount) {
-                    $task->update(['amount' => $total]);
+                    $task->update([
+                        'amount'     => $total,
+                        'unit_price' => $task->unit_cost_per,
+                    ]);
                 }
             }
             // ✅ Step 3: Update project total once
@@ -156,7 +162,7 @@ class ResourceItem extends Model
         $taskTotal = self::where('task_id', $taskId)->sum('total_cost');
         $task = BoqItem::find($taskId);
         if ($task && $task->can_update_total_amount) {
-            $task->update(['amount' => $taskTotal]);
+            $task->update(['amount' => $taskTotal, 'unit_price' => (float) $task->unit_cost_per]);
         }
         BoqItem::updateTotalProject($projectId);
     }

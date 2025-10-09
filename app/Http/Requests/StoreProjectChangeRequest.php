@@ -1,10 +1,13 @@
 <?php
+
 namespace App\Http\Requests;
+
 use App\Enums\ChangeRequestType;
 use App\Enums\RequestStatuses;
 use App\Traits\HasApprovalValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+
 class StoreProjectChangeRequest extends FormRequest
 {
     use HasApprovalValidation;

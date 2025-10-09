@@ -285,7 +285,7 @@ class Project extends Model
     }
     public function getFormattedTotalCostAttribute()
     {
-        return number_format($this->phases->sum('total_cost'), 2);
+        return number_format($this->total_task_amount, 2);
     }
     public function getSummaryOfBidAttribute()
     {
@@ -356,6 +356,14 @@ class Project extends Model
         $this->request_status = RequestStatuses::DENIED->value;
         $this->save();
         $this->refresh();
+    }
+    public function getTotalTaskAmountAttribute()
+    {
+        $allTasks = $this->relationLoaded('phases')
+            ? $this->phases->flatMap(fn ($phase) => $phase->tasks)
+            : $this->phases()->with('tasks')->get()->flatMap(fn ($phase) => $phase->tasks);
+        // Sum the 'amount' of all tasks as float
+        return $allTasks->sum(fn ($task) => (float) $task->amount);
     }
     public function getSummaryOfRatesAttribute()
     {

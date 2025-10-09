@@ -38,7 +38,7 @@ class ProjectDetailResource extends JsonResource
             'cash_flow' => $this->cash_flow ? $this->cash_flow : null,
             'phases' => BoqPartResource::collection($this->whenLoaded('phases')),
             'attachments' => AttachmentResource::collection($this->whenLoaded('attachments')),
-            'total_cost' => $this->phases->sum('total_cost'),
+            'total_cost' => $this->total_task_amount,
             'formatted_total_cost' => $this->formatted_total_cost,
             'abc' => $this->abc,
             'bid_date' => $this->bid_date?->format('Y-m-d'),
