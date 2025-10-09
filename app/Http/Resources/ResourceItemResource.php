@@ -1,10 +1,7 @@
 <?php
-
 namespace App\Http\Resources;
-
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-
 class ResourceItemResource extends JsonResource
 {
     /**
@@ -25,6 +22,7 @@ class ResourceItemResource extends JsonResource
             'quantity' => $this->quantity,
             'formatted_quantity' => $this->formatted_quantity,
             'unit' => $this->unit,
+            'unit_name' => $this->unit_name,
             'unit_cost' => $this->unit_cost,
             'formatted_unit_cost' => $this->formatted_unit_cost,
             'resource_cost' => $this->resource_cost,

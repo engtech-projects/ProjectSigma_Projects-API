@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Models;
-
 use App\Enums\ResourceType;
 use App\Traits\FormatNumbers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-
 class ResourceItem extends Model
 {
     use HasFactory;
@@ -25,6 +22,7 @@ class ResourceItem extends Model
         'unit_count',
         'quantity',
         'unit',
+        'unit_name',
         'unit_cost',
         'resource_count',
         'total_cost',

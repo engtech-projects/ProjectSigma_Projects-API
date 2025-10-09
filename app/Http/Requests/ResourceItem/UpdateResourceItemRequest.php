@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Requests\ResourceItem;
-
 use App\Enums\LaborCostCategory;
 use App\Enums\ResourceStatus;
 use App\Enums\ResourceType;
@@ -9,7 +7,6 @@ use App\Enums\WorkTimeCategory;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
-
 class UpdateResourceItemRequest extends FormRequest
 {
     /**
@@ -46,6 +43,7 @@ class UpdateResourceItemRequest extends FormRequest
             'unit_count' => 'nullable|integer|min:0',
             'quantity' => 'required|numeric|min:0',
             'unit' => 'required|string',
+            'unit_name' => 'required|string',
             'unit_cost' => 'required|numeric|min:0',
             'resource_count' => 'required|integer|min:0',
             'consumption_rate' => 'nullable|numeric|min:0',
