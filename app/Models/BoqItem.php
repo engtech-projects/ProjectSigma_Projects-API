@@ -82,7 +82,9 @@ class BoqItem extends Model
     }
     public function getTotalPriceAttribute()
     {
-        return $this->unit_price * $this->quantity;
+        $unitPrice = (float) $this->unit_price;
+        $quantity  = (float) $this->quantity;
+        return $unitPrice * $quantity;
     }
     public function getResourceTotalsAttribute()
     {
@@ -228,7 +230,6 @@ class BoqItem extends Model
         $total = $this->direct_cost_items->sum('total_cost');
         return number_format($total, 2);
     }
-
     public function getUnitCostPerItemAttribute()
     {
         if ($this->quantity == 0) {

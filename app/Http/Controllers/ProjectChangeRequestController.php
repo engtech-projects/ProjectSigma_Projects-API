@@ -20,7 +20,9 @@ class ProjectChangeRequestController extends Controller
     }
     public function store(StoreProjectChangeRequest $request)
     {
-        $changeRequest = ProjectChangeRequest::create($request->validated());
+        $validated = $request->validated();
+        $validated['created_by'] = auth()->id();
+        $changeRequest = ProjectChangeRequest::create($validated);
         return response()->json([
             'success' => true,
             'message' => 'Project change request created successfully',

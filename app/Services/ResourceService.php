@@ -33,11 +33,11 @@ class ResourceService
     public static function create($request)
     {
         return DB::transaction(function () use ($request) {
-            if (isset($request['unit_count'])) {
-                $request['total_cost'] = ($request['quantity'] * $request['unit_cost']) * $request['unit_count'];
-            } else {
-                $request['total_cost'] = $request['quantity'] * $request['unit_cost'];
-            }
+            $quantity   = (float) ($request['quantity'] ?? 0);
+            $unitCost   = (float) ($request['unit_cost'] ?? 0);
+            $unitCount  = isset($request['unit_count']) ? (float) $request['unit_count'] : 1;
+            $request['total_cost'] = $quantity * $unitCost * $unitCount;
+            $request['total_cost'] = round($request['total_cost'], 2);
             $data = ResourceItem::create($request);
             $data->syncUnitCostAcrossProjectResources();
             return $data;
@@ -47,11 +47,12 @@ class ResourceService
     {
         return DB::transaction(function () use ($request, $id) {
             $data = ResourceItem::findOrFail($id);
-            if (isset($request['unit_count'])) {
-                $request['total_cost'] = ($request['quantity'] * $request['unit_cost']) * $request['unit_count'];
-            } else {
-                $request['total_cost'] = $request['quantity'] * $request['unit_cost'];
-            }
+            $quantity  = (float) ($request['quantity'] ?? $data->quantity ?? 0);
+            $unitCost  = (float) ($request['unit_cost'] ?? $data->unit_cost ?? 0);
+            $unitCount = isset($request['unit_count'])
+                ? (float) $request['unit_count']
+                : ($data->unit_count ?? 1);
+            $request['total_cost'] = round($quantity * $unitCost * $unitCount, 2);
             $data->fill($request)->save();
             $data->syncUnitCostAcrossProjectResources();
             return $data;
