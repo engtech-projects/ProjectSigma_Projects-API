@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ResourceType;
+use App\Traits\FormatNumbers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,6 +15,7 @@ class ResourceItem extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use FormatNumbers;
     protected $table = 'resources';
     protected $fillable = [
         'task_id',
@@ -23,6 +25,7 @@ class ResourceItem extends Model
         'unit_count',
         'quantity',
         'unit',
+        'unit_name',
         'unit_cost',
         'resource_count',
         'total_cost',
@@ -69,6 +72,22 @@ class ResourceItem extends Model
     {
         return $query->where('resource_type', 'like', "%{$resourceType}%");
     }
+    public function getFormattedQuantityAttribute()
+    {
+        return $this->formatted($this->quantity);
+    }
+    public function getFormattedUnitCountAttribute()
+    {
+        return $this->formatted($this->unit_count);
+    }
+    public function getFormattedUnitCostAttribute()
+    {
+        return $this->formatted($this->unit_cost);
+    }
+    public function getFormattedTotalCostAttribute()
+    {
+        return $this->formatted($this->total_cost);
+    }
     public function syncUnitCostAcrossProjectResources(): int
     {
         return DB::transaction(function () {
@@ -98,7 +117,12 @@ class ResourceItem extends Model
             foreach ($taskTotals as $taskId => $total) {
                 $task = BoqItem::find($taskId);
                 if ($task && $task->can_update_total_amount) {
-                    $task->update(['amount' => $total]);
+                    $task->update([
+                        'amount'     => $total,
+                        'unit_price' => $task->unit_cost_per,
+                        'draft_amount'     => $total,
+                        'draft_unit_price' => $task->unit_cost_per,
+                    ]);
                 }
             }
             // ✅ Step 3: Update project total once
@@ -126,7 +150,7 @@ class ResourceItem extends Model
     {
         $projectId = $this->task->phase->project_id;
         return self::whereHas('task.phase', fn ($query) =>
-                $query->where('project_id', $projectId))
+        $query->where('project_id', $projectId))
             ->where('resource_type', $this->resource_type)
             ->where('unit', $this->unit)
             ->where('description', $this->description)
@@ -140,7 +164,12 @@ class ResourceItem extends Model
         $taskTotal = self::where('task_id', $taskId)->sum('total_cost');
         $task = BoqItem::find($taskId);
         if ($task && $task->can_update_total_amount) {
-            $task->update(['amount' => $taskTotal]);
+            $task->update([
+                'amount'     => $taskTotal,
+                'unit_price' => $task->unit_cost_per,
+                'draft_amount'     => $taskTotal,
+                'draft_unit_price' => $task->unit_cost_per,
+            ]);
         }
         BoqItem::updateTotalProject($projectId);
     }

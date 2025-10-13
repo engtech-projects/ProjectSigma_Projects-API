@@ -34,6 +34,7 @@ class ProjectService
             $attr['status'] = ProjectStatus::PENDING->value;
             $attr['amount'] = $attr['amount'] ?? 0;
             $attr['created_by'] = auth()->user()->id;
+            $attr['implementing_office'] = $attr['implementing_office'] ?? null;
             $attr['cash_flow'] = json_encode(array_fill_keys(['wtax', 'q1', 'q2', 'q3', 'q4'], [
                 'accomplishment' => 0,
                 'cashflow' => 0,

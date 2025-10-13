@@ -27,9 +27,9 @@ class Bom extends Model
     protected static function booted()
     {
         static::saving(function ($bom) {
-            $quantity   = $bom->quantity ?? 0;
-            $unit_price = $bom->unit_price ?? 0;
-            $bom->amount = $quantity * $unit_price;
+            if ($bom->isDirty(['quantity', 'unit_price'])) {
+                $bom->amount = ($bom->quantity ?? 0) * ($bom->unit_price ?? 0);
+            }
         });
     }
 

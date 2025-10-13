@@ -18,6 +18,7 @@ use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use App\Traits\ModelHelpers;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Project extends Model
 {
@@ -282,6 +283,10 @@ class Project extends Model
     {
         return $query->orderBy($sortBy ?? 'updated_at', $order ?? 'desc');
     }
+    public function getFormattedTotalCostAttribute()
+    {
+        return number_format($this->total_task_amount, 2);
+    }
     public function getSummaryOfBidAttribute()
     {
         $summaryOfBid = [];
@@ -351,6 +356,22 @@ class Project extends Model
         $this->request_status = RequestStatuses::DENIED->value;
         $this->save();
         $this->refresh();
+    }
+    public function getTotalTaskAmountAttribute()
+    {
+        $allTasks = $this->relationLoaded('phases')
+            ? $this->phases->flatMap(fn ($phase) => $phase->tasks)
+            : $this->phases()->with('tasks')->get()->flatMap(fn ($phase) => $phase->tasks);
+        // Sum the 'amount' of all tasks as float
+        return $allTasks->sum(fn ($task) => (float) $task->amount);
+    }
+    public function getTotalDraftTaskAmountAttribute()
+    {
+        $allTasks = $this->relationLoaded('phases')
+            ? $this->phases->flatMap(fn ($phase) => $phase->tasks)
+            : $this->phases()->with('tasks')->get()->flatMap(fn ($phase) => $phase->tasks);
+        // Sum the 'amount' of all tasks as float
+        return $allTasks->sum(fn ($task) => (float) $task->draft_amount);
     }
     public function getSummaryOfRatesAttribute()
     {

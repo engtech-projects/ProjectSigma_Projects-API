@@ -13,7 +13,6 @@ class UpdateBoqItemRequest extends FormRequest
     {
         return true;
     }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -24,11 +23,10 @@ class UpdateBoqItemRequest extends FormRequest
         return [
             'name' => 'required|string',
             'description' => 'required|string',
-            'quantity' => 'required|numeric',
+            'quantity' => 'required|numeric|min:0',
             'unit' => 'required|string',
-            'unit_price' => 'nullable|numeric',
-            'draft_unit_price' => 'nullable|numeric',
-            'amount' => 'nullable|numeric',
+            'unit_price' => 'nullable|numeric|min:0',
+            'amount' => 'nullable|numeric|min:0',
         ];
     }
 }
