@@ -1,9 +1,6 @@
 <?php
-
 namespace App\Http\Requests\Project;
-
 use Illuminate\Foundation\Http\FormRequest;
-
 class StoreProjectRequest extends FormRequest
 {
     /**
@@ -30,7 +27,7 @@ class StoreProjectRequest extends FormRequest
             'license' => 'nullable|string',
             'designator' => 'nullable|string|max:255',
             'position' => 'required|string',
-            'abc' => 'nullable|string',
+            'abc' => 'nullable|numeric|min:0',
             'bid_date' => 'nullable|date_format:Y-m-d',
             'duration' => 'nullable|integer',
             'amount' => 'nullable|decimal:0,2',

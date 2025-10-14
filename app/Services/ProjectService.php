@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Services;
-
 use App\Enums\MarketingStage;
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
@@ -18,7 +16,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-
 class ProjectService
 {
     protected $project;
@@ -34,6 +31,7 @@ class ProjectService
             $attr['status'] = ProjectStatus::PENDING->value;
             $attr['amount'] = $attr['amount'] ?? 0;
             $attr['created_by'] = auth()->user()->id;
+            $attr['document_number'] = "DPWH-INFR-19-2016"; // Replace with actual document number on frontend
             $attr['implementing_office'] = $attr['implementing_office'] ?? null;
             $attr['cash_flow'] = json_encode(array_fill_keys(['wtax', 'q1', 'q2', 'q3', 'q4'], [
                 'accomplishment' => 0,
