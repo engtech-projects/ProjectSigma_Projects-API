@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreNatureOfWorkRequest extends FormRequest
 {
@@ -22,7 +23,10 @@ class StoreNatureOfWorkRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:nature_of_work,name',
+            'name' => [
+                'required',
+                Rule::unique('nature_of_work')->whereNull('deleted_at'),
+            ],
         ];
     }
 }
