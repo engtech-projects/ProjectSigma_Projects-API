@@ -138,6 +138,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('{project}/activities', [ActivityController::class, 'projectActivities']);
         Route::post('{project}/activities', [ActivityController::class, 'createProjectActivity']);
         Route::get('{project}/task-schedules', [TaskScheduleController::class, 'getAllTaskScheduleByProject']);
+        Route::patch('{task}/update-draft-unit-price', [BoqItemController::class, 'updateDraftUnitPrice']);
     });
     // ────── Attachments ──────
     Route::prefix('attachments')->group(function () {
@@ -196,7 +197,6 @@ Route::middleware('auth:api')->group(function () {
     Route::post('daily-schedule/{id}/restore', [DailyScheduleController::class, 'restore']);
     Route::get('activities/{activity}/daily', [DailyScheduleController::class, 'getDailySchedule']);
     Route::post('activities/{activity}/daily', [DailyScheduleController::class, 'updateOrCreateDailySchedule']);
-
     // ────── Setup Uom ──────
     Route::resource('setup-uom', SetupUomController::class);
 });
