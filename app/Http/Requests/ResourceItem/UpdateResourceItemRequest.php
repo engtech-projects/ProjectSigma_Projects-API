@@ -46,6 +46,7 @@ class UpdateResourceItemRequest extends FormRequest
             'unit_count' => 'nullable|integer|min:0',
             'quantity' => 'required|numeric|min:0',
             'unit' => 'required|string',
+            'unit_name' => 'required|string',
             'unit_cost' => 'required|numeric|min:0',
             'resource_count' => 'required|integer|min:0',
             'consumption_rate' => 'nullable|numeric|min:0',

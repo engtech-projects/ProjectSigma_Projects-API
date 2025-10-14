@@ -18,7 +18,6 @@ class StoreProjectChangeRequest extends FormRequest
     {
         return true;
     }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -31,7 +30,6 @@ class StoreProjectChangeRequest extends FormRequest
             'request_type' => ['required', Rule::in(ChangeRequestType::values())],
             'changes' => ['nullable', 'json'],
             'request_status' => ['required', Rule::in(RequestStatuses::values())],
-            'created_by' => ['required', 'exists:users,id'],
             ...$this->storeApprovals(),
         ];
     }
