@@ -28,7 +28,9 @@ class UpdateNatureOfWorkRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('nature_of_work', 'name')->ignore($natureOfWorkId),
+                Rule::unique('nature_of_work', 'name')
+                    ->ignore($natureOfWorkId)
+                    ->whereNull('deleted_at'),
             ],
         ];
     }

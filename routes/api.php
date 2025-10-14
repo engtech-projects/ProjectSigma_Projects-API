@@ -33,6 +33,7 @@ use App\Http\Controllers\ResourceMetricController;
 use App\Http\Controllers\SetupListsController;
 use App\Http\Controllers\SetupUomController;
 use App\Http\Controllers\TaskScheduleController;
+use App\Http\Controllers\TssRevisionController;
 use App\Http\Controllers\VoidApproval;
 use App\Http\Resources\User\UserCollection;
 use App\Models\Uom;
@@ -50,6 +51,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
 Route::middleware('auth:api')->group(function () {
     // SYNCHRONIZATION ROUTES
     Route::prefix('setup')->group(function () {
@@ -76,13 +78,13 @@ Route::middleware('auth:api')->group(function () {
         });
     });
     // ────── User Info ──────
-    Route::get('/user', fn () => response()->json(new UserCollection(Auth::user()), 200));
+    Route::get('/user', fn() => response()->json(new UserCollection(Auth::user()), 200));
     // ────── Lookups ──────
     Route::prefix('lookups')->group(function () {
-        Route::get('/project-status', fn () => response()->json(ProjectStatus::cases(), 200));
-        Route::get('/project-stage', fn () => response()->json(ProjectStage::cases(), 200));
+        Route::get('/project-status', fn() => response()->json(ProjectStatus::cases(), 200));
+        Route::get('/project-stage', fn() => response()->json(ProjectStage::cases(), 200));
         Route::get('/resource-names', [ResourceItemController::class, 'getResourceType']);
-        Route::get('/uom', fn () => response()->json(Uom::all(), 200));
+        Route::get('/uom', fn() => response()->json(Uom::all(), 200));
         Route::resource('positions', PositionController::class);
         Route::get('/all-position', [PositionController::class, 'all']);
         Route::get('item-profiles', [SetupListsController::class, 'getAllItemProfileList']);
@@ -102,6 +104,7 @@ Route::middleware('auth:api')->group(function () {
             Route::get('{project}/details', [ProjectController::class, 'getProjectDetails']);
             // ───── Direct Cost - Cashflows ─────
             Route::resource('{project}/cashflows', CashflowController::class);
+            Route::post('{project}/cashflows/{cashflow}/restore', [CashflowController::class, 'restore']);
             // ───── Generate Summary Of Estimate Direct Cost ─────
             Route::get('{project}/direct-cost/summary', [ProjectController::class, 'generateSummaryOfDirectEstimate']);
             // ───── Change Requests ─────
@@ -116,6 +119,7 @@ Route::middleware('auth:api')->group(function () {
             });
             // ───── Bill of Materials ─────
             Route::get('{project}/bom/generate-bom', [BomController::class, 'generateBillOfMaterials']);
+            Route::post('{project}/bom/{bom}/restore', [BomController::class, 'restore']);
             Route::resource('{project}/bom', BomController::class);
         });
         Route::get('{project}/resource-items', [ProjectController::class, 'getResourcesItems']);
@@ -141,7 +145,9 @@ Route::middleware('auth:api')->group(function () {
     });
     // ────── Phases, Tasks, Resources ──────
     Route::resource('phases', BoqPartController::class);
+    Route::post('phases/{phase}/restore', [BoqPartController::class, 'restore']);
     Route::resource('tasks', BoqItemController::class);
+    Route::post('tasks/{task}/restore', [BoqItemController::class, 'restore']);
     Route::patch('{task}/update-draft-unit-price', [BoqItemController::class, 'updateDraftUnitPrice']);
     Route::prefix('uom')->as('uom.')->group(function () {
         Route::resource('resource', UomController::class);
@@ -152,7 +158,9 @@ Route::middleware('auth:api')->group(function () {
         Route::get('all', [NatureOfWorkController::class, 'all']);
     });
     Route::resource('resource-items', ResourceItemController::class);
+    Route::post('resource-items/{resourceItem}/restore', [ResourceItemController::class, 'restore']);
     Route::resource('direct-cost-estimates', DirectCostEstimateController::class);
+    Route::post('direct-cost-estimates/{id}/restore', [DirectCostEstimateController::class, 'restore']);
     Route::resource('resource-metrics', ResourceMetricController::class);
     Route::resource('task-schedule', TaskScheduleController::class);
     Route::patch('task-schedule/{id}/schedule', [TaskScheduleController::class, 'updateTaskSchedule']);
@@ -164,6 +172,8 @@ Route::middleware('auth:api')->group(function () {
         Route::post('revision/{revision}/copy-to-project', [RevisionController::class, 'copyAwardedProjectAsDraft']);
         Route::post('change-to-proposal', [RevisionController::class, 'changeToProposal']);
         Route::post('return-to-draft', [RevisionController::class, 'returnToDraft']);
+        // ────── TSS Revisions ──────
+        Route::resource('tss', TssRevisionController::class);
     });
     // ────── Roles & Permissions ──────
     Route::resource('roles', RoleController::class);

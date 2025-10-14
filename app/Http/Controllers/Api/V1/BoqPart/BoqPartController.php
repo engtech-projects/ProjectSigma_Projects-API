@@ -70,10 +70,22 @@ class BoqPartController extends Controller
     public function destroy(BoqPart $phase)
     {
         $phase->delete();
-
         return response()->json([
             'message' => 'Project phase has been deleted',
             'data' => $phase,
+        ], 200);
+    }
+
+    /**
+     * Restore the specified resource from storage.
+     */
+    public function restore($phase)
+    {
+        $deletedPhase = BoqPart::withTrashed()->findOrFail($phase);
+        $deletedPhase->restore();
+        return response()->json([
+            'success' => true,
+            'message' => 'Project phase has been restored',
         ], 200);
     }
 }

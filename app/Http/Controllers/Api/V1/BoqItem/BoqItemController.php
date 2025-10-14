@@ -75,6 +75,16 @@ class BoqItemController extends Controller
         ], 200);
     }
 
+    public function restore($task)
+    {
+        $deletedTask = BoqItem::withTrashed()->findOrFail($task);
+        $deletedTask->restore();
+        return response()->json([
+            'success' => true,
+            'message' => 'BOQ Item restored successfully',
+        ], 200);
+    }
+
     public function updateDraftUnitPrice(BoqItem $task, UpdateDraftUnitPriceRequest $request)
     {
         $task->update($request->validated());

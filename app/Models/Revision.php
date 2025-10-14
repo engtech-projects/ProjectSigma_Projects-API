@@ -54,6 +54,11 @@ class Revision extends Model
         return $this->belongsTo(Project::class);
     }
 
+    public function nextVersion($projectId)
+    {
+        return static::where('project_id', $projectId)->max('version') + 1;
+    }
+
     public function scopeWhereProjectCode(Builder $query, string $code): Builder
     {
         return $query->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.code')) LIKE ?", ["%{$code}%"]);

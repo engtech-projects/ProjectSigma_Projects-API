@@ -46,4 +46,14 @@ class CashflowController extends Controller
             'message' => 'Cashflow updated successfully',
         ], 200);
     }
+
+    public function restore(Project $project, $cashflowId)
+    {
+        $deletedCashflow = $project->cashflows()->withTrashed()->findOrFail($cashflowId);
+        $deletedCashflow->restore();
+        return response()->json([
+            'success' => true,
+            'message' => 'Cashflow restored successfully',
+        ], 200);
+    }
 }
