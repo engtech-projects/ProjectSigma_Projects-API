@@ -18,17 +18,6 @@ class TssRevisionController extends Controller
     {
         $this->service = $service;
     }
-    public function index(Project $project)
-    {
-        $revisions = Revision::where('project_id', $project->id)
-            ->with('data')
-            ->orderBy('version', 'desc')
-            ->get();
-        return SummarizedTssRevisionResource::collection($revisions)->additional([
-            'success' => true,
-            'message' => 'TSS revisions retrieved successfully',
-        ]);
-    }
     public function store(Project $project, Request $request)
     {
         $this->service->createTssRevision($project, $request->user(), $request->notes);
