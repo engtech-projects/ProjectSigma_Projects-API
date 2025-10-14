@@ -20,13 +20,6 @@ class UpdateDraftUnitPriceRequest extends FormRequest
         ]);
     }
     /**
-     * Handle failed authorization with a custom JSON response.
-     */
-    protected function failedAuthorization()
-    {
-        throw new AuthorizationException(__('Forbidden'), 403);
-    }
-    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
