@@ -1,7 +1,10 @@
 <?php
+
 namespace App\Http\Requests\Project;
+
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+
 class UpdateProjectRequest extends FormRequest
 {
     /**

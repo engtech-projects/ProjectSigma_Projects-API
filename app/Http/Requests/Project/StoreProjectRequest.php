@@ -1,6 +1,9 @@
 <?php
+
 namespace App\Http\Requests\Project;
+
 use Illuminate\Foundation\Http\FormRequest;
+
 class StoreProjectRequest extends FormRequest
 {
     /**
