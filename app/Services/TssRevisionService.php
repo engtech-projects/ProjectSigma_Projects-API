@@ -3,12 +3,9 @@
 namespace App\Services;
 
 use App\Http\Requests\TssRevisionRequest;
-use App\Http\Resources\Project\ProjectDetailResource;
 use App\Http\Resources\ProjectTssRevisionResource;
-use App\Http\Resources\TssProjectDetailResource;
 use App\Models\Project;
 use App\Models\Revision;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class TssRevisionService

@@ -12,7 +12,6 @@ use App\Http\Requests\Revision\ApproveProposalRequest;
 use App\Http\Requests\Revision\RejectProposalRequest;
 use App\Http\Requests\TssRevisionRequest;
 use App\Http\Resources\ProjectRevisionsSummaryResource;
-use App\Http\Resources\ProjectTssRevisionResource;
 use App\Http\Resources\RevisionResource;
 use App\Models\Project;
 use App\Models\Revision;
@@ -27,7 +26,7 @@ class RevisionController extends Controller
     {
         $validated = $request->validated();
         $projectKey = $validated['project_key'] ?? null;
-        $listOfRevisions = Revision::when($projectKey, fn($query) => $query->projectKey($projectKey))
+        $listOfRevisions = Revision::when($projectKey, fn ($query) => $query->projectKey($projectKey))
             ->latest()
             ->paginate(config('services.pagination.limit'));
         return ProjectRevisionsSummaryResource::collection($listOfRevisions)

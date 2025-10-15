@@ -33,7 +33,7 @@ class Project extends Model
     {
         return LogOptions::defaults()
             ->logAll() // List of attributes to log
-            ->setDescriptionForEvent(fn(string $eventName) => "Project has been {$eventName}");
+            ->setDescriptionForEvent(fn (string $eventName) => "Project has been {$eventName}");
     }
     protected $fillable = [
         'parent_project_id',
@@ -362,18 +362,18 @@ class Project extends Model
     public function getTotalTaskAmountAttribute()
     {
         $allTasks = $this->relationLoaded('phases')
-            ? $this->phases->flatMap(fn($phase) => $phase->tasks)
-            : $this->phases()->with('tasks')->get()->flatMap(fn($phase) => $phase->tasks);
+            ? $this->phases->flatMap(fn ($phase) => $phase->tasks)
+            : $this->phases()->with('tasks')->get()->flatMap(fn ($phase) => $phase->tasks);
         // Sum the 'amount' of all tasks as float
-        return $allTasks->sum(fn($task) => (float) $task->amount);
+        return $allTasks->sum(fn ($task) => (float) $task->amount);
     }
     public function getTotalDraftTaskAmountAttribute()
     {
         $allTasks = $this->relationLoaded('phases')
-            ? $this->phases->flatMap(fn($phase) => $phase->tasks)
-            : $this->phases()->with('tasks')->get()->flatMap(fn($phase) => $phase->tasks);
+            ? $this->phases->flatMap(fn ($phase) => $phase->tasks)
+            : $this->phases()->with('tasks')->get()->flatMap(fn ($phase) => $phase->tasks);
         // Sum the 'amount' of all tasks as float
-        return $allTasks->sum(fn($task) => (float) $task->draft_amount);
+        return $allTasks->sum(fn ($task) => (float) $task->draft_amount);
     }
     public function getSummaryOfRatesAttribute()
     {
