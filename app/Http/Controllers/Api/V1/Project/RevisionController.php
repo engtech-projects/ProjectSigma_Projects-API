@@ -10,11 +10,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterProjectRequest;
 use App\Http\Requests\Revision\ApproveProposalRequest;
 use App\Http\Requests\Revision\RejectProposalRequest;
+use App\Http\Requests\TssRevisionRequest;
 use App\Http\Resources\ProjectRevisionsSummaryResource;
+use App\Http\Resources\ProjectTssRevisionResource;
 use App\Http\Resources\RevisionResource;
 use App\Models\Project;
 use App\Models\Revision;
 use App\Services\ProjectService;
+use App\Services\TssRevisionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -24,7 +27,7 @@ class RevisionController extends Controller
     {
         $validated = $request->validated();
         $projectKey = $validated['project_key'] ?? null;
-        $listOfRevisions = Revision::when($projectKey, fn ($query) => $query->projectKey($projectKey))
+        $listOfRevisions = Revision::when($projectKey, fn($query) => $query->projectKey($projectKey))
             ->latest()
             ->paginate(config('services.pagination.limit'));
         return ProjectRevisionsSummaryResource::collection($listOfRevisions)
@@ -199,5 +202,14 @@ class RevisionController extends Controller
         $projectService = new ProjectService($project);
         $result = $projectService->revertToRevision($revision);
         return $result;
+    }
+
+    public function tssRevision(Project $project, TssRevisionRequest $request)
+    {
+        $tssRevisionService = new TssRevisionService();
+        $tssRevisionService->createTssRevision($project, $request);
+        return ProjectTssRevisionResource::make($project)->additional([
+            'message' => 'Project Tss revision created successfully',
+        ], 200);
     }
 }

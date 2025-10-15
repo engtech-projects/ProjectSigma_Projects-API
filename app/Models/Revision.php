@@ -21,10 +21,10 @@ class Revision extends Model
         'project_id',
         'project_uuid',
         'data',
+        'version',
         'comments',
         'status',
     ];
-
     protected static function boot()
     {
         parent::boot();

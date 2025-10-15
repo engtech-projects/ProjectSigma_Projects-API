@@ -134,6 +134,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
         Route::patch('{project}/cash-flow', [ProjectController::class, 'updateCashFlow']);
         Route::get('{project}/revisions', [RevisionController::class, 'showProjectRevisions']);
+        Route::post('{project}/tss-revision', [RevisionController::class, 'tssRevision']);
         Route::put('{project}/revert/{revision}', [RevisionController::class, 'revertToRevision']);
         Route::get('{project}/activities', [ActivityController::class, 'projectActivities']);
         Route::post('{project}/activities', [ActivityController::class, 'createProjectActivity']);
@@ -173,8 +174,6 @@ Route::middleware('auth:api')->group(function () {
         Route::post('revision/{revision}/copy-to-project', [RevisionController::class, 'copyAwardedProjectAsDraft']);
         Route::post('change-to-proposal', [RevisionController::class, 'changeToProposal']);
         Route::post('return-to-draft', [RevisionController::class, 'returnToDraft']);
-        // ────── TSS Revisions ──────
-        Route::resource('tss', TssRevisionController::class);
     });
     // ────── Roles & Permissions ──────
     Route::resource('roles', RoleController::class);

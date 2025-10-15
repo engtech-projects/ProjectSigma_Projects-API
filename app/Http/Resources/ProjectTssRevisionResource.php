@@ -6,7 +6,7 @@ use App\Http\Resources\Project\BoqPartResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TssProjectDetailResource extends JsonResource
+class ProjectTssRevisionResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,7 +18,7 @@ class TssProjectDetailResource extends JsonResource
         return [
             'id' => $this->id,
             'parent_project_id' => $this->parent_project_id,
-            'project_identifier' => $this->uuid,
+            'project_identifier' => $this->project_identifier,
             'code' => $this->code,
             'name' => $this->name,
             'contract_id' => $this->contract_id,
@@ -44,8 +44,8 @@ class TssProjectDetailResource extends JsonResource
             'created_at' => $this->created_at_formatted,
             'updated_at' => $this->updated_at_formatted,
             'cash_flow' => $this->cash_flow ? $this->cash_flow : null,
-            'tss_cashflow' => ProjectTssCashflowResource::collection($this->whenLoaded('cashflows')),
             'phases' => BoqPartResource::collection($this->whenLoaded('phases')),
+            'boms' => BomResource::collection($this->whenLoaded('boms')),
             'attachments' => AttachmentResource::collection($this->whenLoaded('attachments')),
             'total_cost' => $this->total_task_amount,
             'draft_total_cost' => $this->total_draft_task_amount,
