@@ -15,18 +15,8 @@ class UpdateDraftUnitPriceRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // return $this->checkUserAccess([
-        //     ...AccessibilityProjects::marketingGroup(),
-        // ]);
         return true;
     }
-    /**
-     * Handle failed authorization with a custom JSON response.
-     */
-    // protected function failedAuthorization()
-    // {
-    //     throw new AuthorizationException(__('Forbidden'), 403);
-    // }
     /**
      * Get the validation rules that apply to the request.
      *
