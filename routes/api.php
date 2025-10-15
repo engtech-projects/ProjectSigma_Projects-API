@@ -134,7 +134,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
         Route::patch('{project}/cash-flow', [ProjectController::class, 'updateCashFlow']);
         Route::get('{project}/revisions', [RevisionController::class, 'showProjectRevisions']);
-        Route::post('{project}/tss-revision', [RevisionController::class, 'tssRevision']);
+        Route::post('{project}/tss-revision', [RevisionController::class, 'createTssRevision']);
         Route::put('{project}/revert/{revision}', [RevisionController::class, 'revertToRevision']);
         Route::get('{project}/activities', [ActivityController::class, 'projectActivities']);
         Route::post('{project}/activities', [ActivityController::class, 'createProjectActivity']);

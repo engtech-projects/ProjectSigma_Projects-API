@@ -16,7 +16,11 @@ class TssRevisionService
     public function createTssRevision(Project $project, TssRevisionRequest $request)
     {
         DB::transaction(function () use ($project, $request) {
-            $project->loadMissing(['phases.tasks.resources', 'boms']);
+            $project->loadMissing([
+                'phases.tasks.resources',
+                'boms',
+                'attachments'
+            ]);
             $version = Revision::where('project_id', $project->id)->max('version') + 1;
             Revision::create([
                 'project_id' => $project->id,

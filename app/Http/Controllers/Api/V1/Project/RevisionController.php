@@ -204,11 +204,12 @@ class RevisionController extends Controller
         return $result;
     }
 
-    public function tssRevision(Project $project, TssRevisionRequest $request)
+    public function createTssRevision(Project $project, TssRevisionRequest $request)
     {
         $tssRevisionService = new TssRevisionService();
         $tssRevisionService->createTssRevision($project, $request);
-        return ProjectTssRevisionResource::make($project)->additional([
+        return response()->json([
+            'success' => true,
             'message' => 'Project Tss revision created successfully',
         ], 200);
     }
