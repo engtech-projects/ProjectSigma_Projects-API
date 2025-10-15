@@ -12,7 +12,7 @@ class ProjectDetailResource extends JsonResource
         return [
             'id' => $this->id,
             'parent_project_id' => $this->parent_project_id,
-            'project_identifier' => $this->uuid,
+            'project_identifier' => $this->project_identifier,
             'code' => $this->code,
             'name' => $this->name,
             'contract_id' => $this->contract_id,
