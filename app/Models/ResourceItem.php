@@ -38,6 +38,8 @@ class ResourceItem extends Model
     ];
     protected $casts = [
         'resource_type' => ResourceType::class,
+        'unit_cost' => 'decimal:2',
+        'total_cost' => 'decimal:2',
     ];
     protected static function boot()
     {
@@ -149,7 +151,7 @@ class ResourceItem extends Model
     public function matchingResources()
     {
         $projectId = $this->task->phase->project_id;
-        return self::whereHas('task.phase', fn ($query) =>
+        return self::whereHas('task.phase', fn($query) =>
         $query->where('project_id', $projectId))
             ->where('resource_type', $this->resource_type)
             ->where('unit', $this->unit)
