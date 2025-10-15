@@ -23,14 +23,7 @@ class UpdateProjectRequest extends FormRequest
     {
         return [
             'contract_id' => 'required|string',
-            'code' => [
-                'nullable',
-                'string',
-                Rule::unique('projects', 'code')
-                    ->whereNull('deleted_at')
-                    ->ignore($this->route('project')),
-            ],
-            'name' => 'required|string',
+            'code' => 'nullable|string',
             'location' => 'required|string',
             'amount' => 'nullable|numeric|decimal:0,2|min:0',
             'contract_date' => 'nullable|date|date_format:Y-m-d',
