@@ -38,6 +38,8 @@ class ResourceItem extends Model
     ];
     protected $casts = [
         'resource_type' => ResourceType::class,
+        'unit_cost' => 'decimal:2',
+        'total_cost' => 'decimal:2',
     ];
     protected static function boot()
     {

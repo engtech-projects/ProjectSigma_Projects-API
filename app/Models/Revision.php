@@ -21,10 +21,10 @@ class Revision extends Model
         'project_id',
         'project_uuid',
         'data',
+        'version',
         'comments',
         'status',
     ];
-
     protected static function boot()
     {
         parent::boot();
@@ -52,6 +52,11 @@ class Revision extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function nextVersion($projectId)
+    {
+        return static::where('project_id', $projectId)->max('version') + 1;
     }
 
     public function scopeWhereProjectCode(Builder $query, string $code): Builder

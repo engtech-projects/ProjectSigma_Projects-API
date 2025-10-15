@@ -80,9 +80,23 @@ class ResourceItemController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Project Resources Item has been deleted',
-            'data' => $result,
         ], 200);
     }
+    /**
+     * Restore the specified resource from storage.
+     */
+    public function restore($resourceItem)
+    {
+        $deletedResourceItem = ResourceItem::withTrashed()->findOrFail($resourceItem);
+        $deletedResourceItem->restore();
+        return response()->json([
+            'success' => true,
+            'message' => 'Resource item restored successfully',
+        ], 200);
+    }
+    /**
+     * Get resources associated with a specific BOQ item.
+     */
     public function billOfMaterialsResources(BoqItem $item_id)
     {
         $resources = $item_id->resources()->get();

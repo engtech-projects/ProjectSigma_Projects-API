@@ -10,11 +10,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterProjectRequest;
 use App\Http\Requests\Revision\ApproveProposalRequest;
 use App\Http\Requests\Revision\RejectProposalRequest;
+use App\Http\Requests\TssRevisionRequest;
 use App\Http\Resources\ProjectRevisionsSummaryResource;
 use App\Http\Resources\RevisionResource;
 use App\Models\Project;
 use App\Models\Revision;
 use App\Services\ProjectService;
+use App\Services\TssRevisionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -199,5 +201,15 @@ class RevisionController extends Controller
         $projectService = new ProjectService($project);
         $result = $projectService->revertToRevision($revision);
         return $result;
+    }
+
+    public function createTssRevision(Project $project, TssRevisionRequest $request)
+    {
+        $tssRevisionService = new TssRevisionService();
+        $tssRevisionService->createTssRevision($project, $request);
+        return response()->json([
+            'success' => true,
+            'message' => 'Project Tss revision created successfully',
+        ], 200);
     }
 }

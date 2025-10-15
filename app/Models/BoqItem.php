@@ -29,6 +29,10 @@ class BoqItem extends Model
         'draft_amount',
         'amount',
     ];
+    protected $casts = [
+        'amount' => 'decimal:2',
+        'draft_amount' => 'decimal:2',
+    ];
     protected static function boot()
     {
         parent::boot();
