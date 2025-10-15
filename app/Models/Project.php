@@ -60,6 +60,7 @@ class Project extends Model
         'designator',
         'abc',
         'bid_date',
+        'document_number',
         'created_by',
         'cash_flow',
     ];
