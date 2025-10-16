@@ -14,6 +14,10 @@ class TssCashflowResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'date' => $this->date,
+            'total_amount' => $this->total_amount,
+            'items' => CashflowItemResource::collection($this->whenLoaded('cashflowItems'))
+        ];
     }
 }
