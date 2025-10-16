@@ -50,6 +50,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
 Route::middleware('auth:api')->group(function () {
     // SYNCHRONIZATION ROUTES
     Route::prefix('setup')->group(function () {
@@ -102,6 +103,7 @@ Route::middleware('auth:api')->group(function () {
             Route::get('{project}/details', [ProjectController::class, 'getProjectDetails']);
             // ───── Direct Cost - Cashflows ─────
             Route::resource('{project}/cashflows', CashflowController::class);
+            Route::post('{project}/cashflows/{cashflow}/restore', [CashflowController::class, 'restore']);
             // ───── Generate Summary Of Estimate Direct Cost ─────
             Route::get('{project}/direct-cost/summary', [ProjectController::class, 'generateSummaryOfDirectEstimate']);
             // ───── Change Requests ─────
@@ -116,6 +118,7 @@ Route::middleware('auth:api')->group(function () {
             });
             // ───── Bill of Materials ─────
             Route::get('{project}/bom/generate-bom', [BomController::class, 'generateBillOfMaterials']);
+            Route::post('{project}/bom/{bom}/restore', [BomController::class, 'restore']);
             Route::resource('{project}/bom', BomController::class);
         });
         Route::get('{project}/resource-items', [ProjectController::class, 'getResourcesItems']);
@@ -130,6 +133,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
         Route::patch('{project}/cash-flow', [ProjectController::class, 'updateCashFlow']);
         Route::get('{project}/revisions', [RevisionController::class, 'showProjectRevisions']);
+        Route::post('{project}/tss-revision', [RevisionController::class, 'createTssRevision']);
         Route::put('{project}/revert/{revision}', [RevisionController::class, 'revertToRevision']);
         Route::get('{project}/activities', [ActivityController::class, 'projectActivities']);
         Route::post('{project}/activities', [ActivityController::class, 'createProjectActivity']);
@@ -142,7 +146,10 @@ Route::middleware('auth:api')->group(function () {
     });
     // ────── Phases, Tasks, Resources ──────
     Route::resource('phases', BoqPartController::class);
+    Route::post('phases/{phase}/restore', [BoqPartController::class, 'restore']);
     Route::resource('tasks', BoqItemController::class);
+    Route::post('tasks/{task}/restore', [BoqItemController::class, 'restore']);
+    Route::patch('{task}/update-draft-unit-price', [BoqItemController::class, 'updateDraftUnitPrice']);
     Route::prefix('uom')->as('uom.')->group(function () {
         Route::resource('resource', UomController::class);
         Route::get('all', [UomController::class, 'all']);
@@ -152,7 +159,9 @@ Route::middleware('auth:api')->group(function () {
         Route::get('all', [NatureOfWorkController::class, 'all']);
     });
     Route::resource('resource-items', ResourceItemController::class);
+    Route::post('resource-items/{resourceItem}/restore', [ResourceItemController::class, 'restore']);
     Route::resource('direct-cost-estimates', DirectCostEstimateController::class);
+    Route::post('direct-cost-estimates/{id}/restore', [DirectCostEstimateController::class, 'restore']);
     Route::resource('resource-metrics', ResourceMetricController::class);
     Route::resource('task-schedule', TaskScheduleController::class);
     Route::patch('task-schedule/{id}/schedule', [TaskScheduleController::class, 'updateTaskSchedule']);

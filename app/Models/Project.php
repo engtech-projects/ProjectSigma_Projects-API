@@ -60,6 +60,7 @@ class Project extends Model
         'designator',
         'abc',
         'bid_date',
+        'document_number',
         'created_by',
         'cash_flow',
     ];
@@ -70,6 +71,7 @@ class Project extends Model
         'ntp_date' => 'datetime:Y-m-d',
         'bid_date' => 'datetime:Y-m-d',
         'amount' => 'decimal:2',
+        'abc' => 'decimal:2',
         'marketing_stage' => MarketingStage::class,
         'tss_stage' => TssStage::class,
     ];

@@ -55,4 +55,14 @@ class ProjectChangeRequestController extends Controller
             'data' => new ProjectChangeRequestResource($changeRequest),
         ], 200);
     }
+
+    public function restore($changeRequest)
+    {
+        $deletedChangeRequest = ProjectChangeRequest::withTrashed()->findOrFail($changeRequest);
+        $deletedChangeRequest->restore();
+        return response()->json([
+            'success' => true,
+            'message' => 'Project change request restored successfully',
+        ], 200);
+    }
 }

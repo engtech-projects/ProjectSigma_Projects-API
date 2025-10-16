@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class UpdateNatureOfWorkRequest extends FormRequest
+class TssRevisionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,7 +13,6 @@ class UpdateNatureOfWorkRequest extends FormRequest
     {
         return true;
     }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -22,16 +20,10 @@ class UpdateNatureOfWorkRequest extends FormRequest
      */
     public function rules(): array
     {
-        $natureOfWorkId = $this->route('nature_of_work');
         return [
-            'name' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('nature_of_work', 'name')
-                    ->ignore($natureOfWorkId)
-                    ->whereNull('deleted_at'),
-            ],
+            'project_uuid' => 'nullable|string',
+            'comments' => 'nullable|string',
+            'version' => 'required|integer',
         ];
     }
 }

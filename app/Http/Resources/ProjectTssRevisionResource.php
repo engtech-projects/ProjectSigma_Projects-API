@@ -1,13 +1,19 @@
 <?php
 
-namespace App\Http\Resources\Project;
+namespace App\Http\Resources;
 
-use App\Http\Resources\AttachmentResource;
+use App\Http\Resources\Project\BoqPartResource;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProjectDetailResource extends JsonResource
+class ProjectTssRevisionResource extends JsonResource
 {
-    public function toArray($request)
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
@@ -39,6 +45,7 @@ class ProjectDetailResource extends JsonResource
             'updated_at' => $this->updated_at_formatted,
             'cash_flow' => $this->cash_flow ? $this->cash_flow : null,
             'phases' => BoqPartResource::collection($this->whenLoaded('phases')),
+            'boms' => BomResource::collection($this->whenLoaded('boms')),
             'attachments' => AttachmentResource::collection($this->whenLoaded('attachments')),
             'total_cost' => $this->total_task_amount,
             'draft_total_cost' => $this->total_draft_task_amount,

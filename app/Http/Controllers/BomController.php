@@ -41,9 +41,9 @@ class BomController extends Controller
         $bom = $project->boms()->findOrFail($bomId);
         $bom->update($request->validated());
         return response()->json([
-                'success' => true,
-                'message' => 'Bill of Material item updated successfully',
-            ]);
+            'success' => true,
+            'message' => 'Bill of Material item updated successfully',
+        ]);
     }
     public function destroy(Project $project, $bomId)
     {
@@ -54,6 +54,17 @@ class BomController extends Controller
             'message' => 'Bill of Material item deleted successfully',
         ], 200);
     }
+
+    public function restore(Project $project, $bomId)
+    {
+        $deletedBom = $project->boms()->withTrashed()->findOrFail($bomId);
+        $deletedBom->restore();
+        return response()->json([
+            'success' => true,
+            'message' => 'Bill of Material item restored successfully',
+        ], 200);
+    }
+
     public function generateBillOfMaterials(Project $project)
     {
         return GenerateBomResource::collection($project->boms()->get())

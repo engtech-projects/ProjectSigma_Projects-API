@@ -33,4 +33,14 @@ class DirectCostEstimateController extends Controller
             'data' => new DirectCostEstimateResource($resourceItem),
         ], 200);
     }
+
+    public function restore($id)
+    {
+        $deletedResourceItem = ResourceItem::withTrashed()->findOrFail($id);
+        $deletedResourceItem->restore();
+        return response()->json([
+            'success' => true,
+            'message' => 'Direct Cost Estimate restored successfully',
+        ], 200);
+    }
 }
