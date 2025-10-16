@@ -27,6 +27,8 @@ class UpdateBomRequest extends FormRequest
             'unit' => 'sometimes|required|string|max:50',
             'unit_price' => 'sometimes|nullable|numeric|min:0',
             'additional_details' => 'sometimes|nullable|string',
+            'original_quantity' => 'sometimes|nullable|numeric|min:0',
+            'revised_quantity' => 'sometimes|nullable|numeric|min:0',
         ];
     }
 }
