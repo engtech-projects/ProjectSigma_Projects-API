@@ -35,7 +35,6 @@ class RevisionController extends Controller
                 'message' => 'Revisions retrieved successfully',
             ]);
     }
-
     public function addRevision($status, $id)
     {
         DB::transaction(function () use ($status, $id) {
@@ -49,10 +48,8 @@ class RevisionController extends Controller
                 'status' => $status,
             ]);
         });
-
         return true;
     }
-
     public function copyAwardedProjectAsDraft(Revision $revision)
     {
         $projectData = json_decode($revision->data, true);
@@ -111,7 +108,6 @@ class RevisionController extends Controller
             ], 500);
         }
     }
-
     public function show(Revision $revision)
     {
         return response()->json([
@@ -120,7 +116,6 @@ class RevisionController extends Controller
             'data' => new RevisionResource($revision),
         ], 200);
     }
-
     public function showProjectRevisions($project)
     {
         $revisions = Revision::where('project_id', $project->id)
@@ -132,7 +127,6 @@ class RevisionController extends Controller
             'data' => ProjectRevisionsSummaryResource::collection($revisions),
         ], 200);
     }
-
     public function changeToProposal(ApproveProposalRequest $request)
     {
         $validatedData = $request->validated();
@@ -143,7 +137,6 @@ class RevisionController extends Controller
             $revision->status = ProjectStatus::PENDING->value;
             $revision->save();
         });
-
         return response()->json([
             'message' => 'Project approved to proposal',
         ], 200);
@@ -158,12 +151,10 @@ class RevisionController extends Controller
             $revision->status = ProjectStage::BIDDING->value;
             $revision->save();
         });
-
         return response()->json([
             'message' => 'Project approved to bidding',
         ], 200);
     }
-
     public function returnToDraft(RejectProposalRequest $request)
     {
         $validatedData = $request->validated();
@@ -174,12 +165,10 @@ class RevisionController extends Controller
             $revision->status = ProjectStatus::PENDING->value;
             $revision->save();
         });
-
         return response()->json([
             'message' => 'Project returned to draft',
         ], 200);
     }
-
     public function archive(Request $request, Revision $revision)
     {
         $validatedData = $request->validated();
@@ -190,26 +179,31 @@ class RevisionController extends Controller
             $revision->status = ProjectStage::ARCHIVED->value;
             $revision->save();
         });
-
         return response()->json([
             'message' => 'Project archived',
         ], 200);
     }
-
     public function revertToRevision(Project $project, Revision $revision)
     {
         $projectService = new ProjectService($project);
         $result = $projectService->revertToRevision($revision);
         return $result;
     }
-
     public function createTssRevision(Project $project, TssRevisionRequest $request)
     {
-        $tssRevisionService = new TssRevisionService();
-        $tssRevisionService->createTssRevision($project, $request);
-        return response()->json([
-            'success' => true,
-            'message' => 'Project Tss revision created successfully',
-        ], 200);
+        try {
+            $tssRevisionService = new TssRevisionService();
+            $tssRevisionService->createTssRevision($project, $request);
+            return response()->json([
+                'success' => true,
+                'message' => 'Project Tss revision created successfully',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create TSS revision',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

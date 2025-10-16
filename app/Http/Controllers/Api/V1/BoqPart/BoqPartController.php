@@ -20,13 +20,11 @@ class BoqPartController extends Controller
     public function index(FilterPhraseRequest $request)
     {
         $phases = BoqPartService::withPagination($request->validated());
-
         return response()->json([
             'message' => 'Phases retrieved successfully.',
             'data' => BoqPartResource::collection($phases),
         ], 200);
     }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -35,13 +33,11 @@ class BoqPartController extends Controller
         $validated = $request->validated();
         $project = Project::find($validated['project_id']);
         $result = BoqPartService::create($validated);
-
         return response()->json([
             'message' => 'Project Item added successfully.',
             'data' => $result,
         ], 201);
     }
-
     /**
      * Display the specified resource.
      */
@@ -49,7 +45,6 @@ class BoqPartController extends Controller
     {
         return response()->json($phase->load('tasks'), 200);
     }
-
     /**
      * Update the specified resource in storage.
      */
@@ -57,13 +52,11 @@ class BoqPartController extends Controller
     {
         $validated = $request->validated();
         $phase->update($validated);
-
         return response()->json([
             'message' => 'Project phase has been updated',
             'data' => $phase,
         ], 200);
     }
-
     /**
      * Remove the specified resource from storage.
      */
@@ -71,11 +64,11 @@ class BoqPartController extends Controller
     {
         $phase->delete();
         return response()->json([
+            'success' => true,
             'message' => 'Project phase has been deleted',
             'data' => $phase,
         ], 200);
     }
-
     /**
      * Restore the specified resource from storage.
      */

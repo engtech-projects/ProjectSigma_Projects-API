@@ -18,13 +18,12 @@ class TssRevisionService
                 'boms',
                 'attachments'
             ]);
-            $version = Revision::where('project_id', $project->id)->max('version') + 1;
             Revision::create([
                 'project_id' => $project->id,
                 'project_uuid' => $project->uuid,
                 'data' => json_encode(ProjectTssRevisionResource::make($project)->toArray($request)),
                 'comments' => $request->input('comments'),
-                'version' => $version,
+                'version' => Revision::nextVersion($project->id),
             ]);
         });
     }

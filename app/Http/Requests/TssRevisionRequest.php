@@ -13,7 +13,6 @@ class TssRevisionRequest extends FormRequest
     {
         return true;
     }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -23,7 +22,6 @@ class TssRevisionRequest extends FormRequest
     {
         return [
             'project_uuid' => 'nullable|string',
-            'data' => 'required|json',
             'comments' => 'nullable|string',
             'version' => 'required|integer',
         ];
