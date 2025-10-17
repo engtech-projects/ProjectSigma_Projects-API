@@ -30,10 +30,13 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'user_id',
+        'employee_id',
+        'type',
+        'accessibilities',
         'name',
         'email',
+        'email_verified_at',
         'password',
-        'employee_id',
     ];
 
     /**
@@ -70,5 +73,10 @@ class User extends Authenticatable
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    public function getAccessibilityNamesAttribute()
+    {
+        return SetupAccessibilities::whereIn("id", $this->accessibilities)->get()->pluck("accessibilities_name");
     }
 }
