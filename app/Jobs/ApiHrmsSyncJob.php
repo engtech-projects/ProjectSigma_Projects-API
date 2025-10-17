@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Services\ApiServices\HrmsService;
+use App\Http\Services\ApiServices\HrmsSecretKeyService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -34,7 +34,7 @@ class ApiHrmsSyncJob implements ShouldQueue
     public function handle(): void
     {
         try {
-            $service = app(HrmsService::class);
+            $service = app(HrmsSecretKeyService::class);
             if (!method_exists($service, $this->method)) {
                 Log::warning("ApiHrmsSyncJob: Method {$this->method} does not exist.");
                 return;

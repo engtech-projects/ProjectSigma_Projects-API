@@ -118,4 +118,15 @@ class APiSyncController extends Controller
             'success' => true,
         ]);
     }
+
+    public function syncUsers(Request $request)
+    {
+        if (!ApiHrmsSyncJob::dispatch('syncUsers')) {
+            throw new \Exception("User sync failed.");
+        }
+        return response()->json([
+            'message' => 'Successfully synced all Users.',
+            'success' => true,
+        ]);
+    }
 }
