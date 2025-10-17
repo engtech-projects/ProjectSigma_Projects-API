@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreProjectCashFlowRequest;
+use App\Http\Requests\StoreTssCashflowRequest;
 use App\Http\Requests\UpdateCashflowItemRequest;
-use App\Http\Resources\ProjectTssCashflowResource;
+use App\Http\Resources\TssCashflowResource;
 use App\Models\Cashflow;
 use App\Models\Project;
 use App\Services\ProjectService;
@@ -13,19 +13,19 @@ class CashflowController extends Controller
 {
     public function index(Project $project)
     {
-        return ProjectTssCashflowResource::collection($project->cashflows()->with('cashflowItems.item')->get())
+        return TssCashflowResource::collection($project->cashflows()->with('cashflowItems.item')->get())
             ->additional([
                 'success' => true,
                 'message' => 'Cashflows retrieved successfully',
             ]);
     }
 
-    public function store(Project $project, StoreProjectCashFlowRequest $request)
+    public function store(Project $project, StoreTssCashflowRequest $request)
     {
         $projectService = new ProjectService($project);
         $cashflow = $projectService->storeCashflow($request->validated());
         $cashflow->load('cashflowItems.item');
-        return ProjectTssCashflowResource::make($cashflow)
+        return TssCashflowResource::make($cashflow)
             ->additional([
                 'success' => true,
                 'message' => 'Cashflow created successfully',
