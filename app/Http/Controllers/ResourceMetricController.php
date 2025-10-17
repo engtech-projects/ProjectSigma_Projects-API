@@ -1,0 +1,58 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\CreateResourceMetricRequest;
+use App\Http\Requests\UpdateResourceMetricRequest;
+use App\Http\Resources\ResourceMetricResource;
+use App\Models\ResourceMetric;
+
+class ResourceMetricController extends Controller
+{
+    public function index()
+    {
+        $resourceMetrics = ResourceMetric::with('resource')->get();
+        return ResourceMetricResource::collection($resourceMetrics)
+            ->additional([
+                'success' => true,
+                'message' => 'Resource metrics retrieved successfully',
+            ]);
+    }
+
+    public function store(CreateResourceMetricRequest $request)
+    {
+        $validatedData = $request->validated();
+        $resourceMetric = ResourceMetric::create([
+            'resource_id' => $validatedData['resource_id'],
+            'label' => $validatedData['label'],
+            'value' => $validatedData['value'],
+            'unit' => $validatedData['unit'],
+        ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Resource metric created successfully',
+            'data' => $resourceMetric,
+        ], 201);
+    }
+
+    public function update(UpdateResourceMetricRequest $request, ResourceMetric $resourceMetric)
+    {
+        $validatedData = $request->validated();
+        $resourceMetric->update($validatedData);
+        return response()->json([
+            'success' => true,
+            'message' => 'Resource metric updated successfully',
+            'data' => $resourceMetric,
+        ], 200);
+    }
+
+    public function destroy(ResourceMetric $resourceMetric)
+    {
+        $resourceMetric->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Resource metric deleted successfully',
+            'data' => $resourceMetric,
+        ], 200);
+    }
+}
