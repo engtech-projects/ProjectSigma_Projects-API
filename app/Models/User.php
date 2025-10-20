@@ -59,17 +59,6 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            if (empty($model->uuid)) {
-                $model->uuid = (string) Str::uuid();
-            }
-        });
-    }
-
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
