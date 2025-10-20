@@ -2,7 +2,6 @@
 
 namespace App\Http\Services\ApiServices;
 
-use App\Models\Employee;
 use App\Models\SetupAccessibilities;
 use App\Models\SetupDepartments;
 use App\Models\SetupEmployees;
@@ -51,7 +50,7 @@ class HrmsSecretKeyService
     public function syncEmployees()
     {
         $employees = $this->getAllEmployees();
-        $employees = collect($employees)->map(fn($e) => collect($e)->only([
+        $employees = collect($employees)->map(fn ($e) => collect($e)->only([
             'id',
             'first_name',
             'middle_name',
