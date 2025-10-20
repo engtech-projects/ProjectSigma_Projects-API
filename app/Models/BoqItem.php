@@ -107,12 +107,14 @@ class BoqItem extends Model
     }
     public function getTotalMaterialsAmountAttribute()
     {
-        return $this->resources()->where('resource_type', ResourceType::MATERIALS->value)
+        $total = $this->resources()->where('resource_type', ResourceType::MATERIALS->value)
             ->sum('total_cost');
+        return round($total, 2);
     }
     public function getTotalDirectCostAttribute()
     {
-        return $this->resources()->sum('total_cost');
+        $total = $this->resources()->sum('total_cost');
+        return round($total, 2);
     }
     public function getTotalEquipmentAmountAttribute()
     {
@@ -168,16 +170,18 @@ class BoqItem extends Model
     public function getVatAttribute()
     {
         $total = collect($this->resource_totals)->sum('total_cost');
-        return $total > 0
+        $formattedTotal = $total > 0
             ? 0.12 * ($total + $this->ocm + $this->contractors_profit)
             : 0;
+        return round($formattedTotal, 2);
     }
     public function getGrandTotalAttribute()
     {
         $total = collect($this->resource_totals)->sum('total_cost');
-        return $total > 0
+        $formattedTotal = $total > 0
             ? $total + $this->ocm + $this->contractors_profit + $this->vat
             : 0;
+        return round($formattedTotal, 2);
     }
     public function getUnitCostPerAttribute()
     {
