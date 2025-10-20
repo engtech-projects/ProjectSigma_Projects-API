@@ -64,6 +64,7 @@ Route::middleware('auth:api')->group(function () {
             Route::prefix('hrms')->group(function () {
                 Route::post('/all', [ApiSyncController::class, 'syncAllHrms']);
                 Route::post('/employees', [APiSyncController::class, 'syncEmployees']);
+                Route::post('/users', [APiSyncController::class, 'syncUsers']);
                 Route::post('/accessibilities', [APiSyncController::class, 'syncAccessibilities']);
                 Route::post('/departments', [APiSyncController::class, 'syncDepartments']);
             });
