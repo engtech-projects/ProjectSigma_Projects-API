@@ -1,10 +1,7 @@
 <?php
-
 namespace App\Http\Resources\Project;
-
 use App\Http\Resources\AttachmentResource;
 use Illuminate\Http\Resources\Json\JsonResource;
-
 class ProjectDetailResource extends JsonResource
 {
     public function toArray($request)
@@ -45,6 +42,7 @@ class ProjectDetailResource extends JsonResource
             'formatted_total_cost' => $this->formatted_total_cost,
             'abc' => $this->abc,
             'bid_date' => $this->bid_date?->format('Y-m-d'),
+            'document_number' => $this->document_number,
         ];
     }
 }

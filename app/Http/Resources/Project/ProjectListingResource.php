@@ -1,11 +1,8 @@
 <?php
-
 namespace App\Http\Resources\Project;
-
 use App\Enums\ProjectStatus;
 use App\Enums\TssStage;
 use Illuminate\Http\Resources\Json\JsonResource;
-
 class ProjectListingResource extends JsonResource
 {
     public function toArray($request)
@@ -15,6 +12,7 @@ class ProjectListingResource extends JsonResource
             'name' => $this->name,
             'location' => $this->location,
             'amount' => $this->amount,
+            'formatted_amount' => number_format($this->amount),
             'code' => $this->code,
             'contract_id' => $this->contract_id,
             'created_by' => $this->created_by,
