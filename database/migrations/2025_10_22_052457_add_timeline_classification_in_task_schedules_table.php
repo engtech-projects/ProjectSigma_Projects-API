@@ -12,7 +12,7 @@ return new class () extends Migration {
     public function up(): void
     {
         Schema::table('task_schedules', function (Blueprint $table) {
-            $table->enum('timeline_classification', TimelineClassification::values())->default('current timeline')->after('id');
+            $table->enum('timeline_classification', TimelineClassification::values())->default('current_timeline')->after('id');
             $table->dropColumn('original_start');
             $table->dropColumn('original_end');
             $table->dropColumn('current_start');
