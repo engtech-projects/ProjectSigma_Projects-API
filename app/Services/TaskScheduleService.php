@@ -22,6 +22,7 @@ class TaskScheduleService
     {
         return Project::with('phases.tasks.schedules')
             ->filterByTitle($filter['title'] ?? null)
+            ->filterByTimelineClassification($filter['timeline_classification'] ?? null)
             ->filterByItemId($filter['item_id'] ?? null)
             ->filterByDate($filter['date_from'] ?? null, $filter['date_to'] ?? null)
             ->filterByStatus($filter['status'] ?? null)

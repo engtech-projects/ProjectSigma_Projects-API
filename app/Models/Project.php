@@ -248,6 +248,14 @@ class Project extends Model
     {
         return $query->orderBy('updated_at', 'desc');
     }
+    public function scopeFilterByTimelineClassification($query, $timelineClassification)
+    {
+        return $query->when($timelineClassification, function ($q) use ($timelineClassification) {
+            $q->whereHas('phases.tasks.schedules', function ($q) use ($timelineClassification) {
+                $q->where('timeline_classification', $timelineClassification);
+            });
+        });
+    }
     public function scopeFilterByTitle($query, $title)
     {
         return $query->when($title, function ($q) use ($title) {
