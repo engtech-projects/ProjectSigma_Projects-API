@@ -5,7 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class () extends Migration {
+return new class() extends Migration {
     /**
      * Run the migrations.
      */
@@ -27,10 +27,10 @@ return new class () extends Migration {
     {
         Schema::table('task_schedules', function (Blueprint $table) {
             $table->dropColumn('timeline_classification');
-            $table->date('original_start');
-            $table->date('original_end');
-            $table->date('current_start');
-            $table->date('current_end');
+            $table->date('original_start')->nullable();
+            $table->date('original_end')->nullable();
+            $table->date('current_start')->nullable();
+            $table->date('current_end')->nullable();
         });
     }
 };
