@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\ScheduleConflictException;
 use App\Http\Requests\CreateTaskScheduleRequest;
 use App\Http\Requests\FilterTaskScheduleRequest;
 use App\Http\Requests\UpdateTaskScheduleRequest;
 use App\Http\Resources\ProjectTaskScheduleResource;
 use App\Http\Resources\TaskScheduleResource;
 use App\Models\Project;
+use App\Models\TaskSchedule;
 use App\Services\TaskScheduleService;
 use Illuminate\Validation\ValidationException;
 
@@ -47,44 +47,39 @@ class TaskScheduleController extends Controller
             ]);
     }
 
-    public function store(CreateTaskScheduleRequest $request)
+    public function store(TaskSchedule $taskSchedule, CreateTaskScheduleRequest $request)
     {
-        try {
-            $schedule = $this->taskScheduleService->create($request->validated());
-            return response()->json([
-                'success' => true,
-                'message' => 'Task schedule created successfully.',
-                'data' =>  TaskScheduleResource::make($schedule),
-            ], 201);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 422);
-        }
+        $storeTaskSchedule = $taskSchedule->create($request->validated());
+        return TaskScheduleResource::make($storeTaskSchedule)->additional([
+            'success' => true,
+            'message' => 'Task schedule created successfully.',
+        ], 201);
     }
 
-    public function updateTaskSchedule(UpdateTaskScheduleRequest $request, $id)
+    public function show(TaskSchedule $taskSchedule)
     {
-        try {
-            $result = $this->taskScheduleService->updateTaskSchedule($id, $request->validated());
-            return response()->json([
+        return TaskScheduleResource::make($taskSchedule)
+            ->additional([
                 'success' => true,
-                'message' => 'Task schedule updated successfully.',
-                'data' => $result,
-            ], 200);
-        } catch (ScheduleConflictException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-                'conflicts' => $e->conflicts,
-                'suggested_slots' => $e->suggestedSlots,
-            ], 422);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 422);
-        }
+                'message' => 'Task schedule fetched successfully',
+            ], 201);
+    }
+
+    public function update(TaskSchedule $taskSchedule, UpdateTaskScheduleRequest $request)
+    {
+        $taskSchedule->update($request->validated());
+        return response()->json([
+            'success' => true,
+            'message' => 'Task schedule updated successfully',
+        ], 201);
+    }
+
+    public function destroy(TaskSchedule $taskSchedule)
+    {
+        $taskSchedule->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Task schedule deleted successfully',
+        ], 201);
     }
 }

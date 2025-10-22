@@ -77,18 +77,21 @@ Route::middleware('auth:api')->group(function () {
             Route::get('/departments', [SetupListsController::class, 'getDepartmentList']);
         });
     });
+
     // ────── User Info ──────
-    Route::get('/user', fn () => response()->json(new UserCollection(Auth::user()), 200));
+    Route::get('/user', fn() => response()->json(new UserCollection(Auth::user()), 200));
+
     // ────── Lookups ──────
     Route::prefix('lookups')->group(function () {
-        Route::get('/project-status', fn () => response()->json(ProjectStatus::cases(), 200));
-        Route::get('/project-stage', fn () => response()->json(ProjectStage::cases(), 200));
+        Route::get('/project-status', fn() => response()->json(ProjectStatus::cases(), 200));
+        Route::get('/project-stage', fn() => response()->json(ProjectStage::cases(), 200));
         Route::get('/resource-names', [ResourceItemController::class, 'getResourceType']);
-        Route::get('/uom', fn () => response()->json(Uom::all(), 200));
+        Route::get('/uom', fn() => response()->json(Uom::all(), 200));
         Route::resource('positions', PositionController::class);
         Route::get('/all-position', [PositionController::class, 'all']);
         Route::get('item-profiles', [SetupListsController::class, 'getAllItemProfileList']);
     });
+
     // ────── Approvals ──────
     Route::prefix('approvals')->group(function () {
         Route::post('approve/{modelName}/{model}', ApproveApproval::class);
@@ -96,19 +99,27 @@ Route::middleware('auth:api')->group(function () {
         Route::post('cancel/{modelName}/{model}', CancelApproval::class);
         Route::post('void/{modelName}/{model}', VoidApproval::class);
     });
+
     // ────── Projects ──────
     Route::prefix('projects')->group(function () {
+        // ───── Project's Resource ────
         Route::resource('resource', ProjectController::class);
+
+        // ───── Live Project ────
         Route::prefix('live')->group(function () {
             Route::get('/', [ProjectController::class, 'getLiveProjects']);
             Route::get('{project}/details', [ProjectController::class, 'getProjectDetails']);
-            // ───── Direct Cost - Cashflows ─────
+
+            // ───── Direct Cost - Tss Cashflows ─────
             Route::resource('{project}/cashflows', CashflowController::class);
             Route::post('{project}/cashflows/{cashflow}/restore', [CashflowController::class, 'restore']);
+
             // ───── Generate Summary Of Estimate Direct Cost ─────
             Route::get('{project}/direct-cost/summary', [ProjectController::class, 'generateSummaryOfDirectEstimate']);
+
             // ───── Change Requests ─────
             Route::resource('change-requests', ProjectChangeRequestController::class);
+
             // ───── allRequest, myRequest, myApprovals, ApprovedRequests ─────
             Route::prefix('direct-cost-requests')->group(function () {
                 Route::get('/', [DirectCostRequestController::class, 'index']);
@@ -117,11 +128,14 @@ Route::middleware('auth:api')->group(function () {
                 Route::get('my-approvals', [DirectCostRequestController::class, 'myApprovals']);
                 Route::get('approved', [DirectCostRequestController::class, 'approved']);
             });
+
             // ───── Bill of Materials ─────
             Route::get('{project}/bom/generate-bom', [BomController::class, 'generateBillOfMaterials']);
             Route::post('{project}/bom/{bom}/restore', [BomController::class, 'restore']);
             Route::resource('{project}/bom', BomController::class);
         });
+
+        // ───── Project Essentials ────
         Route::get('{project}/resource-items', [ProjectController::class, 'getResourcesItems']);
         Route::get('owned', [ProjectController::class, 'getOwnedProjects']);
         Route::patch('{project}/status', [ProjectStatusController::class, 'updateStatus']);
@@ -129,45 +143,71 @@ Route::middleware('auth:api')->group(function () {
         Route::post('{project}/archive', [ProjectStatusController::class, 'archive']);
         Route::post('{project}/complete', [ProjectStatusController::class, 'complete']);
         Route::post('replicate', [ProjectController::class, 'replicate']);
+
+        // ───── Project Attachments ─────
         Route::post('{project}/attachments', [ProjectAttachmentController::class, 'store']);
         Route::get('{project}/document-viewer', [ProjectAttachmentController::class, 'getDocumentViewerLink']);
+
+        // ───── Project Summary Rates ─────
         Route::post('change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
         Route::patch('{project}/cash-flow', [ProjectController::class, 'updateCashFlow']);
+
+        // ───── Project Revisions ────
         Route::get('{project}/revisions', [RevisionController::class, 'showProjectRevisions']);
         Route::post('{project}/tss-revision', [RevisionController::class, 'createTssRevision']);
         Route::put('{project}/revert/{revision}', [RevisionController::class, 'revertToRevision']);
+
+        // ───── Project Activities ────
         Route::get('{project}/activities', [ActivityController::class, 'projectActivities']);
         Route::post('{project}/activities', [ActivityController::class, 'createProjectActivity']);
+
+        // ───── Project Task Schedules ────
         Route::get('{project}/task-schedules', [TaskScheduleController::class, 'getAllTaskScheduleByProject']);
+        Route::get('task_schedules', [TaskScheduleController::class, 'filterProjectTaskSchedules']);
+
+        // ───── Project Bill of Quantity ────
         Route::patch('{task}/update-draft-unit-price', [BoqItemController::class, 'updateDraftUnitPrice']);
     });
+
     // ────── Attachments ──────
     Route::prefix('attachments')->group(function () {
         Route::delete('{attachment}/remove', [ProjectAttachmentController::class, 'destroy']);
     });
+
     // ────── Phases, Tasks, Resources ──────
     Route::resource('phases', BoqPartController::class);
     Route::post('phases/{phase}/restore', [BoqPartController::class, 'restore']);
     Route::resource('tasks', BoqItemController::class);
     Route::post('tasks/{task}/restore', [BoqItemController::class, 'restore']);
     Route::patch('{task}/update-draft-unit-price', [BoqItemController::class, 'updateDraftUnitPrice']);
+
+    // ───── Unit of Measurements ────
     Route::prefix('uom')->as('uom.')->group(function () {
         Route::resource('resource', UomController::class);
         Route::get('all', [UomController::class, 'all']);
     });
+
+    // ───── Nature of Work ────
     Route::prefix('nature-of-work')->as('nature-of-work.')->group(function () {
         Route::resource('resource', NatureOfWorkController::class);
         Route::get('all', [NatureOfWorkController::class, 'all']);
     });
+
+    // ───── Resource Items ────
     Route::resource('resource-items', ResourceItemController::class);
     Route::post('resource-items/{resourceItem}/restore', [ResourceItemController::class, 'restore']);
+
+    // ───── Direct Cost Estimates ────
     Route::resource('direct-cost-estimates', DirectCostEstimateController::class);
     Route::post('direct-cost-estimates/{id}/restore', [DirectCostEstimateController::class, 'restore']);
+
+    // ───── Unit of Measurements ────
     Route::resource('resource-metrics', ResourceMetricController::class);
     Route::resource('task-schedule', TaskScheduleController::class);
-    Route::patch('task-schedule/{id}/schedule', [TaskScheduleController::class, 'updateTaskSchedule']);
-    Route::get('/projects/task_schedules', [TaskScheduleController::class, 'filterProjectTaskSchedules']);
+
+    // ───── Bill of Materials ────
     Route::get('bill-of-materials/{item_id}/resources/all', [ResourceItemController::class, 'billOfMaterialsResources']);
+
     // ────── Revisions ──────
     Route::prefix('project-revisions')->group(function () {
         Route::resource('revisions', RevisionController::class);
@@ -175,27 +215,34 @@ Route::middleware('auth:api')->group(function () {
         Route::post('change-to-proposal', [RevisionController::class, 'changeToProposal']);
         Route::post('return-to-draft', [RevisionController::class, 'returnToDraft']);
     });
+
     // ────── Roles & Permissions ──────
     Route::resource('roles', RoleController::class);
     Route::resource('permissions', PermissionController::class);
+
     // ────── Logs ──────
     Route::resource('logs', LogController::class);
+
     // ────── Employees ──────
     Route::resource('employees', EmployeeController::class);
+
     // ────── Project Assignments ──────
     Route::prefix('project-assignments')->group(function () {
         Route::get('{project}/team', [ProjectAssignmentController::class, 'index']);
         Route::get('{project_assignment}', [ProjectAssignmentController::class, 'show']);
         Route::post('/', [ProjectAssignmentController::class, 'store']);
     });
+
     // ────── Activities ──────
     Route::resource('activities', ActivityController::class);
     Route::post('activities/{id}/restore', [ActivityController::class, 'restore']);
-    // ────── Daily Schedule ──────
+
+    // ────── Daily Schedules ──────
     Route::resource('daily-schedule', DailyScheduleController::class);
     Route::post('daily-schedule/{id}/restore', [DailyScheduleController::class, 'restore']);
     Route::get('activities/{activity}/daily', [DailyScheduleController::class, 'getDailySchedule']);
     Route::post('activities/{activity}/daily', [DailyScheduleController::class, 'updateOrCreateDailySchedule']);
+
     // ────── Setup Uom ──────
     Route::resource('setup-uom', SetupUomController::class);
 });

@@ -13,22 +13,15 @@ class TaskSchedule extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'timeline_classification',
         'item_id',
         'name',
-        'original_start',
-        'original_end',
-        'current_start',
-        'current_end',
         'duration_days',
         'weight_percent',
         'status',
     ];
 
     protected $casts = [
-        'original_start' => 'date',
-        'original_end' => 'date',
-        'current_start' => 'date',
-        'current_end' => 'date',
         'weight_percent' => 'decimal:2',
     ];
 

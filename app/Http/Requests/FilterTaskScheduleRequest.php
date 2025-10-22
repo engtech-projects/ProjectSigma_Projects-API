@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\TaskStatus;
+use App\Enums\TimelineClassification;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -24,6 +25,7 @@ class FilterTaskScheduleRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'timeline_classification' => ['required', Rule::in(TimelineClassification::values())],
             'title' => ['nullable', 'string'],
             'item_id' => ['nullable', 'string'],
             'date_from' => ['nullable', 'date'],
