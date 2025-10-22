@@ -163,7 +163,7 @@ Route::middleware('auth:api')->group(function () {
 
         // ───── Project Task Schedules ────
         Route::get('{project}/task-schedules', [TaskScheduleController::class, 'getAllTaskScheduleByProject']);
-        Route::get('task_schedules', [TaskScheduleController::class, 'filterProjectTaskSchedules']);
+        Route::get('task-schedules', [TaskScheduleController::class, 'filterProjectTaskSchedules']);
 
         // ───── Project Bill of Quantity ────
         Route::patch('{task}/update-draft-unit-price', [BoqItemController::class, 'updateDraftUnitPrice']);
@@ -203,6 +203,8 @@ Route::middleware('auth:api')->group(function () {
 
     // ───── Unit of Measurements ────
     Route::resource('resource-metrics', ResourceMetricController::class);
+
+    // ───── Task Schedule ────
     Route::resource('task-schedule', TaskScheduleController::class);
 
     // ───── Bill of Materials ────
