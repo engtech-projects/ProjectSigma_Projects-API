@@ -53,7 +53,7 @@ class TaskScheduleController extends Controller
         return TaskScheduleResource::make($storeTaskSchedule)->additional([
             'success' => true,
             'message' => 'Task schedule created successfully.',
-        ], 201);
+        ]);
     }
 
     public function show(TaskSchedule $taskSchedule)
@@ -62,7 +62,7 @@ class TaskScheduleController extends Controller
             ->additional([
                 'success' => true,
                 'message' => 'Task schedule fetched successfully',
-            ], 201);
+            ]);
     }
 
     public function update(TaskSchedule $taskSchedule, UpdateTaskScheduleRequest $request)
@@ -71,7 +71,7 @@ class TaskScheduleController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Task schedule updated successfully',
-        ], 201);
+        ]);
     }
 
     public function destroy(TaskSchedule $taskSchedule)
@@ -80,6 +80,6 @@ class TaskScheduleController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Task schedule deleted successfully',
-        ], 201);
+        ]);
     }
 }
