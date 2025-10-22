@@ -77,7 +77,7 @@ class TaskScheduleService
                 ->where('id', '!=', $id)
                 ->where(function ($query) use ($currentStart, $currentEnd) {
                     $query->where('current_start', '<', $currentEnd)
-                          ->where('current_end', '>', $currentStart);
+                        ->where('current_end', '>', $currentStart);
                 })
                 ->get();
             if ($conflicts->isNotEmpty()) {
