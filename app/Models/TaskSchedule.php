@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TimelineClassification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,6 +23,7 @@ class TaskSchedule extends Model
     ];
 
     protected $casts = [
+        'timeline_classification' => TimelineClassification::class,
         'weight_percent' => 'decimal:2',
     ];
 
