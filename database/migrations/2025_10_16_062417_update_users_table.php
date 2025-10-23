@@ -11,7 +11,6 @@ return new class () extends Migration {
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('employee_id')->after('user_id')->nullable();
             $table->string('type')->after('employee_id')->nullable();
             $table->json('accessibilities')->after('type')->nullable();
             $table->dropColumn('uuid');
