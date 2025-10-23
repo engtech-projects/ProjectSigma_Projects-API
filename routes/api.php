@@ -205,7 +205,7 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('resource-metrics', ResourceMetricController::class);
 
     // ───── Task Schedule ────
-    Route::resource('task-schedule', TaskScheduleController::class);
+    Route::resource('task-schedules', TaskScheduleController::class);
 
     // ───── Bill of Materials ────
     Route::get('bill-of-materials/{item_id}/resources/all', [ResourceItemController::class, 'billOfMaterialsResources']);
