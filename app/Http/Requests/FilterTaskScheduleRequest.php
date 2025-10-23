@@ -25,7 +25,7 @@ class FilterTaskScheduleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'timeline_classification' => ['required', Rule::in(TimelineClassification::values())],
+            'timeline_classification' => ['nullable', Rule::in(TimelineClassification::values())],
             'title' => ['nullable', 'string'],
             'item_id' => ['nullable', 'string'],
             'status' => ['nullable', 'string', Rule::in(TaskStatus::cases())],
