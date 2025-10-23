@@ -17,6 +17,8 @@ class TaskSchedule extends Model
         'timeline_classification',
         'item_id',
         'name',
+        'start_date',
+        'end_date',
         'duration_days',
         'weight_percent',
         'status',
@@ -24,6 +26,8 @@ class TaskSchedule extends Model
 
     protected $casts = [
         'timeline_classification' => TimelineClassification::class,
+        'start_date' => 'date',
+        'end_date' => 'date',
         'weight_percent' => 'decimal:2',
     ];
 

@@ -27,6 +27,8 @@ class FilterTaskScheduleRequest extends FormRequest
         return [
             'timeline_classification' => ['nullable', Rule::in(TimelineClassification::values())],
             'title' => ['nullable', 'string'],
+            'date_from' => ['nullable', 'date'],
+            'date_to' => ['nullable', 'date', 'after:date_from'],
             'item_id' => ['nullable', 'string'],
             'status' => ['nullable', 'string', Rule::in(TaskStatus::cases())],
             'sort_by' => ['nullable', 'string', 'in:name,created_at,updated_at'],

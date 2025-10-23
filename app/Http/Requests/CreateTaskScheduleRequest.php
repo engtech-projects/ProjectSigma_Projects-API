@@ -28,6 +28,8 @@ class CreateTaskScheduleRequest extends FormRequest
             'timeline_classification' => ['required', Rule::in(TimelineClassification::values())],
             'item_id' => ['required', 'exists:tasks,id'],
             "name" => ['nullable', 'string', 'max:255'],
+            'start_date' => ['required', 'date'],
+            'end_date' => ['required', 'date', 'after:start_date'],
             'duration_days' => ['nullable', 'integer', 'min:1'],
             'weight_percent' => ['nullable', 'numeric', 'between:0,100', 'decimal:0,2'],
             'status' => ['required', Rule::in(TaskStatus::values())]

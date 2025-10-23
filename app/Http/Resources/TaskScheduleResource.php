@@ -19,6 +19,8 @@ class TaskScheduleResource extends JsonResource
             'timeline_classification' => $this->timeline_classification,
             'item_id' => $this->item_id,
             'name' => $this->name,
+            'start_date' => $this->start_date,
+            'end_date' => $this->end_date,
             'duration_days' => $this->duration_days,
             'weight_percent' => $this->weight_percent,
             'status' => $this->status,

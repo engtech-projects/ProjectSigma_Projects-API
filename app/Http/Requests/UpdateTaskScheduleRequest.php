@@ -20,12 +20,14 @@ class UpdateTaskScheduleRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+    * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
             'timeline_classification' => ['required', Rule::in(TimelineClassification::values())],
+            'start_date' => ['nullable', 'date'],
+            'end_date' => ['nullable', 'date', 'after:start_date'],
             'duration_days' => ['nullable', 'integer', 'min:1'],
             'weight_percent' => ['nullable', 'numeric', 'between:0,100', 'decimal:0,2'],
             'status' => ['required', Rule::in(TaskStatus::values())]

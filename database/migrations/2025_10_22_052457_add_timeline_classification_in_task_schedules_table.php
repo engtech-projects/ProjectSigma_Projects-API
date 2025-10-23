@@ -13,6 +13,8 @@ return new class () extends Migration {
     {
         Schema::table('task_schedules', function (Blueprint $table) {
             $table->enum('timeline_classification', TimelineClassification::values())->default('current_timeline')->after('id');
+            $table->date('start_date')->after('item_id');
+            $table->date('end_date')->after('start_date');
             $table->dropColumn('original_start');
             $table->dropColumn('original_end');
             $table->dropColumn('current_start');
@@ -27,6 +29,8 @@ return new class () extends Migration {
     {
         Schema::table('task_schedules', function (Blueprint $table) {
             $table->dropColumn('timeline_classification');
+            $table->dropColumn('start_date');
+            $table->dropColumn('end_date');
             $table->date('original_start')->nullable();
             $table->date('original_end')->nullable();
             $table->date('current_start')->nullable();

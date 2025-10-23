@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ScheduleConflictException;
 use App\Http\Requests\CreateTaskScheduleRequest;
 use App\Http\Requests\FilterTaskScheduleRequest;
 use App\Http\Requests\UpdateTaskScheduleRequest;
@@ -47,9 +48,9 @@ class TaskScheduleController extends Controller
             ]);
     }
 
-    public function store(TaskSchedule $taskSchedule, CreateTaskScheduleRequest $request)
+    public function store(CreateTaskScheduleRequest $request)
     {
-        $storeTaskSchedule = $taskSchedule->create($request->validated());
+        $storeTaskSchedule = $this->taskScheduleService->createTaskSchedule($request->validated());
         return TaskScheduleResource::make($storeTaskSchedule)->additional([
             'success' => true,
             'message' => 'Task schedule created successfully.',
@@ -65,13 +66,28 @@ class TaskScheduleController extends Controller
             ]);
     }
 
-    public function update(TaskSchedule $taskSchedule, UpdateTaskScheduleRequest $request)
+    public function update(UpdateTaskScheduleRequest $request, $id)
     {
-        $taskSchedule->update($request->validated());
-        return response()->json([
-            'success' => true,
-            'message' => 'Task schedule updated successfully',
-        ]);
+        try {
+            $updatedTaskSchedule = $this->taskScheduleService->updateTaskSchedule($id, $request->validated());
+            return response()->json([
+                'success' => true,
+                'message' => 'Task schedule updated successfully.',
+                'data' => $updatedTaskSchedule,
+            ], 200);
+        } catch (ScheduleConflictException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'conflicts' => $e->conflicts,
+                'suggested_slots' => $e->suggestedSlots,
+            ], 422);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 422);
+        }
     }
 
     public function destroy(TaskSchedule $taskSchedule)

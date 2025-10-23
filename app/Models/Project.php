@@ -282,10 +282,8 @@ class Project extends Model
     {
         return $query->when($dateFrom && $dateTo, function ($q) use ($dateFrom, $dateTo) {
             $q->whereHas('phases.tasks.schedules', function ($subQuery) use ($dateFrom, $dateTo) {
-                $subQuery->whereBetween('original_start', [$dateFrom, $dateTo])
-                    ->orWhereBetween('original_end', [$dateFrom, $dateTo])
-                    ->orWhereBetween('current_start', [$dateFrom, $dateTo])
-                    ->orWhereBetween('current_end', [$dateFrom, $dateTo]);
+                $subQuery->whereBetween('start_date', [$dateFrom, $dateTo])
+                    ->orWhereBetween('end_date', [$dateFrom, $dateTo]);
             });
         });
     }
