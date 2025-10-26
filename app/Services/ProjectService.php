@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Services;
-
 use App\Enums\MarketingStage;
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
@@ -18,7 +16,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
-
 class ProjectService
 {
     protected $project;
@@ -379,15 +376,20 @@ class ProjectService
                 $total = (float) $distribution[$label];
                 $percent = $grandTotal ? ($total / $grandTotal) * 100 : 0;
                 $result[$label] = [
-                    'total (PHP)' => number_format($total, 2),
-                    'percent'     => number_format($percent, 2) . '%',
+                    'total_php' => number_format($total, 2),
+                    'total_percent'     => number_format($percent, 2) . '%',
+                ];
+            } else {
+                $result[$label] = [
+                    'total_php' => 0.00,
+                    'total_percent' => '0.00%',
                 ];
             }
         }
         $directPercent = $grandTotal ? ($directCostTotal / $grandTotal) * 100 : 0;
-        $result['Direct Cost Total'] = [
-            'total (PHP)' => number_format($directCostTotal, 2),
-            'percent'     => number_format($directPercent, 2) . '%',
+        $result['direct_cost_total'] = [
+            'total_php' => number_format($directCostTotal, 2),
+            'total_percent'     => number_format($directPercent, 2) . '%',
         ];
         return $result;
     }
