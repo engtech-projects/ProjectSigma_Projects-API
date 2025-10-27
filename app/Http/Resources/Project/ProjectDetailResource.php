@@ -1,7 +1,10 @@
 <?php
+
 namespace App\Http\Resources\Project;
+
 use App\Http\Resources\AttachmentResource;
 use Illuminate\Http\Resources\Json\JsonResource;
+
 class ProjectDetailResource extends JsonResource
 {
     public function toArray($request)

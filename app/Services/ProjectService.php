@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Services;
+
 use App\Enums\MarketingStage;
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
@@ -16,6 +18,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+
 class ProjectService
 {
     protected $project;
