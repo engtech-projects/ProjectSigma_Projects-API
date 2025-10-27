@@ -33,6 +33,9 @@ class BoqItem extends Model
         'amount' => 'decimal:2',
         'draft_amount' => 'decimal:2',
     ];
+    protected $appends = [
+        'missing_setup_item_profile_id',
+    ];
     protected static function boot()
     {
         parent::boot();
@@ -219,17 +222,21 @@ class BoqItem extends Model
             'total' => number_format($this->unit_price * $this->quantity, 2),
         ];
     }
+    public function getMissingSetupItemProfileIdAttribute(): bool
+    {
+        if (!$this->relationLoaded('resources')) {
+            $this->load('resources');
+        }
+        return $this->resources->contains(fn ($r) => $r->setup_item_profile_id === null);
+    }
     public function getDirectCostItemsAttribute()
     {
         return $this->resources->map(function (ResourceItem $item) {
-            $totalCost = ($item->resource_type->value === "materials" && $item->setup_item_profile_id === null)
-                ? 0
-                : $item->total_cost;
             return [
                 'resource_item_id' => $item->id,
                 'setup_item_profile_id' => $item->setup_item_profile_id,
                 'resource_type' => $item->resource_type,
-                'total_cost' => $totalCost,
+                'total_cost' => $item->total_cost,
             ];
         })->values();
     }

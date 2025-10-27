@@ -359,12 +359,9 @@ class ProjectService
     {
         $resources = $tasks->flatMap->resources;
         $resources = $resources->map(function ($item) {
-            $totalCost = ($item->resource_type->value === "materials" && $item->setup_item_profile_id === null)
-                ? 0
-                : (float) $item->total_cost;
             return [
                 'resource_type' => strtolower($item->resource_type->value),
-                'total_cost'    => $totalCost,
+                'total_cost'    => floatval($item->total_cost),
             ];
         });
         $distribution = $resources->groupBy('resource_type')->map(function ($group) {

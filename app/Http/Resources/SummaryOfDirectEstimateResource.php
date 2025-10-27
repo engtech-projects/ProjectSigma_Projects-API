@@ -18,6 +18,7 @@ class SummaryOfDirectEstimateResource extends JsonResource
     {
         return [
             'item_id' => $this->id,
+            'missing_setup_item_profile_id' => $this->missing_setup_item_profile_id,
             'pay_item_no' => $this->name,
             'description' => $this->description,
             'unit_price' => $this->item_unit_price,
