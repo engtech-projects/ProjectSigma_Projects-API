@@ -45,6 +45,7 @@ class ProjectDetailResource extends JsonResource
             'formatted_total_cost' => $this->formatted_total_cost,
             'abc' => $this->abc,
             'bid_date' => $this->bid_date?->format('Y-m-d'),
+            'document_number' => $this->document_number,
         ];
     }
 }

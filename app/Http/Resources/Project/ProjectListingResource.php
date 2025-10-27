@@ -15,6 +15,7 @@ class ProjectListingResource extends JsonResource
             'name' => $this->name,
             'location' => $this->location,
             'amount' => $this->amount,
+            'formatted_amount' => number_format($this->amount, 2),
             'code' => $this->code,
             'contract_id' => $this->contract_id,
             'created_by' => $this->created_by,
