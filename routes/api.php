@@ -50,7 +50,6 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
 Route::middleware('auth:api')->group(function () {
     // SYNCHRONIZATION ROUTES
     Route::prefix('setup')->group(function () {
@@ -64,6 +63,7 @@ Route::middleware('auth:api')->group(function () {
             Route::prefix('hrms')->group(function () {
                 Route::post('/all', [ApiSyncController::class, 'syncAllHrms']);
                 Route::post('/employees', [APiSyncController::class, 'syncEmployees']);
+                Route::post('/users', [APiSyncController::class, 'syncUsers']);
                 Route::post('/accessibilities', [APiSyncController::class, 'syncAccessibilities']);
                 Route::post('/departments', [APiSyncController::class, 'syncDepartments']);
             });
@@ -97,11 +97,13 @@ Route::middleware('auth:api')->group(function () {
     });
     // ────── Projects ──────
     Route::prefix('projects')->group(function () {
+        // ───── Project's Resource ────
         Route::resource('resource', ProjectController::class);
+        // ───── Live Project ────
         Route::prefix('live')->group(function () {
             Route::get('/', [ProjectController::class, 'getLiveProjects']);
             Route::get('{project}/details', [ProjectController::class, 'getProjectDetails']);
-            // ───── Direct Cost - Cashflows ─────
+            // ───── Direct Cost - Tss Cashflows ─────
             Route::resource('{project}/cashflows', CashflowController::class);
             Route::post('{project}/cashflows/{cashflow}/restore', [CashflowController::class, 'restore']);
             // ───── Generate Summary Of Estimate Direct Cost ─────
@@ -121,6 +123,7 @@ Route::middleware('auth:api')->group(function () {
             Route::post('{project}/bom/{bom}/restore', [BomController::class, 'restore']);
             Route::resource('{project}/bom', BomController::class);
         });
+        // ───── Project Essentials ────
         Route::get('{project}/resource-items', [ProjectController::class, 'getResourcesItems']);
         Route::get('owned', [ProjectController::class, 'getOwnedProjects']);
         Route::patch('{project}/status', [ProjectStatusController::class, 'updateStatus']);
@@ -128,16 +131,23 @@ Route::middleware('auth:api')->group(function () {
         Route::post('{project}/archive', [ProjectStatusController::class, 'archive']);
         Route::post('{project}/complete', [ProjectStatusController::class, 'complete']);
         Route::post('replicate', [ProjectController::class, 'replicate']);
+        // ───── Project Attachments ─────
         Route::post('{project}/attachments', [ProjectAttachmentController::class, 'store']);
         Route::get('{project}/document-viewer', [ProjectAttachmentController::class, 'getDocumentViewerLink']);
+        // ───── Project Summary Rates ─────
         Route::post('change-summary-rates', [ProjectController::class, 'changeSummaryRates']);
         Route::patch('{project}/cash-flow', [ProjectController::class, 'updateCashFlow']);
+        // ───── Project Revisions ────
         Route::get('{project}/revisions', [RevisionController::class, 'showProjectRevisions']);
         Route::post('{project}/tss-revision', [RevisionController::class, 'createTssRevision']);
         Route::put('{project}/revert/{revision}', [RevisionController::class, 'revertToRevision']);
+        // ───── Project Activities ────
         Route::get('{project}/activities', [ActivityController::class, 'projectActivities']);
         Route::post('{project}/activities', [ActivityController::class, 'createProjectActivity']);
+        // ───── Project Task Schedules ────
         Route::get('{project}/task-schedules', [TaskScheduleController::class, 'getAllTaskScheduleByProject']);
+        Route::get('task-schedules', [TaskScheduleController::class, 'filterProjectTaskSchedules']);
+        // ───── Project Bill of Quantity ────
         Route::patch('{task}/update-draft-unit-price', [BoqItemController::class, 'updateDraftUnitPrice']);
     });
     // ────── Attachments ──────
@@ -150,22 +160,27 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('tasks', BoqItemController::class);
     Route::post('tasks/{task}/restore', [BoqItemController::class, 'restore']);
     Route::patch('{task}/update-draft-unit-price', [BoqItemController::class, 'updateDraftUnitPrice']);
+    // ───── Unit of Measurements ────
     Route::prefix('uom')->as('uom.')->group(function () {
         Route::resource('resource', UomController::class);
         Route::get('all', [UomController::class, 'all']);
     });
+    // ───── Nature of Work ────
     Route::prefix('nature-of-work')->as('nature-of-work.')->group(function () {
         Route::resource('resource', NatureOfWorkController::class);
         Route::get('all', [NatureOfWorkController::class, 'all']);
     });
+    // ───── Resource Items ────
     Route::resource('resource-items', ResourceItemController::class);
     Route::post('resource-items/{resourceItem}/restore', [ResourceItemController::class, 'restore']);
+    // ───── Direct Cost Estimates ────
     Route::resource('direct-cost-estimates', DirectCostEstimateController::class);
     Route::post('direct-cost-estimates/{id}/restore', [DirectCostEstimateController::class, 'restore']);
+    // ───── Unit of Measurements ────
     Route::resource('resource-metrics', ResourceMetricController::class);
-    Route::resource('task-schedule', TaskScheduleController::class);
-    Route::patch('task-schedule/{id}/schedule', [TaskScheduleController::class, 'updateTaskSchedule']);
-    Route::get('/projects/task_schedules', [TaskScheduleController::class, 'filterProjectTaskSchedules']);
+    // ───── Task Schedule ────
+    Route::resource('task-schedules', TaskScheduleController::class);
+    // ───── Bill of Materials ────
     Route::get('bill-of-materials/{item_id}/resources/all', [ResourceItemController::class, 'billOfMaterialsResources']);
     // ────── Revisions ──────
     Route::prefix('project-revisions')->group(function () {
@@ -190,7 +205,7 @@ Route::middleware('auth:api')->group(function () {
     // ────── Activities ──────
     Route::resource('activities', ActivityController::class);
     Route::post('activities/{id}/restore', [ActivityController::class, 'restore']);
-    // ────── Daily Schedule ──────
+    // ────── Daily Schedules ──────
     Route::resource('daily-schedule', DailyScheduleController::class);
     Route::post('daily-schedule/{id}/restore', [DailyScheduleController::class, 'restore']);
     Route::get('activities/{activity}/daily', [DailyScheduleController::class, 'getDailySchedule']);

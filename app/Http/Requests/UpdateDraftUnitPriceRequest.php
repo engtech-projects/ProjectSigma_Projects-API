@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\AccessibilityProjects;
 use App\Http\Traits\CheckAccessibility;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -13,7 +14,9 @@ class UpdateDraftUnitPriceRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->checkUserAccess([
+            ...AccessibilityProjects::marketingGroup(),
+        ]);
     }
     /**
      * Get the validation rules that apply to the request.

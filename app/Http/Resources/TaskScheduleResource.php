@@ -16,12 +16,11 @@ class TaskScheduleResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'timeline_classification' => $this->timeline_classification,
             'item_id' => $this->item_id,
             'name' => $this->name,
-            'original_start' => $this->original_start,
-            'original_end' => $this->original_end,
-            'current_start' => $this->current_start,
-            'current_end' => $this->current_end,
+            'start_date' => $this->start_date,
+            'end_date' => $this->end_date,
             'duration_days' => $this->duration_days,
             'weight_percent' => $this->weight_percent,
             'status' => $this->status,

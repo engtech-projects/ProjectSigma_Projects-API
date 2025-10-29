@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -30,10 +29,13 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'user_id',
+        'employee_id',
+        'type',
+        'accessibilities',
         'name',
         'email',
+        'email_verified_at',
         'password',
-        'employee_id',
     ];
 
     /**
@@ -56,19 +58,13 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            if (empty($model->uuid)) {
-                $model->uuid = (string) Str::uuid();
-            }
-        });
-    }
-
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    public function getAccessibilityNamesAttribute()
+    {
+        return SetupAccessibilities::whereIn("id", $this->accessibilities)->get()->pluck("accessibilities_name");
     }
 }
