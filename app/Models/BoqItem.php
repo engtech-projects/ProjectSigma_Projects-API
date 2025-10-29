@@ -33,9 +33,6 @@ class BoqItem extends Model
         'amount' => 'decimal:2',
         'draft_amount' => 'decimal:2',
     ];
-    protected $appends = [
-        'missing_setup_item_profile_id',
-    ];
     protected static function boot()
     {
         parent::boot();
