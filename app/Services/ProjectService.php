@@ -399,9 +399,9 @@ class ProjectService
             ->flatMap(fn ($phase) => $phase->tasks)
             ->flatMap(fn ($task) => $task->resources)
             ->filter(
-                fn ($r) =>
-                $r->resource_type->value === 'materials' &&
-                $r->setup_item_profile_id === null
+                fn ($resource) =>
+                $resource->resource_type->value === 'materials' &&
+                $resource->setup_item_profile_id === null
             );
         return $unlinkedMaterials;
     }
