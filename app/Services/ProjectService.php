@@ -396,4 +396,16 @@ class ProjectService
         ];
         return $result;
     }
+    public function checkIfHasUnlinkedMaterials()
+    {
+        $unlinkedMaterials = $this->project->phases
+            ->flatMap(fn ($phase) => $phase->tasks)
+            ->flatMap(fn ($task) => $task->resources)
+            ->filter(
+                fn ($r) =>
+                $r->resource_type->value === 'materials' &&
+                $r->setup_item_profile_id === null
+            );
+        return $unlinkedMaterials;
+    }
 }

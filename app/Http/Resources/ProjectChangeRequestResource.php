@@ -14,6 +14,15 @@ class ProjectChangeRequestResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'resource_type' => $this->resource_type,
+            'project_id' => $this->project_id,
+            'request_type' => $this->request_type,
+            'changes' => $this->changes,
+            'request_status' => $this->request_status,
+            'created_by' => $this->created_by,
+            'approvals' => $this->approvals,
+        ];
     }
 }

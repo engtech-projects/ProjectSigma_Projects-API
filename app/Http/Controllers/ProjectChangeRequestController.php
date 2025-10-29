@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreProjectChangeRequest;
 use App\Http\Requests\UpdateProjectChangeRequest;
 use App\Http\Resources\ProjectChangeRequestResource;
+use App\Models\Project;
 use App\Models\ProjectChangeRequest;
+use App\Services\ProjectService;
 
 class ProjectChangeRequestController extends Controller
 {
@@ -20,6 +22,16 @@ class ProjectChangeRequestController extends Controller
     }
     public function store(StoreProjectChangeRequest $request)
     {
+        $project = Project::with('phases.tasks.resources')->findOrFail($request->project_id);
+        $projectService = new ProjectService($project);
+        $unlinkedMaterials = $projectService->checkIfHasUnlinkedMaterials();
+        if ($unlinkedMaterials->isNotEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Some material resources are not yet connected to IMS.',
+                'unlinked_materials' => $unlinkedMaterials,
+            ], 422);
+        }
         $validated = $request->validated();
         $validated['created_by'] = auth()->id();
         $changeRequest = ProjectChangeRequest::create($validated);
