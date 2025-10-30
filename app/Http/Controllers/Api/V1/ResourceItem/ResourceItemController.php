@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\V1\ResourceItem;
 
 use App\Enums\ResourceType;
-use App\Enums\TssStage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ResourceItem\StoreResourceItemRequest;
 use App\Http\Requests\ResourceItem\UpdateResourceItemRequest;
@@ -54,7 +53,7 @@ class ResourceItemController extends Controller
     }
     public function getResourceType()
     {
-        $data = array_map(fn($case) => [
+        $data = array_map(fn ($case) => [
             'value' => $case->value,
             'label' => $case->displayName(),
         ], ResourceType::cases());
