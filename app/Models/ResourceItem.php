@@ -35,11 +35,13 @@ class ResourceItem extends Model
         'work_time_category',
         'remarks',
         'status',
+        'percentage'
     ];
     protected $casts = [
         'resource_type' => ResourceType::class,
         'unit_cost' => 'decimal:2',
         'total_cost' => 'decimal:2',
+        'percentage' => 'decimal:2',
     ];
     protected static function boot()
     {
@@ -89,6 +91,17 @@ class ResourceItem extends Model
     public function getFormattedTotalCostAttribute()
     {
         return $this->formatted($this->total_cost);
+    }
+    public function getThirteenthMonthTotalAttribute(): float
+    {
+        if (
+            $this->resource_type === \App\Enums\ResourceType::LABOR_EXPENSE &&
+            $this->percentage !== null &&
+            $this->total_cost !== null
+        ) {
+            return round(($this->percentage / 100) * $this->total_cost, 2);
+        }
+        return 0;
     }
     public function syncUnitCostAcrossProjectResources(): int
     {

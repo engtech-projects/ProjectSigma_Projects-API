@@ -6,6 +6,7 @@ use App\Enums\ResourceType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ResourceItem\StoreResourceItemRequest;
 use App\Http\Requests\ResourceItem\UpdateResourceItemRequest;
+use App\Http\Requests\UpdateLabor13thMonthRequest;
 use App\Http\Resources\ResourceItemResource;
 use App\Models\BoqItem;
 use App\Models\ResourceItem;
@@ -105,5 +106,18 @@ class ResourceItemController extends Controller
             'message' => 'Resources retrieved successfully',
             'data' => ResourceItemResource::collection($resources),
         ], 200);
+    }
+    /**
+     * Update labor 13th month percentage.
+     */
+    public function updateLabor13thMonth(ResourceItem $resource, UpdateLabor13thMonthRequest $request)
+    {
+        $resourceService = new ResourceService();
+        $result = $resourceService->updateLabor13thMonth($resource, $request->percentage);
+        return ResourceItemResource::make($result)
+            ->additional([
+                'success' => true,
+                'message' => 'Labor 13th month updated successfully.',
+            ]);
     }
 }

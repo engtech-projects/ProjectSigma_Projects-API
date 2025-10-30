@@ -99,6 +99,7 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('projects')->group(function () {
         // ───── Project's Resource ────
         Route::resource('resource', ProjectController::class);
+        Route::patch('resource/{resource}/labor/13th-month', [ResourceItemController::class, 'updateLabor13thMonth']);
         // ───── Live Project ────
         Route::prefix('live')->group(function () {
             Route::get('/', [ProjectController::class, 'getLiveProjects']);
