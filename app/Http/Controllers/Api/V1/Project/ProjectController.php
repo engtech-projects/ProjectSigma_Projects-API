@@ -10,6 +10,7 @@ use App\Http\Requests\Project\StoreProjectRequest;
 use App\Http\Requests\Project\UpdateProjectRequest;
 use App\Http\Requests\SummaryRate\SummaryRateRequest;
 use App\Http\Requests\UpdateCashFlowRequest;
+use App\Http\Requests\UpdateLabor13thMonthRequest;
 use App\Http\Requests\UpdateProjectStageRequest;
 use App\Http\Resources\DraftItemListResource;
 use App\Http\Resources\Project\ProjectDetailResource;
@@ -39,8 +40,8 @@ class ProjectController extends Controller
         $projectKey = $validated['project_key'] ?? null;
         $status = $validated['stage_status'] ?? null;
         $data = Project::with('revisions')
-            ->when($status, fn ($query) => $query->filterByStage($status))
-            ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
+            ->when($status, fn($query) => $query->filterByStage($status))
+            ->when($projectKey, fn($query) => $query->projectKey($projectKey))
             ->latestFirst()
             ->paginate(config('services.pagination.limit'));
         return ProjectListingResource::collection($data)
@@ -55,8 +56,8 @@ class ProjectController extends Controller
         $projectKey = $validated['project_key'] ?? null;
         $status = $validated['stage_status'] ?? null;
         $data = Project::with('revisions')
-            ->when($status, fn ($query) => $query->filterByStage($status))
-            ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
+            ->when($status, fn($query) => $query->filterByStage($status))
+            ->when($projectKey, fn($query) => $query->projectKey($projectKey))
             ->latestFirst()
             ->createdByAuth()
             ->paginate(config('services.pagination.limit'));
@@ -130,7 +131,7 @@ class ProjectController extends Controller
         $validated = $request->validated();
         $projectKey = $validated['project_key'] ?? null;
         $data = Project::ongoing()
-            ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
+            ->when($projectKey, fn($query) => $query->projectKey($projectKey))
             ->latestFirst()
             ->paginate(config('services.pagination.limit'));
         return ProjectLiveListingResource::collection($data)
@@ -201,6 +202,7 @@ class ProjectController extends Controller
                 'project_code' => $project->code,
                 'project_name' => $project->name,
                 'location' => $project->location,
+                'revision_no' => $project->current_revision_id,
                 'distribution_of_direct_cost' => $distributionOfDirectCost,
             ]);
     }

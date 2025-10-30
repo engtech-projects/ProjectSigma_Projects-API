@@ -37,6 +37,8 @@ class ResourceItemResource extends JsonResource
             'remarks' => $this->remarks,
             'consumption_unit' => $this->consumption_unit,
             'status' => $this->status,
+            'percentage' => $this->percentage,
+            'thirteenth_month_total' => $this->thirteenth_month_total,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

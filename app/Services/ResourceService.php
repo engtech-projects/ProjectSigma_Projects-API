@@ -2,10 +2,13 @@
 
 namespace App\Services;
 
+use App\Enums\ResourceType;
+use App\Enums\TssStage;
 use App\Models\Project;
 use App\Models\ResourceItem;
 use App\Models\BoqItem;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class ResourceService
 {
@@ -86,5 +89,20 @@ class ResourceService
             })->sum('amount');
             $project->update(['amount' => $totalAmount]);
         }
+    }
+    public function updateLabor13thMonth(ResourceItem $resource, float $percentage): ResourceItem
+    {
+        if ($resource->resource_type !== ResourceType::LABOR_EXPENSE) {
+            throw ValidationException::withMessages([
+                'resource_type' => 'Selected resource is not labor expense.',
+            ]);
+        }
+        if ($resource->task->phase->project->tss_stage !== TssStage::DUPA_PREPARATION) {
+            throw ValidationException::withMessages([
+                'tss_stage' => 'Labor 13th month update allowed only during dupa preparation stage.',
+            ]);
+        }
+        $resource->update(['percentage' => $percentage]);
+        return $resource->fresh();
     }
 }
