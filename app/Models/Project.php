@@ -110,7 +110,14 @@ class Project extends Model
     }
     public function tasks(): HasManyThrough
     {
-        return $this->hasManyThrough(BoqItem::class, BoqPart::class);
+        return $this->hasManyThrough(
+            BoqItem::class,
+            BoqPart::class,
+            'project_id',
+            'phase_id',
+            'id',
+            'id'
+        );
     }
     public function resources()
     {
