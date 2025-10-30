@@ -357,39 +357,32 @@ class ProjectService
     }
     public function calculateDirectCostDistribution($tasks)
     {
-        $resources = $tasks->flatMap->resources;
-        $resources = $resources->map(function ($item) {
-            return [
-                'resource_type' => strtolower($item->resource_type->value),
-                'total_cost'    => floatval($item->total_cost),
-            ];
-        });
-        $distribution = $resources->groupBy('resource_type')->map(function ($group) {
-            return $group->sum('total_cost');
-        });
+        $resources = $tasks->flatMap->resources->map(fn ($item) => [
+            'resource_type' => strtolower($item->resource_type->value),
+            'total_cost' => (float) $item->total_cost,
+        ]);
+        $distribution = $resources
+            ->groupBy('resource_type')
+            ->map(fn ($group) => $group->sum('total_cost'));
+        $projectTotal = (float) $tasks->sum('amount');
         $directCostTotal = $distribution->sum();
-        $grandTotal = (float) $tasks->sum('amount');
         $orderedTypes = ['materials', 'labor_expense', 'equipment_rental', 'fuel_oil_cost', 'overhead_cost'];
-        $result = [];
-        foreach ($orderedTypes as $label) {
-            if (isset($distribution[$label])) {
-                $total = (float) $distribution[$label];
-                $percent = $grandTotal ? ($total / $grandTotal) * 100 : 0;
-                $result[$label] = [
-                    'total_php' => number_format($total, 2),
-                    'total_percent'     => number_format($percent, 2) . '%',
-                ];
-            } else {
-                $result[$label] = [
-                    'total_php' => 0.00,
-                    'total_percent' => '0.00%',
-                ];
-            }
-        }
-        $directPercent = $grandTotal ? ($directCostTotal / $grandTotal) * 100 : 0;
+        $result = collect($orderedTypes)->mapWithKeys(function ($label) use ($distribution, $projectTotal) {
+            $total = (float) ($distribution[$label] ?? 0);
+            $percent = $projectTotal ? ($total / $projectTotal) * 100 : 0;
+            return [
+                $label => [
+                    'total' => number_format($total, 2),
+                    'percent' => number_format($percent, 2) . '%',
+                ],
+            ];
+        })->toArray();
         $result['direct_cost_total'] = [
-            'total_php' => number_format($directCostTotal, 2),
-            'total_percent'     => number_format($directPercent, 2) . '%',
+            'total' => number_format($directCostTotal, 2),
+            'percent' => number_format(
+                $projectTotal ? ($directCostTotal / $projectTotal) * 100 : 0,
+                2
+            ) . '%',
         ];
         return $result;
     }
