@@ -52,7 +52,9 @@ class ResourceItem extends Model
             }
         });
         static::saving(function ($model) {
-            $model->total_cost = round((float) $model->quantity * (float) $model->unit_cost * (float) ($model->unit_count ?? 1), 2);
+            if ($model->resource_type === ResourceType::LABOR_EXPENSE) {
+                $model->total_cost = round((float) $model->quantity * (float) $model->unit_cost * (float) ($model->unit_count ?? 1), 2);
+            }
         });
     }
     public function task(): BelongsTo
