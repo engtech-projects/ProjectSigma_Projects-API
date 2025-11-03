@@ -51,6 +51,9 @@ class ResourceItem extends Model
                 $model->uuid = (string) Str::uuid();
             }
         });
+        static::saving(function ($model) {
+            $model->total_cost = round((float) $model->quantity * (float) $model->unit_cost * (float) ($model->unit_count ?? 1), 2);
+        });
     }
     public function task(): BelongsTo
     {

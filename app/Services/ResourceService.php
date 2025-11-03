@@ -36,11 +36,6 @@ class ResourceService
     public static function create($request)
     {
         return DB::transaction(function () use ($request) {
-            $quantity   = (float) ($request['quantity'] ?? 0);
-            $unitCost   = (float) ($request['unit_cost'] ?? 0);
-            $unitCount  = isset($request['unit_count']) ? (float) $request['unit_count'] : 1;
-            $request['total_cost'] = $quantity * $unitCost * $unitCount;
-            $request['total_cost'] = round($request['total_cost'], 2);
             $data = ResourceItem::create($request);
             $data->syncUnitCostAcrossProjectResources();
             return $data;
