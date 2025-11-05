@@ -52,7 +52,7 @@ class ResourceItem extends Model
             }
         });
         static::saving(function ($model) {
-            if ($model->resource_type === ResourceType::LABOR_EXPENSE) {
+            if ($model->resource_type === ResourceType::LABOR_EXPENSE || $model->resource_type === ResourceType::EQUIPMENT_RENTAL) {
                 $model->total_cost = round((float) $model->quantity * (float) $model->unit_cost * (float) ($model->unit_count ?? 1), 2);
             }
         });
