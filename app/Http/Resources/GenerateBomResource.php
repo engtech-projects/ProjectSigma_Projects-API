@@ -16,10 +16,10 @@ class GenerateBomResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'project_id' => $this->project_id,
+            'project_id' => $this->project_id ?? $this->resource->task->phase->project_id,
             'task_id' => $this->task_id,
-            'resource_id' => $this->resource_id,
-            'item' => $this->material_name,
+            'resource_id' => $this->resource_id ?? $this->resource->id,
+            'item' => $this->setupItemProfile->item_description ?? 'Missing Setup Item Profile.',
             'unit' => $this->unit,
             'original_quantity' => $this->quantity,
         ];
