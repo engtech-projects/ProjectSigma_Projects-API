@@ -123,6 +123,8 @@ Route::middleware('auth:api')->group(function () {
             Route::get('{project}/bom/generate-bom', [BomController::class, 'generateBillOfMaterials']);
             Route::post('{project}/bom/{bom}/restore', [BomController::class, 'restore']);
             Route::resource('{project}/bom', BomController::class);
+            // ───── Project's Data Sheet ─────
+            Route::get('{project}/data-sheet', [ProjectController::class, 'getDataSheet']);
         });
         // ───── Project Essentials ────
         Route::get('{project}/resource-items', [ProjectController::class, 'getResourcesItems']);

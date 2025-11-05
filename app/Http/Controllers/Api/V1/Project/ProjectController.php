@@ -16,6 +16,7 @@ use App\Http\Resources\Project\ProjectDetailResource;
 use App\Http\Resources\Project\ProjectListingResource;
 use App\Http\Resources\Project\ProjectLiveDetailResource;
 use App\Http\Resources\Project\ProjectLiveListingResource;
+use App\Http\Resources\ProjectDataSheetResource;
 use App\Http\Resources\SummaryOfDirectEstimateResource;
 use App\Models\Project;
 use App\Services\ProjectService;
@@ -203,6 +204,14 @@ class ProjectController extends Controller
                 'location' => $project->location,
                 'revision_no' => $project->document_number,
                 'distribution_of_direct_cost' => $distributionOfDirectCost,
+            ]);
+    }
+    public function getDataSheet(Project $project)
+    {
+        return ProjectDataSheetResource::make($project)
+            ->additional([
+                'success' => true,
+                'message' => 'Successfully fetched data sheet.',
             ]);
     }
 }
