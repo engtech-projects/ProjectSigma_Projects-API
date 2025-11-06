@@ -201,7 +201,8 @@ class ProjectController extends Controller
                 'project_code' => $project->code,
                 'project_name' => $project->name,
                 'location' => $project->location,
-                'revision_no' => $project->document_number,
+                'document_number' => $project->document_number,
+                'revision_no' => $project->revision_no ?? 0,
                 'distribution_of_direct_cost' => $distributionOfDirectCost,
             ]);
     }
