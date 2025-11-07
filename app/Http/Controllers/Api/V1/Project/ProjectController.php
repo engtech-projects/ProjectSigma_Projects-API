@@ -206,6 +206,14 @@ class ProjectController extends Controller
                 'distribution_of_direct_cost' => $distributionOfDirectCost,
             ]);
     }
+    public function getProjectChecklist(Project $project)
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully fetched project checklist.',
+            'data' => $project->project_checklist,
+        ], 200);
+    }
     public function getDataSheet(Project $project)
     {
         return ProjectDataSheetResource::make($project)
