@@ -223,7 +223,6 @@ class ProjectController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Project checklist updated successfully.',
-            'data' => $project->project_checklist,
         ], 200);
     }
     public function getDataSheet(Project $project)
