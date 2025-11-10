@@ -63,6 +63,7 @@ class Project extends Model
         'document_number',
         'created_by',
         'cash_flow',
+        'project_checklist',
     ];
     protected $casts = [
         'cash_flow' => 'array',
@@ -74,6 +75,7 @@ class Project extends Model
         'abc' => 'decimal:2',
         'marketing_stage' => MarketingStage::class,
         'tss_stage' => TssStage::class,
+        'project_checklist' => 'array',
     ];
     protected $appends = [
         'summary_of_rates',

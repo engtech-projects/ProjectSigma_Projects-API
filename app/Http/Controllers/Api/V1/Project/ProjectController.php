@@ -10,6 +10,7 @@ use App\Http\Requests\Project\StoreProjectRequest;
 use App\Http\Requests\Project\UpdateProjectRequest;
 use App\Http\Requests\SummaryRate\SummaryRateRequest;
 use App\Http\Requests\UpdateCashFlowRequest;
+use App\Http\Requests\UpdateProjectChecklistRequest;
 use App\Http\Requests\UpdateProjectStageRequest;
 use App\Http\Resources\DraftItemListResource;
 use App\Http\Resources\Project\ProjectDetailResource;
@@ -211,6 +212,17 @@ class ProjectController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Successfully fetched project checklist.',
+            'data' => $project->project_checklist,
+        ], 200);
+    }
+    public function updateProjectChecklist(UpdateProjectChecklistRequest $request, Project $project)
+    {
+        $validated = $request->validated();
+        $project->project_checklist = $validated['project_checklist'];
+        $project->save();
+        return response()->json([
+            'success' => true,
+            'message' => 'Project checklist updated successfully.',
             'data' => $project->project_checklist,
         ], 200);
     }
