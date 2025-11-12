@@ -55,7 +55,6 @@ class BomController extends Controller
             'message' => 'Bill of Material item deleted successfully',
         ], 200);
     }
-
     public function restore(Project $project, $bomId)
     {
         $deletedBom = $project->boms()->withTrashed()->findOrFail($bomId);
@@ -65,7 +64,6 @@ class BomController extends Controller
             'message' => 'Bill of Material item restored successfully',
         ], 200);
     }
-
     public function generateBillOfMaterials(Project $project)
     {
         $boms = $project->boms()
