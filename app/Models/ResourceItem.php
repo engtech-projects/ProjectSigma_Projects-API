@@ -81,6 +81,26 @@ class ResourceItem extends Model
     {
         return $query->where('resource_type', 'like', "%{$resourceType}%");
     }
+    public function getQuantityAttribute($value)
+    {
+        if ($value === null) {
+            return null;
+        }
+        $num = (float) $value;
+        // Format with up to 8 decimals for precision
+        $formatted = rtrim(rtrim(number_format($num, 8, '.', ''), '0'), '.');
+        // Ensure at least 2 decimal places if decimals exist
+        if (strpos($formatted, '.') !== false) {
+            $decimals = strlen(explode('.', $formatted)[1]);
+            if ($decimals < 2) {
+                $formatted = number_format($num, 2, '.', '');
+            }
+        } else {
+            // For whole numbers, always show 2 decimals
+            $formatted = number_format($num, 2, '.', '');
+        }
+        return $formatted;
+    }
     public function getFormattedQuantityAttribute()
     {
         return $this->formatted($this->quantity);

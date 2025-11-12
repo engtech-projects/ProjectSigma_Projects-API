@@ -16,12 +16,10 @@ use Illuminate\Validation\ValidationException;
 class TaskScheduleController extends Controller
 {
     protected TaskScheduleService $taskScheduleService;
-
     public function __construct(TaskScheduleService $taskScheduleService)
     {
         $this->taskScheduleService = $taskScheduleService;
     }
-
     public function filterProjectTaskSchedules(FilterTaskScheduleRequest $request)
     {
         try {
@@ -37,7 +35,6 @@ class TaskScheduleController extends Controller
             ], 422);
         }
     }
-
     public function getAllTaskScheduleByProject(Project $project)
     {
         $taskSchedules = $project->with('phases.tasks.schedules')->findOrFail($project->id);
@@ -47,7 +44,6 @@ class TaskScheduleController extends Controller
                 'message' => 'Task schedules of a project retrieved successfully.',
             ]);
     }
-
     public function store(CreateTaskScheduleRequest $request)
     {
         $storeTaskSchedule = $this->taskScheduleService->createTaskSchedule($request->validated());
@@ -56,7 +52,6 @@ class TaskScheduleController extends Controller
             'message' => 'Task schedule created successfully.',
         ]);
     }
-
     public function show(TaskSchedule $taskSchedule)
     {
         return TaskScheduleResource::make($taskSchedule)
@@ -65,7 +60,6 @@ class TaskScheduleController extends Controller
                 'message' => 'Task schedule fetched successfully',
             ]);
     }
-
     public function update(UpdateTaskScheduleRequest $request, $id)
     {
         try {
@@ -89,7 +83,6 @@ class TaskScheduleController extends Controller
             ], 422);
         }
     }
-
     public function destroy(TaskSchedule $taskSchedule)
     {
         $taskSchedule->delete();
