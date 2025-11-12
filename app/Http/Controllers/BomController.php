@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ResourceType;
 use App\Http\Requests\StoreBomRequest;
 use App\Http\Requests\UpdateBomRequest;
 use App\Http\Resources\BomResource;
@@ -54,7 +55,6 @@ class BomController extends Controller
             'message' => 'Bill of Material item deleted successfully',
         ], 200);
     }
-
     public function restore(Project $project, $bomId)
     {
         $deletedBom = $project->boms()->withTrashed()->findOrFail($bomId);
@@ -64,10 +64,17 @@ class BomController extends Controller
             'message' => 'Bill of Material item restored successfully',
         ], 200);
     }
-
     public function generateBillOfMaterials(Project $project)
     {
-        return GenerateBomResource::collection($project->boms()->get())
+        $boms = $project->boms()
+            ->whereNotNull('resource_id')
+            ->get();
+        $resourceMaterials = $project->phases->flatMap(function ($phase) {
+            return $phase->tasks->flatMap(function ($task) {
+                return $task->resources->where('resource_type', ResourceType::MATERIALS);
+            });
+        });
+        return GenerateBomResource::collection($boms->concat($resourceMaterials))
             ->additional([
                 'success' => true,
                 'message' => 'Bill of Materials generated successfully',

@@ -30,6 +30,8 @@ class DirectCostEstimateResource extends JsonResource
             'work_time_category' => $this->work_time_category,
             'remarks' => $this->remarks,
             'consumption_unit' => $this->consumption_unit,
+            'percentage' => $this->percentage,
+            'thirteenth_month_total' => $this->thirteenth_month_total,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

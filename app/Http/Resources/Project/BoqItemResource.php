@@ -18,6 +18,7 @@ class BoqItemResource extends JsonResource
             'project_location' => $this->project->location,
             'project_created_at' => $this->project->created_at_formatted,
             'project_created_by' => $this->project->created_by,
+            'project_implementing_office' => $this->project->implementing_office,
             'project_designator' => $this->project->designator,
             'project_position' => $this->project->position,
             'project_license' => $this->project->license,

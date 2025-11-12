@@ -35,11 +35,13 @@ class ResourceItem extends Model
         'work_time_category',
         'remarks',
         'status',
+        'percentage'
     ];
     protected $casts = [
         'resource_type' => ResourceType::class,
         'unit_cost' => 'decimal:2',
         'total_cost' => 'decimal:2',
+        'percentage' => 'decimal:2',
     ];
     protected static function boot()
     {
@@ -47,6 +49,11 @@ class ResourceItem extends Model
         static::creating(function ($model) {
             if (empty($model->uuid)) {
                 $model->uuid = (string) Str::uuid();
+            }
+        });
+        static::saving(function ($model) {
+            if ($model->resource_type === ResourceType::LABOR_EXPENSE || $model->resource_type === ResourceType::EQUIPMENT_RENTAL) {
+                $model->total_cost = round((float) $model->quantity * (float) $model->unit_cost * (float) ($model->unit_count ?? 1), 2);
             }
         });
     }
@@ -74,6 +81,26 @@ class ResourceItem extends Model
     {
         return $query->where('resource_type', 'like', "%{$resourceType}%");
     }
+    public function getQuantityAttribute($value)
+    {
+        if ($value === null) {
+            return null;
+        }
+        $num = (float) $value;
+        // Format with up to 8 decimals for precision
+        $formatted = rtrim(rtrim(number_format($num, 8, '.', ''), '0'), '.');
+        // Ensure at least 2 decimal places if decimals exist
+        if (strpos($formatted, '.') !== false) {
+            $decimals = strlen(explode('.', $formatted)[1]);
+            if ($decimals < 2) {
+                $formatted = number_format($num, 2, '.', '');
+            }
+        } else {
+            // For whole numbers, always show 2 decimals
+            $formatted = number_format($num, 2, '.', '');
+        }
+        return $formatted;
+    }
     public function getFormattedQuantityAttribute()
     {
         return $this->formatted($this->quantity);
@@ -89,6 +116,17 @@ class ResourceItem extends Model
     public function getFormattedTotalCostAttribute()
     {
         return $this->formatted($this->total_cost);
+    }
+    public function getThirteenthMonthTotalAttribute(): float
+    {
+        if (
+            $this->resource_type === \App\Enums\ResourceType::LABOR_EXPENSE &&
+            $this->percentage !== null &&
+            $this->total_cost !== null
+        ) {
+            return round(($this->percentage / 100) * $this->total_cost, 2);
+        }
+        return 0;
     }
     public function syncUnitCostAcrossProjectResources(): int
     {

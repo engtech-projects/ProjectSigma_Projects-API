@@ -12,7 +12,6 @@ class TaskSchedule extends Model
 {
     use HasFactory;
     use SoftDeletes;
-
     protected $fillable = [
         'timeline_classification',
         'item_id',
@@ -23,19 +22,16 @@ class TaskSchedule extends Model
         'weight_percent',
         'status',
     ];
-
     protected $casts = [
         'timeline_classification' => TimelineClassification::class,
         'start_date' => 'date',
         'end_date' => 'date',
         'weight_percent' => 'decimal:2',
     ];
-
     public function task(): BelongsTo
     {
         return $this->belongsTo(BoqItem::class);
     }
-
     public function scopeSortByOrder($query, $data)
     {
         return $query->orderBy('sort_order', 'asc');

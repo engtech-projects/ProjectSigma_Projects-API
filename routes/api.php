@@ -99,6 +99,7 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('projects')->group(function () {
         // ───── Project's Resource ────
         Route::resource('resource', ProjectController::class);
+        Route::patch('resource/{resource}/labor/13th-month', [ResourceItemController::class, 'updateLabor13thMonth']);
         // ───── Live Project ────
         Route::prefix('live')->group(function () {
             Route::get('/', [ProjectController::class, 'getLiveProjects']);
@@ -122,6 +123,8 @@ Route::middleware('auth:api')->group(function () {
             Route::get('{project}/bom/generate-bom', [BomController::class, 'generateBillOfMaterials']);
             Route::post('{project}/bom/{bom}/restore', [BomController::class, 'restore']);
             Route::resource('{project}/bom', BomController::class);
+            // ───── Project's Data Sheet ─────
+            Route::get('{project}/data-sheet', [ProjectController::class, 'getDataSheet']);
         });
         // ───── Project Essentials ────
         Route::get('{project}/resource-items', [ProjectController::class, 'getResourcesItems']);
@@ -149,6 +152,9 @@ Route::middleware('auth:api')->group(function () {
         Route::get('task-schedules', [TaskScheduleController::class, 'filterProjectTaskSchedules']);
         // ───── Project Bill of Quantity ────
         Route::patch('{task}/update-draft-unit-price', [BoqItemController::class, 'updateDraftUnitPrice']);
+        // ───── Project Checklist ────
+        Route::get('{project}/checklist', [ProjectController::class, 'getProjectChecklist']);
+        Route::patch('{project}/checklist/update', [ProjectController::class, 'updateProjectChecklist']);
     });
     // ────── Attachments ──────
     Route::prefix('attachments')->group(function () {
