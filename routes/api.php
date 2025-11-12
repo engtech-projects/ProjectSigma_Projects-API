@@ -152,6 +152,9 @@ Route::middleware('auth:api')->group(function () {
         Route::get('task-schedules', [TaskScheduleController::class, 'filterProjectTaskSchedules']);
         // ───── Project Bill of Quantity ────
         Route::patch('{task}/update-draft-unit-price', [BoqItemController::class, 'updateDraftUnitPrice']);
+        // ───── Project Checklist ────
+        Route::get('{project}/checklist', [ProjectController::class, 'getProjectChecklist']);
+        Route::patch('{project}/checklist/update', [ProjectController::class, 'updateProjectChecklist']);
     });
     // ────── Attachments ──────
     Route::prefix('attachments')->group(function () {
