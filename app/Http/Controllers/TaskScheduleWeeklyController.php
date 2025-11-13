@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\TaskScheduleWeeklyRequest;
 use App\Models\TaskSchedule;
-use App\Http\Resources\TaskScheduleResource;
 use App\Http\Resources\TaskScheduleWeeklyResource;
 use App\Models\TaskScheduleWeek;
 
