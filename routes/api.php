@@ -169,8 +169,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('tasks/{task}/restore', [BoqItemController::class, 'restore']);
     Route::patch('{task}/update-draft-unit-price', [BoqItemController::class, 'updateDraftUnitPrice']);
     // ────── Task Schedule ──────
-    Route::get('task-schedules/{taskSchedule}/weekly', [TaskScheduleWeeklyController::class, 'getWeeklyScheduleByTaskScheduleId']);
-    Route::resource('task-schedules/weekly', TaskScheduleWeeklyController::class);
+    Route::get('task-schedule/{taskSchedule}/weekly', [TaskScheduleWeeklyController::class, 'getWeeklyScheduleByTaskScheduleId']);
+    Route::resource('task-schedule/weekly', TaskScheduleWeeklyController::class);
     // ───── Unit of Measurements ────
     Route::prefix('uom')->as('uom.')->group(function () {
         Route::resource('resource', UomController::class);
