@@ -33,6 +33,7 @@ use App\Http\Controllers\ResourceMetricController;
 use App\Http\Controllers\SetupListsController;
 use App\Http\Controllers\SetupUomController;
 use App\Http\Controllers\TaskScheduleController;
+use App\Http\Controllers\TaskScheduleWeeklyController;
 use App\Http\Controllers\VoidApproval;
 use App\Http\Resources\User\UserCollection;
 use App\Models\Uom;
@@ -50,6 +51,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
 Route::middleware('auth:api')->group(function () {
     // SYNCHRONIZATION ROUTES
     Route::prefix('setup')->group(function () {
@@ -77,13 +79,13 @@ Route::middleware('auth:api')->group(function () {
         });
     });
     // ────── User Info ──────
-    Route::get('/user', fn () => response()->json(new UserCollection(Auth::user()), 200));
+    Route::get('/user', fn() => response()->json(new UserCollection(Auth::user()), 200));
     // ────── Lookups ──────
     Route::prefix('lookups')->group(function () {
-        Route::get('/project-status', fn () => response()->json(ProjectStatus::cases(), 200));
-        Route::get('/project-stage', fn () => response()->json(ProjectStage::cases(), 200));
+        Route::get('/project-status', fn() => response()->json(ProjectStatus::cases(), 200));
+        Route::get('/project-stage', fn() => response()->json(ProjectStage::cases(), 200));
         Route::get('/resource-names', [ResourceItemController::class, 'getResourceType']);
-        Route::get('/uom', fn () => response()->json(Uom::all(), 200));
+        Route::get('/uom', fn() => response()->json(Uom::all(), 200));
         Route::resource('positions', PositionController::class);
         Route::get('/all-position', [PositionController::class, 'all']);
         Route::get('item-profiles', [SetupListsController::class, 'getAllItemProfileList']);
@@ -166,6 +168,9 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('tasks', BoqItemController::class);
     Route::post('tasks/{task}/restore', [BoqItemController::class, 'restore']);
     Route::patch('{task}/update-draft-unit-price', [BoqItemController::class, 'updateDraftUnitPrice']);
+    // ────── Task Schedule ──────
+    Route::get('task-schedules/{taskSchedule}/weekly', [TaskScheduleWeeklyController::class, 'getWeeklyScheduleByTaskScheduleId']);
+    Route::resource('task-schedules/weekly', TaskScheduleWeeklyController::class);
     // ───── Unit of Measurements ────
     Route::prefix('uom')->as('uom.')->group(function () {
         Route::resource('resource', UomController::class);
