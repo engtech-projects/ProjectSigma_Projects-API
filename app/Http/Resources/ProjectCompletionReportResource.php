@@ -35,7 +35,7 @@ class ProjectCompletionReportResource extends JsonResource
                 "equipment_target" => $this->equipment_target,
                 "labor_target" => $this->labor_target,
                 "fuel_oil_target" => $this->fuel_oil_target,
-                "overhead(direct)_target" => $this->overhead_target, 
+                "overhead(direct)_target" => $this->overhead_target,
                 "completion_date_actual" => $this->completion_date_actual,
                 "project_cost_total_actual" => $this->project_cost_total_actual,
                 "materials_actual" => $this->materials_actual,
@@ -49,9 +49,9 @@ class ProjectCompletionReportResource extends JsonResource
                 "equipment_variance" => $this->equipment_variance,
                 "labor_variance" => $this->labor_variance,
                 "fuel_oil_variance" => $this->fuel_oil_variance,
-                "overhead(direct)_variance" => $this->overhead_variance,   
+                "overhead(direct)_variance" => $this->overhead_variance,
                 "number_of_accidents" => $this->number_of_accidents,
-            ], 
+            ],
         ];
     }
 }
