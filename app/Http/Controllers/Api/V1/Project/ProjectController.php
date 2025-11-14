@@ -17,6 +17,7 @@ use App\Http\Resources\Project\ProjectDetailResource;
 use App\Http\Resources\Project\ProjectListingResource;
 use App\Http\Resources\Project\ProjectLiveDetailResource;
 use App\Http\Resources\Project\ProjectLiveListingResource;
+use App\Http\Resources\ProjectCompletionReportResource;
 use App\Http\Resources\ProjectDataSheetResource;
 use App\Http\Resources\SummaryOfDirectEstimateResource;
 use App\Models\Project;
@@ -232,6 +233,14 @@ class ProjectController extends Controller
             ->additional([
                 'success' => true,
                 'message' => 'Successfully fetched data sheet.',
+            ]);
+    }
+    public function getCompletionReport(Project $project)
+    {
+        return ProjectCompletionReportResource::make($project)
+            ->additional([
+                'success' => true,
+                'message' => 'Successfully fetched completion report.',
             ]);
     }
 }
