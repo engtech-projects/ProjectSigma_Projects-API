@@ -13,6 +13,7 @@ use App\Http\Requests\UpdateCashFlowRequest;
 use App\Http\Requests\UpdateProjectChecklistRequest;
 use App\Http\Requests\UpdateProjectStageRequest;
 use App\Http\Resources\DraftItemListResource;
+use App\Http\Resources\EstimatedNetIncomeResource;
 use App\Http\Resources\Project\ProjectDetailResource;
 use App\Http\Resources\Project\ProjectListingResource;
 use App\Http\Resources\Project\ProjectLiveDetailResource;
@@ -232,6 +233,20 @@ class ProjectController extends Controller
             ->additional([
                 'success' => true,
                 'message' => 'Successfully fetched data sheet.',
+            ]);
+    }
+    public function generateSummaryOfNetIncome(Project $project)
+    {
+        $projectService = new ProjectService($project);
+        $summary = $projectService->getTasksWithResources();
+        return EstimatedNetIncomeResource::collection($summary)
+            ->additional([
+                'success' => true,
+                'message' => 'Successfully fetched summary of net income.',
+                'project_code' => $project->code,
+                'project_name' => $project->name,
+                'location' => $project->location,
+                'scope_of_work' => $project->scope_of_work,
             ]);
     }
 }
