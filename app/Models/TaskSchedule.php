@@ -36,4 +36,8 @@ class TaskSchedule extends Model
     {
         return $query->orderBy('sort_order', 'asc');
     }
+    public function taskScheduleWeek(): BelongsTo
+    {
+        return $this->belongsTo(TaskScheduleWeek::class);
+    }
 }
