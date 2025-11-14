@@ -11,12 +11,14 @@ use App\Http\Requests\Project\UpdateProjectRequest;
 use App\Http\Requests\SummaryRate\SummaryRateRequest;
 use App\Http\Requests\UpdateCashFlowRequest;
 use App\Http\Requests\UpdateProjectStageRequest;
+use App\Http\Requests\UpdateProjectChecklistRequest;
 use App\Http\Resources\DraftItemListResource;
 use App\Http\Resources\EstimatedNetIncomeResource;
 use App\Http\Resources\Project\ProjectDetailResource;
 use App\Http\Resources\Project\ProjectListingResource;
 use App\Http\Resources\Project\ProjectLiveDetailResource;
 use App\Http\Resources\Project\ProjectLiveListingResource;
+use App\Http\Resources\ProjectDataSheetResource;
 use App\Http\Resources\SummaryOfDirectEstimateResource;
 use App\Models\Project;
 use App\Services\ProjectService;
@@ -40,8 +42,8 @@ class ProjectController extends Controller
         $projectKey = $validated['project_key'] ?? null;
         $status = $validated['stage_status'] ?? null;
         $data = Project::with('revisions')
-            ->when($status, fn ($query) => $query->filterByStage($status))
-            ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
+            ->when($status, fn($query) => $query->filterByStage($status))
+            ->when($projectKey, fn($query) => $query->projectKey($projectKey))
             ->latestFirst()
             ->paginate(config('services.pagination.limit'));
         return ProjectListingResource::collection($data)
@@ -56,8 +58,8 @@ class ProjectController extends Controller
         $projectKey = $validated['project_key'] ?? null;
         $status = $validated['stage_status'] ?? null;
         $data = Project::with('revisions')
-            ->when($status, fn ($query) => $query->filterByStage($status))
-            ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
+            ->when($status, fn($query) => $query->filterByStage($status))
+            ->when($projectKey, fn($query) => $query->projectKey($projectKey))
             ->latestFirst()
             ->createdByAuth()
             ->paginate(config('services.pagination.limit'));
@@ -131,7 +133,7 @@ class ProjectController extends Controller
         $validated = $request->validated();
         $projectKey = $validated['project_key'] ?? null;
         $data = Project::ongoing()
-            ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
+            ->when($projectKey, fn($query) => $query->projectKey($projectKey))
             ->latestFirst()
             ->paginate(config('services.pagination.limit'));
         return ProjectLiveListingResource::collection($data)
@@ -202,8 +204,35 @@ class ProjectController extends Controller
                 'project_code' => $project->code,
                 'project_name' => $project->name,
                 'location' => $project->location,
-                'revision_no' => $project->document_number,
+                'document_number' => $project->document_number,
+                'revision_no' => $project->revision_no ?? 0,
                 'distribution_of_direct_cost' => $distributionOfDirectCost,
+            ]);
+    }
+    public function getProjectChecklist(Project $project)
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully fetched project checklist.',
+            'data' => $project->project_checklist,
+        ], 200);
+    }
+    public function updateProjectChecklist(UpdateProjectChecklistRequest $request, Project $project)
+    {
+        $validated = $request->validated();
+        $project->project_checklist = $validated['project_checklist'];
+        $project->save();
+        return response()->json([
+            'success' => true,
+            'message' => 'Project checklist updated successfully.',
+        ], 200);
+    }
+    public function getDataSheet(Project $project)
+    {
+        return ProjectDataSheetResource::make($project)
+            ->additional([
+                'success' => true,
+                'message' => 'Successfully fetched data sheet.',
             ]);
     }
     public function generateSummaryOfNetIncome(Project $project)
