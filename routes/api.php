@@ -33,6 +33,7 @@ use App\Http\Controllers\ResourceMetricController;
 use App\Http\Controllers\SetupListsController;
 use App\Http\Controllers\SetupUomController;
 use App\Http\Controllers\TaskScheduleController;
+use App\Http\Controllers\TaskScheduleWeeklyController;
 use App\Http\Controllers\VoidApproval;
 use App\Http\Resources\User\UserCollection;
 use App\Models\Uom;
@@ -50,6 +51,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
 Route::middleware('auth:api')->group(function () {
     // SYNCHRONIZATION ROUTES
     Route::prefix('setup')->group(function () {
@@ -166,6 +168,9 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('tasks', BoqItemController::class);
     Route::post('tasks/{task}/restore', [BoqItemController::class, 'restore']);
     Route::patch('{task}/update-draft-unit-price', [BoqItemController::class, 'updateDraftUnitPrice']);
+    // ────── Task Schedule ──────
+    Route::get('task-schedule/{taskSchedule}/weekly', [TaskScheduleWeeklyController::class, 'getWeeklyScheduleByTaskScheduleId']);
+    Route::resource('task-schedule/weekly', TaskScheduleWeeklyController::class);
     // ───── Unit of Measurements ────
     Route::prefix('uom')->as('uom.')->group(function () {
         Route::resource('resource', UomController::class);
