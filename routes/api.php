@@ -136,6 +136,8 @@ Route::middleware('auth:api')->group(function () {
         Route::post('{project}/archive', [ProjectStatusController::class, 'archive']);
         Route::post('{project}/complete', [ProjectStatusController::class, 'complete']);
         Route::post('replicate', [ProjectController::class, 'replicate']);
+        // ───── Project Completion Report ─────
+        Route::get('{project}/completion-report', [ProjectController::class, 'getCompletionReport']);
         // ───── Project Attachments ─────
         Route::post('{project}/attachments', [ProjectAttachmentController::class, 'store']);
         Route::get('{project}/document-viewer', [ProjectAttachmentController::class, 'getDocumentViewerLink']);
