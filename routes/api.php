@@ -111,6 +111,8 @@ Route::middleware('auth:api')->group(function () {
             Route::post('{project}/cashflows/{cashflow}/restore', [CashflowController::class, 'restore']);
             // ───── Generate Summary Of Estimate Direct Cost ─────
             Route::get('{project}/direct-cost/summary', [ProjectController::class, 'generateSummaryOfDirectEstimate']);
+            // ───── Generate Summary Of Estimate Net Income ─────
+            Route::get('{project}/net-income/summary', [ProjectController::class, 'generateSummaryOfNetIncome']);
             // ───── Change Requests ─────
             Route::resource('change-requests', ProjectChangeRequestController::class);
             // ───── allRequest, myRequest, myApprovals, ApprovedRequests ─────
