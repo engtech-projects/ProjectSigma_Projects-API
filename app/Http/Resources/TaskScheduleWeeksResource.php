@@ -2,7 +2,7 @@
 namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-class PhasesDetailedResource extends JsonResource
+class TaskScheduleWeeksResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -13,9 +13,8 @@ class PhasesDetailedResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'description' => $this->description,
-            'tasks' => TasksDetailedResource::collection($this->whenLoaded('tasks')),
+            'week_start_date' => $this->start_date,
+            'week_end_date' => $this->end_date,
         ];
     }
 }

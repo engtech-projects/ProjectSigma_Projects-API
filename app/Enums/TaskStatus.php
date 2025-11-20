@@ -1,9 +1,6 @@
 <?php
-
 namespace App\Enums;
-
 use App\Enums\Traits\EnumHelper;
-
 enum TaskStatus: string
 {
     use EnumHelper;

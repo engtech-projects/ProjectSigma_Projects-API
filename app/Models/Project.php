@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Models;
-
 use App\Enums\MarketingStage;
 use App\Enums\ProjectStatus;
 use App\Enums\RequestStatuses;
@@ -19,7 +17,6 @@ use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use App\Traits\ModelHelpers;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-
 class Project extends Model
 {
     use Filterable;
@@ -50,6 +47,7 @@ class Project extends Model
         'license',
         'marketing_stage',
         'tss_stage',
+        'tss_status',
         'status',
         'is_original',
         'version',
