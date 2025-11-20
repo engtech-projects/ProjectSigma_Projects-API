@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\ChangeRequestType;
 use App\Enums\ProjectStatus;
+use App\Enums\TssStatus;
 use App\Http\Resources\Project\ProjectLiveListingResource;
 use App\Models\Project;
 use App\Models\ProjectChangeRequest;
@@ -13,9 +13,7 @@ class DirectCostRequestController extends Controller
     public function index()
     {
         $data = Project::where('status', ProjectStatus::ONGOING->value)
-            ->whereDoesntHave('changeRequests', function ($query) {
-                $query->where('request_type', ChangeRequestType::DIRECTCOST_APPROVAL_REQUEST->value);
-            })
+            ->where('tss_status', TssStatus::PENDING->value)
             ->latest('created_at')
             ->paginate(config('services.pagination.limit'));
         return ProjectLiveListingResource::collection($data)
@@ -26,7 +24,7 @@ class DirectCostRequestController extends Controller
     }
     public function allRequests()
     {
-        $data = ProjectChangeRequest::where('request_type', ChangeRequestType::DIRECTCOST_APPROVAL_REQUEST->value)
+        $data = ProjectChangeRequest::directCostApproval()
             ->with('project')
             ->latest('created_at')
             ->paginate(config('services.pagination.limit'));
@@ -38,8 +36,9 @@ class DirectCostRequestController extends Controller
     }
     public function myRequests()
     {
-        $data = ProjectChangeRequest::where('request_type', ChangeRequestType::DIRECTCOST_APPROVAL_REQUEST->value)
+        $data = ProjectChangeRequest::directCostApproval()
             ->myRequests()
+            ->pendingTss()
             ->with('project')
             ->latest('created_at')
             ->paginate(config('services.pagination.limit'));
@@ -51,7 +50,7 @@ class DirectCostRequestController extends Controller
     }
     public function myApprovals()
     {
-        $data = ProjectChangeRequest::where('request_type', ChangeRequestType::DIRECTCOST_APPROVAL_REQUEST->value)
+        $data = ProjectChangeRequest::directCostApproval()
             ->myApprovals()
             ->with('project')
             ->latest('created_at')
@@ -65,7 +64,7 @@ class DirectCostRequestController extends Controller
     public function approved()
     {
         $data = ProjectChangeRequest::with('project')
-            ->where('request_type', ChangeRequestType::DIRECTCOST_APPROVAL_REQUEST->value)
+            ->directCostApproval()
             ->isApproved()
             ->latest('created_at')
             ->paginate(config('services.pagination.limit'));

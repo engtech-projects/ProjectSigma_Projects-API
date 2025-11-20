@@ -24,8 +24,7 @@ class TaskScheduleResource extends JsonResource
             'duration_days' => $this->duration_days,
             'weight_percent' => $this->weight_percent,
             'status' => $this->status,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'weeks' => TaskScheduleWeeksResource::collection($this->whenLoaded('weeks')),
         ];
     }
 }

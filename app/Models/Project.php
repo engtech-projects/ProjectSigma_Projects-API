@@ -50,6 +50,7 @@ class Project extends Model
         'license',
         'marketing_stage',
         'tss_stage',
+        'tss_status',
         'status',
         'is_original',
         'version',

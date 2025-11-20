@@ -51,7 +51,6 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
 Route::middleware('auth:api')->group(function () {
     // SYNCHRONIZATION ROUTES
     Route::prefix('setup')->group(function () {
@@ -153,7 +152,8 @@ Route::middleware('auth:api')->group(function () {
         Route::post('{project}/activities', [ActivityController::class, 'createProjectActivity']);
         // ───── Project Task Schedules ────
         Route::get('{project}/task-schedules', [TaskScheduleController::class, 'getAllTaskScheduleByProject']);
-        Route::get('task-schedules', [TaskScheduleController::class, 'filterProjectTaskSchedules']);
+        Route::resource('task-schedules', TaskScheduleController::class)->names('api.task-schedules');
+        Route::resource('task-schedules-weekly', TaskScheduleWeeklyController::class)->names('api.task-schedules-weekly');
         // ───── Project Bill of Quantity ────
         Route::patch('{task}/update-draft-unit-price', [BoqItemController::class, 'updateDraftUnitPrice']);
         // ───── Project Checklist ────
@@ -170,9 +170,6 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('tasks', BoqItemController::class);
     Route::post('tasks/{task}/restore', [BoqItemController::class, 'restore']);
     Route::patch('{task}/update-draft-unit-price', [BoqItemController::class, 'updateDraftUnitPrice']);
-    // ────── Task Schedule ──────
-    Route::get('task-schedule/{taskSchedule}/weekly', [TaskScheduleWeeklyController::class, 'getWeeklyScheduleByTaskScheduleId']);
-    Route::resource('task-schedule/weekly', TaskScheduleWeeklyController::class);
     // ───── Unit of Measurements ────
     Route::prefix('uom')->as('uom.')->group(function () {
         Route::resource('resource', UomController::class);
@@ -191,8 +188,6 @@ Route::middleware('auth:api')->group(function () {
     Route::post('direct-cost-estimates/{id}/restore', [DirectCostEstimateController::class, 'restore']);
     // ───── Unit of Measurements ────
     Route::resource('resource-metrics', ResourceMetricController::class);
-    // ───── Task Schedule ────
-    Route::resource('task-schedules', TaskScheduleController::class);
     // ───── Bill of Materials ────
     Route::get('bill-of-materials/{item_id}/resources/all', [ResourceItemController::class, 'billOfMaterialsResources']);
     // ────── Revisions ──────
