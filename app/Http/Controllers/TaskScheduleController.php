@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Enums\TaskStatus;
 use App\Enums\TimelineClassification;
 use App\Exceptions\ScheduleConflictException;
@@ -13,6 +15,7 @@ use App\Models\Project;
 use App\Models\TaskSchedule;
 use App\Services\TaskScheduleService;
 use Illuminate\Validation\ValidationException;
+
 class TaskScheduleController extends Controller
 {
     protected TaskScheduleService $taskScheduleService;

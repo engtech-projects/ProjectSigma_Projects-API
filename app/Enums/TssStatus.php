@@ -1,6 +1,9 @@
 <?php
+
 namespace App\Enums;
+
 use App\Enums\Traits\EnumHelper;
+
 enum TssStatus: string
 {
     use EnumHelper;

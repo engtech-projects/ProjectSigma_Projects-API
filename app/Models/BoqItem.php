@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Models;
+
 use App\Enums\ProjectStatus;
 use App\Enums\ResourceType;
 use App\Traits\FormatNumbers;
@@ -10,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+
 class BoqItem extends Model
 {
     use HasFactory;
