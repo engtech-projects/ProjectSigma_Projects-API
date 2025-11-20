@@ -149,6 +149,7 @@ Route::middleware('auth:api')->group(function () {
         // ───── Project Task Schedules ────
         Route::get('{project}/task-schedules', [TaskScheduleController::class, 'getAllTaskScheduleByProject']);
         Route::resource('task-schedules', TaskScheduleController::class)->names('api.task-schedules');
+        Route::resource('task-schedules-weekly', TaskScheduleWeeklyController::class)->names('api.task-schedules-weekly');
         // ───── Project Bill of Quantity ────
         Route::patch('{task}/update-draft-unit-price', [BoqItemController::class, 'updateDraftUnitPrice']);
         // ───── Project Checklist ────

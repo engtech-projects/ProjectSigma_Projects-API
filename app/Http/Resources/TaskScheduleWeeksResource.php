@@ -13,8 +13,8 @@ class TaskScheduleWeeksResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'week_start_date' => $this->start_date,
-            'week_end_date' => $this->end_date,
+            'week_start_date' => $this->week_start_date,
+            'week_end_date' => $this->week_end_date,
         ];
     }
 }
