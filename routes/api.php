@@ -109,6 +109,7 @@ Route::middleware('auth:api')->group(function () {
             // ───── Direct Cost - Tss Cashflows ─────
             Route::resource('{project}/cashflows', CashflowController::class);
             Route::post('{project}/cashflows/{cashflow}/restore', [CashflowController::class, 'restore']);
+            Route::get('{project}/tasks-schedules/cashflows', [CashflowController::class, 'getTasksSchedulesCashflows']);
             // ───── Generate Summary Of Estimate Direct Cost ─────
             Route::get('{project}/direct-cost/summary', [ProjectController::class, 'generateSummaryOfDirectEstimate']);
             // ───── Change Requests ─────
