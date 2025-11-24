@@ -36,6 +36,7 @@ use App\Http\Controllers\TaskScheduleController;
 use App\Http\Controllers\TaskScheduleWeeklyController;
 use App\Http\Controllers\VoidApproval;
 use App\Http\Resources\User\UserCollection;
+use App\Http\Controllers\CalendarController;
 use App\Models\Uom;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
@@ -137,6 +138,8 @@ Route::middleware('auth:api')->group(function () {
         Route::post('{project}/archive', [ProjectStatusController::class, 'archive']);
         Route::post('{project}/complete', [ProjectStatusController::class, 'complete']);
         Route::post('replicate', [ProjectController::class, 'replicate']);
+        Route::get('calendar', [CalendarController::class, 'fetchProjectsNamesForCalendar']);
+        Route::get('{project}/calendar-dates', [CalendarController::class, 'showProjectCalendarDates']);
         // ───── Project Completion Report ─────
         Route::get('{project}/completion-report', [ProjectController::class, 'getCompletionReport']);
         // ───── Project Attachments ─────
