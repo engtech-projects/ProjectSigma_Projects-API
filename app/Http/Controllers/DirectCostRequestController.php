@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\ProjectStatus;
 use App\Enums\TssStatus;
+use App\Http\Resources\Project\ProjectChangeRequestListingResource;
 use App\Http\Resources\Project\ProjectLiveListingResource;
 use App\Models\Project;
 use App\Models\ProjectChangeRequest;
@@ -12,8 +13,11 @@ class DirectCostRequestController extends Controller
 {
     public function index()
     {
+        // Exclude projects that already exist in ProjectChangeRequest
+        $excludedProjectIds = ProjectChangeRequest::pluck('project_id');
         $data = Project::where('status', ProjectStatus::ONGOING->value)
             ->where('tss_status', TssStatus::PENDING->value)
+            ->whereNotIn('id', $excludedProjectIds) // ← added filter
             ->latest('created_at')
             ->paginate(config('services.pagination.limit'));
         return ProjectLiveListingResource::collection($data)
@@ -28,7 +32,7 @@ class DirectCostRequestController extends Controller
             ->with('project')
             ->latest('created_at')
             ->paginate(config('services.pagination.limit'));
-        return ProjectLiveListingResource::collection($data)
+        return ProjectChangeRequestListingResource::collection($data)
             ->additional([
                 'success' => true,
                 'message' => 'Successfully fetched.',
@@ -42,7 +46,7 @@ class DirectCostRequestController extends Controller
             ->with('project')
             ->latest('created_at')
             ->paginate(config('services.pagination.limit'));
-        return ProjectLiveListingResource::collection($data)
+        return ProjectChangeRequestListingResource::collection($data)
             ->additional([
                 'success' => true,
                 'message' => 'Successfully fetched.',
@@ -55,7 +59,7 @@ class DirectCostRequestController extends Controller
             ->with('project')
             ->latest('created_at')
             ->paginate(config('services.pagination.limit'));
-        return ProjectLiveListingResource::collection($data)
+        return ProjectChangeRequestListingResource::collection($data)
             ->additional([
                 'success' => true,
                 'message' => 'Successfully fetched.',
@@ -68,7 +72,7 @@ class DirectCostRequestController extends Controller
             ->isApproved()
             ->latest('created_at')
             ->paginate(config('services.pagination.limit'));
-        return ProjectLiveListingResource::collection($data)
+        return ProjectChangeRequestListingResource::collection($data)
             ->additional([
                 'success' => true,
                 'message' => 'Successfully fetched.',

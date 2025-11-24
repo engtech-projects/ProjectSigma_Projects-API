@@ -23,21 +23,29 @@ class TaskScheduleWeeklyController extends Controller
     public function store(StoreTaskScheduleWeekRequest $request)
     {
         $data = $request->validated();
-        // Get parent TaskSchedule (internal_timeline)
+        // Fetch parent TaskSchedule (internal_timeline)
         $taskSchedule = TaskSchedule::where('item_id', $data['item_id'])
             ->where('timeline_classification', 'internal_timeline')
-            ->firstOrFail();
+            ->first();
+        // Return early if no parent schedule exists
+        if (!$taskSchedule) {
+            return response()->json([
+                'message' => 'Set Work Schedule first before doing weekly schedule.'
+            ], 422);
+        }
+        // Parse dates
+        $weight = $data['weight_percent'];
         $weekStart = Carbon::parse($data['week_start_date']);
         $weekEnd   = Carbon::parse($data['week_end_date']);
-        // Ensure week is within parent schedule
         $scheduleStart = Carbon::parse($taskSchedule->start_date);
         $scheduleEnd   = Carbon::parse($taskSchedule->end_date);
+        // Validate range within parent schedule
         if ($weekStart->lt($scheduleStart) || $weekEnd->gt($scheduleEnd)) {
             return response()->json([
                 'message' => 'Week dates must be within the task schedule start and end dates.'
             ], 422);
         }
-        // Check for overlapping weeks
+        // Check overlap
         $overlap = TaskScheduleWeek::where('task_schedule_id', $taskSchedule->id)
             ->where(function ($q) use ($weekStart, $weekEnd) {
                 $q->whereBetween('week_start_date', [$weekStart, $weekEnd])
@@ -51,9 +59,10 @@ class TaskScheduleWeeklyController extends Controller
                 'message' => 'The week overlaps with an existing week. Please choose a different date range.'
             ], 422);
         }
-        // Store the week
+        // Store the new week
         $week = TaskScheduleWeek::create([
             'task_schedule_id' => $taskSchedule->id,
+            'weight_percent'  => $weight,
             'week_start_date'  => $weekStart,
             'week_end_date'    => $weekEnd,
         ]);
