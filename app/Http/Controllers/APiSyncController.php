@@ -1,12 +1,9 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\Jobs\ApiHrmsSyncJob;
 use App\Jobs\ApiInventorySyncJob;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-
 class APiSyncController extends Controller
 {
     public function syncAll(Request $request)
@@ -23,7 +20,6 @@ class APiSyncController extends Controller
             'success' => true,
         ]);
     }
-
     public function syncAllHrms(Request $request)
     {
         try {
@@ -76,7 +72,6 @@ class APiSyncController extends Controller
             'success' => true,
         ]);
     }
-
     public function syncAllInventory(Request $request)
     {
         try {
@@ -90,7 +85,6 @@ class APiSyncController extends Controller
             'success' => true,
         ]);
     }
-
     public function syncUOM(Request $request)
     {
         try {
@@ -104,7 +98,6 @@ class APiSyncController extends Controller
             'success' => true,
         ]);
     }
-
     public function syncItemProfile(Request $request)
     {
         try {
@@ -118,7 +111,6 @@ class APiSyncController extends Controller
             'success' => true,
         ]);
     }
-
     public function syncUsers(Request $request)
     {
         try {

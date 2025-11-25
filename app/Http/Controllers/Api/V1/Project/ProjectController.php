@@ -1,8 +1,7 @@
 <?php
-
 namespace App\Http\Controllers\Api\V1\Project;
-
 use App\Enums\ProjectStage;
+use App\Enums\TssStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterProjectRequest;
 use App\Http\Requests\Project\ReplicateProjectRequest;
@@ -23,7 +22,6 @@ use App\Models\Project;
 use App\Services\ProjectService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
-
 // use Illuminate\Support\Facades\Gate;
 class ProjectController extends Controller
 {
@@ -41,8 +39,8 @@ class ProjectController extends Controller
         $projectKey = $validated['project_key'] ?? null;
         $status = $validated['stage_status'] ?? null;
         $data = Project::with('revisions')
-            ->when($status, fn ($query) => $query->filterByStage($status))
-            ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
+            ->when($status, fn($query) => $query->filterByStage($status))
+            ->when($projectKey, fn($query) => $query->projectKey($projectKey))
             ->latestFirst()
             ->paginate(config('services.pagination.limit'));
         return ProjectListingResource::collection($data)
@@ -57,8 +55,8 @@ class ProjectController extends Controller
         $projectKey = $validated['project_key'] ?? null;
         $status = $validated['stage_status'] ?? null;
         $data = Project::with('revisions')
-            ->when($status, fn ($query) => $query->filterByStage($status))
-            ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
+            ->when($status, fn($query) => $query->filterByStage($status))
+            ->when($projectKey, fn($query) => $query->projectKey($projectKey))
             ->latestFirst()
             ->createdByAuth()
             ->paginate(config('services.pagination.limit'));
@@ -120,11 +118,16 @@ class ProjectController extends Controller
     }
     public function getProjectDetails(Project $project)
     {
-        $data = $project->load('phases.tasks', 'attachments');
+        // Base relations
+        $relations = ['phases.tasks', 'attachments'];
+        if ($project->tss_status !== TssStatus::PENDING->value) {
+            $relations[] = 'directCostApprovalRequest';
+        }
+        $project->load($relations);
         return new JsonResponse([
             'success' => true,
             'message' => "Successfully fetched.",
-            'data' => new ProjectLiveDetailResource($data),
+            'data' => new ProjectLiveDetailResource($project),
         ], JsonResponse::HTTP_OK);
     }
     public function getLiveProjects(FilterProjectRequest $request)
@@ -132,7 +135,7 @@ class ProjectController extends Controller
         $validated = $request->validated();
         $projectKey = $validated['project_key'] ?? null;
         $data = Project::ongoing()
-            ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
+            ->when($projectKey, fn($query) => $query->projectKey($projectKey))
             ->latestFirst()
             ->paginate(config('services.pagination.limit'));
         return ProjectLiveListingResource::collection($data)

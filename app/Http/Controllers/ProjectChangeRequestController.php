@@ -1,14 +1,12 @@
 <?php
-
 namespace App\Http\Controllers;
-
+use App\Enums\TssStatus;
 use App\Http\Requests\StoreProjectChangeRequest;
 use App\Http\Requests\UpdateProjectChangeRequest;
 use App\Http\Resources\ProjectChangeRequestResource;
 use App\Models\Project;
 use App\Models\ProjectChangeRequest;
 use App\Services\ProjectService;
-
 class ProjectChangeRequestController extends Controller
 {
     public function index()
@@ -34,6 +32,8 @@ class ProjectChangeRequestController extends Controller
         }
         $validated = $request->validated();
         $validated['created_by'] = auth()->id();
+        $project->tss_status = TssStatus::ONGOING->value;
+        $project->save();
         $changeRequest = ProjectChangeRequest::create($validated);
         return response()->json([
             'success' => true,

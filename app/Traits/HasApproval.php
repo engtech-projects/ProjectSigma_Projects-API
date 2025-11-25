@@ -1,17 +1,17 @@
 <?php
-
 namespace App\Traits;
-
 use App\Enums\AccessibilitySigma;
+use App\Enums\ChangeRequestType;
 use App\Enums\RequestStatuses;
+use App\Enums\TssStatus;
 use App\Http\Traits\CheckAccessibility;
+use App\Models\Project;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-
 trait HasApproval
 {
     use CheckAccessibility;
@@ -109,6 +109,11 @@ trait HasApproval
     {
         // DEFAULT PROCESS WHEN FULLY APPROVING REQUEST
         $this->request_status = RequestStatuses::APPROVED->value;
+        if ($this->request_type == ChangeRequestType::DIRECTCOST_APPROVAL_REQUEST->value) {
+            $project = Project::find($this->project_id);
+            $project->tss_status = TssStatus::APPROVED->value;
+            $project->save();
+        }
         $this->save();
         $this->refresh();
     }
