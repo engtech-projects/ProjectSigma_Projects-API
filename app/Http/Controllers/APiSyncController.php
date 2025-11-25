@@ -1,9 +1,12 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Jobs\ApiHrmsSyncJob;
 use App\Jobs\ApiInventorySyncJob;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+
 class APiSyncController extends Controller
 {
     public function syncAll(Request $request)

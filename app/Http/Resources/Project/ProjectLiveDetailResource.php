@@ -1,8 +1,11 @@
 <?php
+
 namespace App\Http\Resources\Project;
+
 use App\Enums\TssStatus;
 use App\Http\Resources\ApprovalAttributeResource;
 use Illuminate\Http\Resources\Json\JsonResource;
+
 class ProjectLiveDetailResource extends JsonResource
 {
     public function toArray($request)
