@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Traits;
+
 use App\Enums\AccessibilitySigma;
 use App\Enums\ChangeRequestType;
 use App\Enums\RequestStatuses;
@@ -12,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+
 trait HasApproval
 {
     use CheckAccessibility;

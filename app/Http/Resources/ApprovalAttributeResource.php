@@ -1,10 +1,13 @@
 <?php
+
 namespace App\Http\Resources;
+
 use App\Enums\ApprovalStatus;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+
 class ApprovalAttributeResource extends JsonResource
 {
     /**
