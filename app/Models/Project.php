@@ -129,6 +129,16 @@ class Project extends Model
             });
         })->unique('description')->values();
     }
+    public function taskSchedules()
+    {
+        return TaskSchedule::whereIn(
+            'item_id',
+            BoqItem::whereIn(
+                'phase_id',
+                $this->phases()->pluck('id')
+            )->pluck('id')
+        );
+    }
     public function boms()
     {
         return $this->hasMany(Bom::class, 'project_id', 'id');

@@ -36,4 +36,27 @@ class TaskSchedule extends Model
     {
         return $query->orderBy('sort_order', 'asc');
     }
+    public function taskScheduleWeek(): BelongsTo
+    {
+        return $this->belongsTo(TaskScheduleWeek::class);
+    }
+    public function resources()
+    {
+        return $this->hasMany(ResourceItem::class, 'task_id', 'id');
+    }
+    public function getWeightedResourcesAttribute()
+    {
+        return $this->resources()
+            ->selectRaw('id, resource_type, SUM(total_cost) as total_cost')
+            ->groupBy('id', 'resource_type')
+            ->get()
+            ->map(function ($row) {
+                return [
+                    'resource_id' => $row->id,
+                    'resource_type' => $row->resource_type,
+                    'total_cost' => (float) $row->total_cost,
+                    'weighted_total_cost' => (float) ($row->total_cost * $this->weight_percent),
+                ];
+            });
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTssCashflowRequest;
 use App\Http\Requests\UpdateCashflowItemRequest;
 use App\Http\Resources\TssCashflowResource;
+use App\Http\Resources\TssTaskScheduleCashflowResource;
 use App\Models\Cashflow;
 use App\Models\Project;
 use App\Services\ProjectService;
@@ -55,5 +56,14 @@ class CashflowController extends Controller
             'success' => true,
             'message' => 'Cashflow restored successfully',
         ], 200);
+    }
+
+    public function getTasksSchedulesCashflows(Project $project)
+    {
+        return TssTaskScheduleCashflowResource::collection($project->taskSchedules()->get())
+            ->additional([
+                'success' => true,
+                'message' => 'Cashflows retrieved successfully',
+            ]);
     }
 }
