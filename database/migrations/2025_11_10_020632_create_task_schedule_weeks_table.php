@@ -15,6 +15,7 @@ return new class () extends Migration {
             $table->foreignId('task_schedule_id')->constrained()->onDeleteRestrict()->onUpdateRestrict();
             $table->date('week_start_date');
             $table->date('week_end_date');
+            $table->decimal('weight_percent', 5, 2);
             $table->timestamps();
             $table->softDeletes();
         });

@@ -50,6 +50,7 @@ class Project extends Model
         'license',
         'marketing_stage',
         'tss_stage',
+        'tss_status',
         'status',
         'is_original',
         'version',
@@ -446,8 +447,10 @@ class Project extends Model
     {
         return Carbon::parse($this->updated_at)->format('F j, Y h:i A');
     }
-    public function changeRequests()
+    public function directCostApprovalRequest()
     {
-        return $this->hasMany(ProjectChangeRequest::class);
+        return $this->hasOne(ProjectChangeRequest::class)
+            ->where('request_type', 'directcost_approval_request')
+            ->latest(); // ensures the latest one if many exist
     }
 }

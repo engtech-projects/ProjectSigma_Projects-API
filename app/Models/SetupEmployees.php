@@ -1,20 +1,15 @@
 <?php
-
 namespace App\Models;
-
 use App\Traits\ModelHelpers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
 class SetupEmployees extends Model
 {
     use HasFactory;
     use SoftDeletes;
     use ModelHelpers;
-
     protected $table = 'setup_employees';
-
     protected $fillable = [
         'first_name',
         'middle_name',
@@ -43,7 +38,6 @@ class SetupEmployees extends Model
         'date_of_birth' => 'datetime',
         'date_of_marriage' => 'datetime',
     ];
-
     /**
      * ==================================================
      * MODEL ATTRIBUTES
@@ -67,7 +61,6 @@ class SetupEmployees extends Model
             ]))
         );
     }
-
     public function getFullnameFirstAttribute()
     {
         return implode(
