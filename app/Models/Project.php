@@ -463,10 +463,11 @@ class Project extends Model
         if (!$this->duration) {
             return $startDate->toDateString();
         }
-        preg_match('/(\d+)\s*(CD|MD|YR)/i', $this->duration, $matches);
+        preg_match('/(\d+)\s*(C.D.|CD|MD|YR)?/i', $this->duration, $matches);
         $value = (int)($matches[1] ?? 0);
         $unit = strtoupper($matches[2] ?? 'CD');
         return match ($unit) {
+            'C.D.' => $startDate->copy()->addDays($value)->toDateString(),
             'CD' => $startDate->copy()->addDays($value)->toDateString(),
             'MD' => $startDate->copy()->addMonths($value)->toDateString(),
             'YR' => $startDate->copy()->addYears($value)->toDateString(),

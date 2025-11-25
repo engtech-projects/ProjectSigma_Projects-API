@@ -138,8 +138,8 @@ Route::middleware('auth:api')->group(function () {
         Route::post('{project}/archive', [ProjectStatusController::class, 'archive']);
         Route::post('{project}/complete', [ProjectStatusController::class, 'complete']);
         Route::post('replicate', [ProjectController::class, 'replicate']);
-        Route::get('calendar', [CalendarController::class, 'fetchProjectsNamesForCalendar']);
-        Route::get('{project}/calendar-dates', [CalendarController::class, 'showProjectCalendarDates']);
+        Route::get('calendar/projects-names', [CalendarController::class, 'getProjectsNamesForCalendar']);
+        Route::get('{project}/calendar-dates', [CalendarController::class, 'getProjectCalendarDates']);
         // ───── Project Completion Report ─────
         Route::get('{project}/completion-report', [ProjectController::class, 'getCompletionReport']);
         // ───── Project Attachments ─────

@@ -24,8 +24,9 @@ class TaskSchedule extends Model
     ];
     protected $casts = [
         'timeline_classification' => TimelineClassification::class,
-        'start_date' => 'date',
-        'end_date' => 'date',
+        'start_date' => 'date:Y-m-d',
+        'end_date' => 'date:Y-m-d',
+        'duration_days' => 'integer',
         'weight_percent' => 'decimal:2',
     ];
     public function task(): BelongsTo
