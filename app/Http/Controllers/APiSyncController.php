@@ -23,7 +23,6 @@ class APiSyncController extends Controller
             'success' => true,
         ]);
     }
-
     public function syncAllHrms(Request $request)
     {
         try {
@@ -76,7 +75,6 @@ class APiSyncController extends Controller
             'success' => true,
         ]);
     }
-
     public function syncAllInventory(Request $request)
     {
         try {
@@ -90,7 +88,6 @@ class APiSyncController extends Controller
             'success' => true,
         ]);
     }
-
     public function syncUOM(Request $request)
     {
         try {
@@ -104,7 +101,6 @@ class APiSyncController extends Controller
             'success' => true,
         ]);
     }
-
     public function syncItemProfile(Request $request)
     {
         try {
@@ -118,7 +114,6 @@ class APiSyncController extends Controller
             'success' => true,
         ]);
     }
-
     public function syncUsers(Request $request)
     {
         try {

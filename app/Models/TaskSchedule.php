@@ -6,6 +6,7 @@ use App\Enums\TimelineClassification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TaskSchedule extends Model
@@ -37,9 +38,9 @@ class TaskSchedule extends Model
     {
         return $query->orderBy('sort_order', 'asc');
     }
-    public function taskScheduleWeek(): BelongsTo
+    public function weeks(): HasMany
     {
-        return $this->belongsTo(TaskScheduleWeek::class);
+        return $this->hasMany(TaskScheduleWeek::class, 'task_schedule_id', 'id');
     }
     public function resources()
     {
