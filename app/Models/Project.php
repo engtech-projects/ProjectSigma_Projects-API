@@ -475,7 +475,6 @@ class Project extends Model
             default => $startDate->copy()->addDays($value)->toDateString(),
         };
     }
-    public function changeRequests()
     public function directCostApprovalRequest()
     {
         return $this->hasOne(ProjectChangeRequest::class)
