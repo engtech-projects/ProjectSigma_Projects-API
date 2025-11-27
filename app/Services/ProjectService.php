@@ -388,16 +388,16 @@ class ProjectService
         ];
         return $result;
     }
-    public function checkIfHasUnlinkedMaterials()
+    public function hasUnlinkedMaterials(): bool
     {
-        $unlinkedMaterials = $this->project->phases
+        return $this->project->phases
             ->flatMap(fn ($phase) => $phase->tasks)
             ->flatMap(fn ($task) => $task->resources)
             ->filter(
-                fn ($resource) =>
-                $resource->resource_type->value === 'materials' &&
-                $resource->setup_item_profile_id === null
-            );
-        return $unlinkedMaterials;
+                fn ($r) =>
+                (is_string($r->resource_type) && $r->resource_type === 'materials') ||
+                (is_object($r->resource_type) && $r->resource_type->value === 'materials')
+            )
+            ->contains(fn ($r) => is_null($r->setup_item_profile_id));
     }
 }
