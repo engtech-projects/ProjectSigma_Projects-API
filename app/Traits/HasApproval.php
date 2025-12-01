@@ -3,8 +3,11 @@
 namespace App\Traits;
 
 use App\Enums\AccessibilitySigma;
+use App\Enums\ChangeRequestType;
 use App\Enums\RequestStatuses;
+use App\Enums\TssStatus;
 use App\Http\Traits\CheckAccessibility;
+use App\Models\Project;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,7 +27,6 @@ trait HasApproval
     {
         return $this->belongsTo(User::class, 'created_by');
     }
-
     /**
      * ==================================================
      * MODEL ATTRIBUTES
@@ -34,14 +36,11 @@ trait HasApproval
     {
         return $this->created_by_user->employee?->fullname_first ?? ($this->created_by_user?->name ?? 'USER NOT FOUND');
     }
-
     public function getDateApprovedDateHumanAttribute()
     {
         $dateApproved = collect($this->approvals)->last()['date_approved'];
-
         return $dateApproved ? Carbon::parse($dateApproved)->format('F j, Y') : null;
     }
-
     public function getSummaryApprovalsAttribute()
     {
         return collect($this->approvals)->map(function ($approval) {
@@ -53,11 +52,9 @@ trait HasApproval
             }
             $user = User::with('employee')->find($approval['user_id']);
             $employee = $user?->employee?->fullname_first ?? 'SYSTEM ADMINISTRATOR';
-
             return $employee . ' - ' . $approval['status'] . ' - ' . ($approval['no_of_days_approved_from_the_date_filled'] ?? '0');
         })->implode(', ');
     }
-
     /**
      * ==================================================
      * STATIC SCOPES
@@ -68,7 +65,6 @@ trait HasApproval
         $query->whereJsonLength('approvals', '>', 0)
             ->whereJsonContains('approvals', ['user_id' => auth()->user()->id, 'status' => RequestStatuses::PENDING]);
     }
-
     public function scopeAuthUserNextApproval(Builder $query): void
     {
         $userId = auth()->user()->id;
@@ -78,43 +74,35 @@ trait HasApproval
             JSON_UNQUOTE(JSON_EXTRACT(approvals, REPLACE(JSON_UNQUOTE(JSON_SEARCH(approvals, 'one', 'Pending', NULL, '$[*].status')), '.status', '.user_id'))) = ?
         ", [$userId]);
     }
-
     public function scopeRequestStatusPending(Builder $query): void
     {
         $query->where('request_status', RequestStatuses::PENDING);
     }
-
     public function scopeIsPending(Builder $query): void
     {
         $query->where('request_status', RequestStatuses::PENDING->value);
     }
-
     public function scopeIsApproved(Builder $query): void
     {
         $query->where('request_status', RequestStatuses::APPROVED->value);
     }
-
     public function scopeIsDenied(Builder $query): void
     {
         $query->where('request_status', RequestStatuses::DENIED->value);
     }
-
     public function scopeMyRequests(Builder $query): void
     {
         $query->where('created_by', auth()->user()->id);
     }
-
     public function scopeMyApprovals(Builder $query): void
     {
         $query->requestStatusPending()->authUserNextApproval();
     }
-
     /**
      * ==================================================
      * DYNAMIC SCOPES
      * ==================================================
      */
-
     /**
      * ==================================================
      * MODEL FUNCTIONS
@@ -124,10 +112,14 @@ trait HasApproval
     {
         // DEFAULT PROCESS WHEN FULLY APPROVING REQUEST
         $this->request_status = RequestStatuses::APPROVED->value;
+        if ($this->request_type == ChangeRequestType::DIRECTCOST_APPROVAL_REQUEST->value) {
+            $project = Project::find($this->project_id);
+            $project->tss_status = TssStatus::APPROVED->value;
+            $project->save();
+        }
         $this->save();
         $this->refresh();
     }
-
     public function denyRequestStatus()
     {
         // DEFAULT PROCESS WHEN DENYING REQUEST
@@ -135,21 +127,17 @@ trait HasApproval
         $this->save();
         $this->refresh();
     }
-
     public function setRequestStatus(?string $newStatus)
     {
     }
-
     public function requestStatusCompleted(): bool
     {
         // DEFAULT IDENTIFIER IF REQUEST STATUS HAS ALREADY ENDED
         if ($this->request_status == RequestStatuses::APPROVED->value) {
             return true;
         }
-
         return false;
     }
-
     public function requestStatusEnded(): bool
     {
         // DEFAULT IDENTIFIER IF REQUEST STATUS HAS ALREADY ENDED
@@ -165,25 +153,20 @@ trait HasApproval
         ) {
             return true;
         }
-
         return false;
     }
-
     public function getUserPendingApproval($userId)
     {
         return collect($this->approvals)->where('user_id', $userId)
             ->where('status', RequestStatuses::PENDING);
     }
-
     public function getNextPendingApproval()
     {
         if ($this->request_status != RequestStatuses::PENDING->value) {
             return null;
         }
-
         return collect($this->approvals)->where('status', RequestStatuses::PENDING->value)->first();
     }
-
     public function approveCurrentApproval()
     {
         // USE THIS FUNCTION IF SURE TO APPROVE CURRENT APPROVAL AND VERIFIED IF CURRENT APPROVAL IS CURRENT USER
@@ -197,7 +180,6 @@ trait HasApproval
             if ($this->checkUserAccess([AccessibilitySigma::SUPERADMIN->value])) {
                 $approval['remarks'] = 'Approved by Super Admin';
             }
-
             return $approval;
         });
         $this->save();
@@ -206,7 +188,6 @@ trait HasApproval
             $this->completeRequestStatus();
         }
     }
-
     public function denyCurrentApproval($remarks)
     {
         // USE THIS FUNCTION IF SURE TO DENY CURRENT APPROVAL AND VERIFIED IF CURRENT APPROVAL IS CURRENT USER
@@ -218,13 +199,11 @@ trait HasApproval
                 $approval['date_denied'] = Carbon::now()->format('F j, Y h:i A');
                 $approval['remarks'] = $remarks;
             }
-
             return $approval;
         });
         $this->save();
         $this->denyRequestStatus();
     }
-
     public function updateApproval(?array $data)
     {
         // CHECK IF REQUEST ALREADY DISAPPROVED AND SET RESPONSE DATA
@@ -263,7 +242,6 @@ trait HasApproval
             $this->approveCurrentApproval();
         }
         DB::commit();
-
         return [
             'approvals' => $currentApproval,
             'success' => true,
@@ -271,7 +249,6 @@ trait HasApproval
             'message' => $data['status'] === RequestStatuses::APPROVED->value ? 'Successfully approved.' : 'Successfully denied.',
         ];
     }
-
     public function voidRequestStatus()
     {
         $this->request_status = RequestStatuses::VOID;

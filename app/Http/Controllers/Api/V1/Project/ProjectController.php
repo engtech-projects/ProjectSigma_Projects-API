@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Project;
 
 use App\Enums\ProjectStage;
+use App\Enums\TssStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterProjectRequest;
 use App\Http\Requests\Project\ReplicateProjectRequest;
@@ -121,11 +122,16 @@ class ProjectController extends Controller
     }
     public function getProjectDetails(Project $project)
     {
-        $data = $project->load('phases.tasks', 'attachments');
+        // Base relations
+        $relations = ['phases.tasks', 'attachments'];
+        if ($project->tss_status !== TssStatus::PENDING->value) {
+            $relations[] = 'directCostApprovalRequest';
+        }
+        $project->load($relations);
         return new JsonResponse([
             'success' => true,
             'message' => "Successfully fetched.",
-            'data' => new ProjectLiveDetailResource($data),
+            'data' => new ProjectLiveDetailResource($project),
         ], JsonResponse::HTTP_OK);
     }
     public function getLiveProjects(FilterProjectRequest $request)

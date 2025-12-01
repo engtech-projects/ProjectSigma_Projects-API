@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\TssStatus;
 use App\Http\Requests\StoreProjectChangeRequest;
 use App\Http\Requests\UpdateProjectChangeRequest;
 use App\Http\Resources\ProjectChangeRequestResource;
@@ -24,8 +25,8 @@ class ProjectChangeRequestController extends Controller
     {
         $project = Project::with('phases.tasks.resources')->findOrFail($request->project_id);
         $projectService = new ProjectService($project);
-        $unlinkedMaterials = $projectService->checkIfHasUnlinkedMaterials();
-        if ($unlinkedMaterials->isNotEmpty()) {
+        $unlinkedMaterials = $projectService->hasUnlinkedMaterials();
+        if ($unlinkedMaterials) {
             return response()->json([
                 'success' => false,
                 'message' => 'Some material resources are not yet connected to IMS.',
@@ -34,6 +35,8 @@ class ProjectChangeRequestController extends Controller
         }
         $validated = $request->validated();
         $validated['created_by'] = auth()->id();
+        $project->tss_status = TssStatus::ONGOING->value;
+        $project->save();
         $changeRequest = ProjectChangeRequest::create($validated);
         return response()->json([
             'success' => true,

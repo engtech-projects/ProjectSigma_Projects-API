@@ -6,6 +6,7 @@ use App\Enums\MarketingStage;
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Enums\TssStage;
+use App\Enums\TssStatus;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectDetailResource;
 use App\Models\BoqPart;
@@ -267,6 +268,7 @@ class ProjectService
             $this->project->marketing_stage = $newStage->value;
             if ($newStage->value === MarketingStage::AWARDED->value) {
                 $this->project->tss_stage = TssStage::DUPA_PREPARATION->value;
+                $this->project->tss_status = TssStatus::PENDING->value;
                 $this->project->status = ProjectStatus::ONGOING->value;
                 $this->createProjectRevision($this->project->status);
             }
@@ -386,16 +388,16 @@ class ProjectService
         ];
         return $result;
     }
-    public function checkIfHasUnlinkedMaterials()
+    public function hasUnlinkedMaterials(): bool
     {
-        $unlinkedMaterials = $this->project->phases
+        return $this->project->phases
             ->flatMap(fn ($phase) => $phase->tasks)
             ->flatMap(fn ($task) => $task->resources)
             ->filter(
-                fn ($resource) =>
-                $resource->resource_type->value === 'materials' &&
-                $resource->setup_item_profile_id === null
-            );
-        return $unlinkedMaterials;
+                fn ($r) =>
+                (is_string($r->resource_type) && $r->resource_type === 'materials') ||
+                (is_object($r->resource_type) && $r->resource_type->value === 'materials')
+            )
+            ->contains(fn ($r) => is_null($r->setup_item_profile_id));
     }
 }

@@ -6,6 +6,7 @@ use App\Enums\TimelineClassification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TaskSchedule extends Model
@@ -24,8 +25,9 @@ class TaskSchedule extends Model
     ];
     protected $casts = [
         'timeline_classification' => TimelineClassification::class,
-        'start_date' => 'date',
-        'end_date' => 'date',
+        'start_date' => 'date:Y-m-d',
+        'end_date' => 'date:Y-m-d',
+        'duration_days' => 'integer',
         'weight_percent' => 'decimal:2',
     ];
     public function task(): BelongsTo
@@ -36,9 +38,9 @@ class TaskSchedule extends Model
     {
         return $query->orderBy('sort_order', 'asc');
     }
-    public function taskScheduleWeek(): BelongsTo
+    public function weeks(): HasMany
     {
-        return $this->belongsTo(TaskScheduleWeek::class);
+        return $this->hasMany(TaskScheduleWeek::class, 'task_schedule_id', 'id');
     }
     public function resources()
     {
@@ -58,5 +60,12 @@ class TaskSchedule extends Model
                     'weighted_total_cost' => (float) ($row->total_cost * $this->weight_percent),
                 ];
             });
+    }
+    public function getStartMonthAttribute()
+    {
+        if (!$this->start_date) {
+            return null;
+        }
+        return \Carbon\Carbon::parse($this->start_date)->format('F');
     }
 }
