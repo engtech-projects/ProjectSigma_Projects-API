@@ -17,6 +17,7 @@ class TaskScheduleWeek extends Model
         'task_schedule_id',
         'week_start_date',
         'week_end_date',
+        'weight_percent',
     ];
     // Dates to be treated as Carbon instances
     protected $dates = [

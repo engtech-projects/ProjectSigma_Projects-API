@@ -6,6 +6,7 @@ use App\Enums\MarketingStage;
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Enums\TssStage;
+use App\Enums\TssStatus;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectDetailResource;
 use App\Models\BoqPart;
@@ -267,6 +268,7 @@ class ProjectService
             $this->project->marketing_stage = $newStage->value;
             if ($newStage->value === MarketingStage::AWARDED->value) {
                 $this->project->tss_stage = TssStage::DUPA_PREPARATION->value;
+                $this->project->tss_status = TssStatus::PENDING->value;
                 $this->project->status = ProjectStatus::ONGOING->value;
                 $this->createProjectRevision($this->project->status);
             }

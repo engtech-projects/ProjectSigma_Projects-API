@@ -50,6 +50,7 @@ class Project extends Model
         'license',
         'marketing_stage',
         'tss_stage',
+        'tss_status',
         'status',
         'is_original',
         'version',
@@ -128,6 +129,16 @@ class Project extends Model
                 return $task->resources;
             });
         })->unique('description')->values();
+    }
+    public function taskSchedules()
+    {
+        return TaskSchedule::whereIn(
+            'item_id',
+            BoqItem::whereIn(
+                'phase_id',
+                $this->phases()->pluck('id')
+            )->pluck('id')
+        );
     }
     public function boms()
     {
@@ -217,6 +228,10 @@ class Project extends Model
             $query->where('code', 'LIKE', '%' . $keyword . '%')
                 ->orWhere('name', 'LIKE', '%' . $keyword . '%');
         });
+    }
+    public function scopeFetchProjectsNames($query)
+    {
+        return $query->select('id', 'name');
     }
     public function scopeFilterByStage($query, ?string $stage)
     {
@@ -436,8 +451,34 @@ class Project extends Model
     {
         return Carbon::parse($this->updated_at)->format('F j, Y h:i A');
     }
-    public function changeRequests()
+    public function getStartDateAttribute()
     {
-        return $this->hasMany(ProjectChangeRequest::class);
+        if (!$this->ntp_date) {
+            return null;
+        }
+        return Carbon::parse($this->ntp_date)->toDateString();
+    }
+    public function getEndDateAttribute()
+    {
+        $startDate = Carbon::parse($this->ntp_date);
+        if (!$this->duration) {
+            return $startDate->toDateString();
+        }
+        preg_match('/(\d+)\s*(C.D.|CD|MD|YR)?/i', $this->duration, $matches);
+        $value = (int)($matches[1] ?? 0);
+        $unit = strtoupper($matches[2] ?? 'CD');
+        return match ($unit) {
+            'C.D.' => $startDate->copy()->addDays($value)->toDateString(),
+            'CD' => $startDate->copy()->addDays($value)->toDateString(),
+            'MD' => $startDate->copy()->addMonths($value)->toDateString(),
+            'YR' => $startDate->copy()->addYears($value)->toDateString(),
+            default => $startDate->copy()->addDays($value)->toDateString(),
+        };
+    }
+    public function directCostApprovalRequest()
+    {
+        return $this->hasOne(ProjectChangeRequest::class)
+            ->where('request_type', 'directcost_approval_request')
+            ->latest(); // ensures the latest one if many exist
     }
 }

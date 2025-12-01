@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Project;
 
 use App\Enums\ProjectStage;
+use App\Enums\TssStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FilterProjectRequest;
 use App\Http\Requests\Project\ReplicateProjectRequest;
@@ -18,6 +19,7 @@ use App\Http\Resources\Project\ProjectDetailResource;
 use App\Http\Resources\Project\ProjectListingResource;
 use App\Http\Resources\Project\ProjectLiveDetailResource;
 use App\Http\Resources\Project\ProjectLiveListingResource;
+use App\Http\Resources\ProjectCompletionReportResource;
 use App\Http\Resources\ProjectDataSheetResource;
 use App\Http\Resources\SummaryOfDirectEstimateResource;
 use App\Models\Project;
@@ -121,11 +123,16 @@ class ProjectController extends Controller
     }
     public function getProjectDetails(Project $project)
     {
-        $data = $project->load('phases.tasks', 'attachments');
+        // Base relations
+        $relations = ['phases.tasks', 'attachments'];
+        if ($project->tss_status !== TssStatus::PENDING->value) {
+            $relations[] = 'directCostApprovalRequest';
+        }
+        $project->load($relations);
         return new JsonResponse([
             'success' => true,
             'message' => "Successfully fetched.",
-            'data' => new ProjectLiveDetailResource($data),
+            'data' => new ProjectLiveDetailResource($project),
         ], JsonResponse::HTTP_OK);
     }
     public function getLiveProjects(FilterProjectRequest $request)
@@ -247,6 +254,14 @@ class ProjectController extends Controller
                 'project_name' => $project->name,
                 'location' => $project->location,
                 'scope_of_work' => $project->scope_of_work,
+            ]);
+    }
+    public function getCompletionReport(Project $project)
+    {
+        return ProjectCompletionReportResource::make($project)
+            ->additional([
+                'success' => true,
+                'message' => 'Successfully fetched completion report.',
             ]);
     }
 }

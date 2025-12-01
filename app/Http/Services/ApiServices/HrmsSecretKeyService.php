@@ -13,7 +13,6 @@ class HrmsSecretKeyService
 {
     protected $apiUrl;
     protected $authToken;
-
     public function __construct()
     {
         $this->apiUrl = config('services.url.hrms_api_url');
@@ -25,7 +24,6 @@ class HrmsSecretKeyService
             throw new \InvalidArgumentException('HRMS API URL is not configured');
         }
     }
-
     public function syncAll()
     {
         $syncEmployees = $this->syncEmployees();
@@ -46,22 +44,24 @@ class HrmsSecretKeyService
         }
         return true;
     }
-
     public function syncEmployees()
     {
         $employees = $this->getAllEmployees();
-        $employees = collect($employees)->map(fn ($e) => collect($e)->only([
-            'id',
-            'first_name',
-            'middle_name',
-            'family_name',
-            'nick_name',
-            'current_position',
-            'digital_signature',
-            'created_at',
-            'updated_at',
-            'deleted_at',
-        ])->toArray())->toArray();
+        $employees = collect($employees)->map(function ($e) {
+            $arr = collect($e)->only([
+                'id',
+                'first_name',
+                'middle_name',
+                'family_name',
+                'nick_name',
+                'current_position',
+                'digital_signature',
+                'created_at',
+                'updated_at',
+                'deleted_at',
+            ])->toArray();
+            return $arr;
+        })->toArray();
         try {
             SetupEmployees::upsert(
                 $employees,
@@ -84,7 +84,6 @@ class HrmsSecretKeyService
         }
         return true;
     }
-
     public function syncUsers()
     {
         $users = $this->getAllUsers();
@@ -112,7 +111,6 @@ class HrmsSecretKeyService
         }
         return true;
     }
-
     public function syncDepartments()
     {
         $departments = $this->getAllDepartments();
@@ -134,7 +132,6 @@ class HrmsSecretKeyService
         }
         return true;
     }
-
     public function syncAccessibilities()
     {
         $accessibilities = $this->getAllAccessibilities();
@@ -155,7 +152,6 @@ class HrmsSecretKeyService
         }
         return true;
     }
-
     public function getAllEmployees()
     {
         $response = Http::withToken($this->authToken)
@@ -176,7 +172,6 @@ class HrmsSecretKeyService
         }
         return $response->json("data") ?: [];
     }
-
     public function getAllUsers()
     {
         $response = Http::withToken($this->authToken)
@@ -197,7 +192,6 @@ class HrmsSecretKeyService
         }
         return $response->json("data") ?: [];
     }
-
     public function getAllDepartments()
     {
         $response = Http::withToken($this->authToken)
@@ -218,7 +212,6 @@ class HrmsSecretKeyService
         }
         return $response->json("data") ?: [];
     }
-
     public function getAllAccessibilities()
     {
         $response = Http::withToken($this->authToken)

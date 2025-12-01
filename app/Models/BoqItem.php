@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
@@ -59,6 +60,11 @@ class BoqItem extends Model
     public function schedules(): HasMany
     {
         return $this->hasMany(TaskSchedule::class, 'item_id', 'id');
+    }
+    public function schedule(): HasOne
+    {
+        return $this->hasOne(TaskSchedule::class, 'item_id', 'id')
+                    ->latestOfMany('start_date'); // or 'created_at'
     }
     public function project()
     {
@@ -267,5 +273,25 @@ class BoqItem extends Model
     public function getSavingsAmountAttribute()
     {
         return $this->draft_amount - $this->amount;
+    }
+    // Start date from the latest schedule
+    public function getStartDateAttribute()
+    {
+        return $this->schedule?->start_date;
+    }
+    // End date from the latest schedule
+    public function getEndDateAttribute()
+    {
+        return $this->schedule?->end_date;
+    }
+    // Duration from the latest schedule
+    public function getDurationAttribute()
+    {
+        return $this->schedule?->duration_days;
+    }
+    // Relative weight from the latest schedule
+    public function getRelativeWeightAttribute()
+    {
+        return $this->schedule?->weight_percent;
     }
 }

@@ -33,8 +33,10 @@ use App\Http\Controllers\ResourceMetricController;
 use App\Http\Controllers\SetupListsController;
 use App\Http\Controllers\SetupUomController;
 use App\Http\Controllers\TaskScheduleController;
+use App\Http\Controllers\TaskScheduleWeeklyController;
 use App\Http\Controllers\VoidApproval;
 use App\Http\Resources\User\UserCollection;
+use App\Http\Controllers\CalendarController;
 use App\Models\Uom;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
@@ -107,6 +109,7 @@ Route::middleware('auth:api')->group(function () {
             // ───── Direct Cost - Tss Cashflows ─────
             Route::resource('{project}/cashflows', CashflowController::class);
             Route::post('{project}/cashflows/{cashflow}/restore', [CashflowController::class, 'restore']);
+            Route::get('{project}/tasks-schedules/cashflows', [CashflowController::class, 'getTasksSchedulesCashflows']);
             // ───── Generate Summary Of Estimate Direct Cost ─────
             Route::get('{project}/direct-cost/summary', [ProjectController::class, 'generateSummaryOfDirectEstimate']);
             // ───── Generate Summary Of Estimate Net Income ─────
@@ -136,6 +139,10 @@ Route::middleware('auth:api')->group(function () {
         Route::post('{project}/archive', [ProjectStatusController::class, 'archive']);
         Route::post('{project}/complete', [ProjectStatusController::class, 'complete']);
         Route::post('replicate', [ProjectController::class, 'replicate']);
+        Route::get('calendar/projects-names', [CalendarController::class, 'getProjectsNamesForCalendar']);
+        Route::get('{project}/calendar-dates', [CalendarController::class, 'getProjectCalendarDates']);
+        // ───── Project Completion Report ─────
+        Route::get('{project}/completion-report', [ProjectController::class, 'getCompletionReport']);
         // ───── Project Attachments ─────
         Route::post('{project}/attachments', [ProjectAttachmentController::class, 'store']);
         Route::get('{project}/document-viewer', [ProjectAttachmentController::class, 'getDocumentViewerLink']);
@@ -151,7 +158,8 @@ Route::middleware('auth:api')->group(function () {
         Route::post('{project}/activities', [ActivityController::class, 'createProjectActivity']);
         // ───── Project Task Schedules ────
         Route::get('{project}/task-schedules', [TaskScheduleController::class, 'getAllTaskScheduleByProject']);
-        Route::get('task-schedules', [TaskScheduleController::class, 'filterProjectTaskSchedules']);
+        Route::resource('task-schedules', TaskScheduleController::class)->names('api.task-schedules');
+        Route::resource('task-schedules-weekly', TaskScheduleWeeklyController::class)->names('api.task-schedules-weekly');
         // ───── Project Bill of Quantity ────
         Route::patch('{task}/update-draft-unit-price', [BoqItemController::class, 'updateDraftUnitPrice']);
         // ───── Project Checklist ────
@@ -186,8 +194,6 @@ Route::middleware('auth:api')->group(function () {
     Route::post('direct-cost-estimates/{id}/restore', [DirectCostEstimateController::class, 'restore']);
     // ───── Unit of Measurements ────
     Route::resource('resource-metrics', ResourceMetricController::class);
-    // ───── Task Schedule ────
-    Route::resource('task-schedules', TaskScheduleController::class);
     // ───── Bill of Materials ────
     Route::get('bill-of-materials/{item_id}/resources/all', [ResourceItemController::class, 'billOfMaterialsResources']);
     // ────── Revisions ──────
