@@ -64,7 +64,7 @@ class BoqItem extends Model
     public function schedule(): HasOne
     {
         return $this->hasOne(TaskSchedule::class, 'item_id', 'id')
-                    ->latestOfMany('start_date'); // or 'created_at'
+            ->latestOfMany('start_date'); // or 'created_at'
     }
     public function project()
     {
@@ -227,10 +227,15 @@ class BoqItem extends Model
     }
     public function getMissingSetupItemProfileIdAttribute(): bool
     {
-        if (!$this->relationLoaded('resources')) {
-            $this->load('resources');
-        }
-        return $this->resources->contains(fn ($r) => $r->setup_item_profile_id === null);
+        $resources = $this->relationLoaded('resources')
+            ? $this->resources
+            : $this->resources()->get();
+        return $resources
+            ->filter(
+                fn ($r) => (is_string($r->resource_type) && $r->resource_type === 'materials') ||
+                    (is_object($r->resource_type) && $r->resource_type->value === 'materials')
+            )
+            ->contains(fn ($r) => is_null($r->setup_item_profile_id));
     }
     public function getDirectCostItemsAttribute()
     {

@@ -107,10 +107,10 @@ Route::middleware('auth:api')->group(function () {
         Route::prefix('live')->group(function () {
             Route::get('/', [ProjectController::class, 'getLiveProjects']);
             Route::get('{project}/details', [ProjectController::class, 'getProjectDetails']);
-            // ───── Direct Cost - Tss Cashflows ─────
-            Route::resource('{project}/cashflows', CashflowController::class);
-            Route::post('{project}/cashflows/{cashflow}/restore', [CashflowController::class, 'restore']);
-            Route::get('{project}/tasks-schedules/cashflows', [CashflowController::class, 'getTasksSchedulesCashflows']);
+            // ───── Direct Cost - Tss Cash-flows ─────
+            Route::resource('{project}/cash-flows', CashflowController::class);
+            Route::post('{project}/cash-flows/{cashflow}/restore', [CashflowController::class, 'restore']);
+            Route::get('{project}/tasks-schedules/cash-flows', [CashflowController::class, 'getTasksSchedulesCashflows']);
             // ───── Generate Summary Of Estimate Direct Cost ─────
             Route::get('{project}/direct-cost/summary', [ProjectController::class, 'generateSummaryOfDirectEstimate']);
             // ───── Change Requests ─────

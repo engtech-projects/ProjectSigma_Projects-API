@@ -61,4 +61,11 @@ class TaskSchedule extends Model
                 ];
             });
     }
+    public function getStartMonthAttribute()
+    {
+        if (!$this->start_date) {
+            return null;
+        }
+        return \Carbon\Carbon::parse($this->start_date)->format('F');
+    }
 }
