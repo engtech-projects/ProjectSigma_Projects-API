@@ -11,4 +11,5 @@ enum ProjectStatus: string
     case ONGOING = 'ongoing';
     case COMPLETED = 'completed';
     case ONHOLD = 'on-hold';
+    case ARCHIVED = 'archived';
 }

@@ -52,6 +52,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
 Route::middleware('auth:api')->group(function () {
     // SYNCHRONIZATION ROUTES
     Route::prefix('setup')->group(function () {
@@ -135,6 +136,7 @@ Route::middleware('auth:api')->group(function () {
         Route::patch('{project}/status', [ProjectStatusController::class, 'updateStatus']);
         Route::patch('{project}/update-stage', [ProjectController::class, 'updateStage']);
         Route::post('{project}/archive', [ProjectStatusController::class, 'archive']);
+        Route::get('archive-list', [ProjectStatusController::class, 'archiveList']);
         Route::post('{project}/complete', [ProjectStatusController::class, 'complete']);
         Route::post('replicate', [ProjectController::class, 'replicate']);
         Route::get('calendar/projects-names', [CalendarController::class, 'getProjectsNamesForCalendar']);
