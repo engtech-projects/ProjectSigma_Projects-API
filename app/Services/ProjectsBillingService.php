@@ -18,7 +18,7 @@ class ProjectsBillingService
         $originalContractTotalAmount = $projects->sum('amount');
         return [
             'projects' => $projects,
-            'original_contract_total_amount' => $originalContractTotalAmount,
+            'original_contract_amount_grand_total' => $originalContractTotalAmount,
         ];
     }
 }

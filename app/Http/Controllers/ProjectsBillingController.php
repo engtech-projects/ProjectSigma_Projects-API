@@ -27,7 +27,7 @@ class ProjectsBillingController extends Controller
             ->additional([
                 'message' => 'Billing summary retrieved successfully',
                 'status' => 'success',
-                'original_contract_total_amount' => $result['original_contract_total_amount'],
+                'original_contract_amount_grand_total' => $result['original_contract_amount_grand_total'],
             ]);
     }
 }
