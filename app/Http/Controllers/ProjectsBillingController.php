@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\TotalBilledAndBalanceToBeBilledRequest;
 use App\Http\Resources\TotalBilledBalanceToBeBilledResource;
 use App\Models\Project;
 use App\Services\ProjectsBillingService;
-use Carbon\Carbon;
 
 class ProjectsBillingController extends Controller
 {
