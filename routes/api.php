@@ -37,6 +37,7 @@ use App\Http\Controllers\TaskScheduleWeeklyController;
 use App\Http\Controllers\VoidApproval;
 use App\Http\Resources\User\UserCollection;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\ProjectsBillingController;
 use App\Models\Uom;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
@@ -165,6 +166,8 @@ Route::middleware('auth:api')->group(function () {
         // ───── Project Checklist ────
         Route::get('{project}/checklist', [ProjectController::class, 'getProjectChecklist']);
         Route::patch('{project}/checklist/update', [ProjectController::class, 'updateProjectChecklist']);
+        // ───── Projects Billing ────
+        Route::get('total-billed-and-balance-to-be-billed', [ProjectsBillingController::class, 'getTotalBilledAndBalanceToBeBilled']);
     });
     // ────── Attachments ──────
     Route::prefix('attachments')->group(function () {

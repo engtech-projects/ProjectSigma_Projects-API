@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\TotalBilledAndBalanceToBeBilledRequest;
+use App\Http\Resources\TotalBilledBalanceToBeBilledResource;
+use App\Models\Project;
+use App\Services\ProjectsBillingService;
+use Carbon\Carbon;
+
+class ProjectsBillingController extends Controller
+{
+    protected ProjectsBillingService $billingService;
+
+    public function __construct(ProjectsBillingService $billingService)
+    {
+        $this->billingService = $billingService;
+    }
+    public function getTotalBilledAndBalanceToBeBilled(Project $project, TotalBilledAndBalanceToBeBilledRequest $request)
+    {
+        $validated = $request->validated();
+        $result = $this->billingService->getTotalBilledAndBalanceToBeBilled(
+            $validated['year'],
+            $validated['as_of_month'],
+            $validated['as_of_year']
+        );
+        return TotalBilledBalanceToBeBilledResource::collection($result['projects'])
+            ->additional([
+                'message' => 'Billing summary retrieved successfully',
+                'status' => 'success',
+                'original_contract_total_amount' => $result['original_contract_total_amount'],
+            ]);
+    }
+}
