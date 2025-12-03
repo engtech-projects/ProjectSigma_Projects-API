@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CurrentMonthBillingRequest;
 use App\Http\Requests\TotalBilledAndBalanceToBeBilledRequest;
+use App\Http\Resources\CurrentMonthBillingResource;
 use App\Http\Resources\TotalBilledBalanceToBeBilledResource;
 use App\Models\Project;
 use App\Services\ProjectsBillingService;
@@ -29,5 +31,18 @@ class ProjectsBillingController extends Controller
                 'status' => 'success',
                 'original_contract_amount_grand_total' => $result['original_contract_amount_grand_total'],
             ]);
+    }
+    public function getCurrentMonthBilling(CurrentMonthBillingRequest $request)
+    {
+        $validated = $request->validated();
+        $result = $this->billingService->getCurrentMonthBilling(
+            $validated['selected_month'],
+            $validated['selected_year']
+        );
+        return CurrentMonthBillingResource::collection($result['projects'])->additional([
+            'status' => 'success',
+            'message' => 'Current month billing retrieved successfully',
+            'gross_total' => $result['gross_total'],
+        ]);
     }
 }
