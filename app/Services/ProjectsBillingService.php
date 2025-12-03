@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Project;
 use Carbon\Carbon;
+use App\Http\Resources\CumulativeBillingResource;
 
 class ProjectsBillingService
 {
@@ -20,5 +21,18 @@ class ProjectsBillingService
             'projects' => $projects,
             'original_contract_amount_grand_total' => $originalContractTotalAmount,
         ];
+    }
+    public function getCumulativeBilling(int $selectedYear, int $asOfMonth, int $asOfYear)
+    {
+        $startDate = Carbon::create($selectedYear, 1, 1)->startOfDay();
+        $endDate = Carbon::create($selectedYear, $asOfMonth, 1)->endOfMonth()->endOfDay();
+        $projects = Project::select('id', 'code', 'name', 'location', 'amount', 'ntp_date')
+            ->whereBetween('ntp_date', [$startDate, $endDate])
+            ->orderBy('ntp_date', 'asc')
+            ->get();
+        return CumulativeBillingResource::collection($projects)->additional([
+            'status' => 'success',
+            'message' => 'Cumulative billing retrieved successfully',
+        ]);
     }
 }
