@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CumulativeBillingResource extends JsonResource
@@ -12,12 +11,12 @@ class CumulativeBillingResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-    public function toArray(Request $request): array
+    public function toArray($request)
     {
         return [
-            'id' => $this->id,
-            'amount' => $this->amount,
-            'ntp_date' => $this->ntp_date,
+            'year_month'       => $this["year_month"],
+            'total_amount'     => $this["total_amount"],
+            'cumulative_total' => $this["cumulative_total"]
         ];
     }
 }

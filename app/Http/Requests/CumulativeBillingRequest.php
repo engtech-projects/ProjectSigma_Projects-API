@@ -22,11 +22,9 @@ class CumulativeBillingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'year' => 'required|integer',
+            'selected_year' => 'required|integer',
             'as_of_month' => 'required|integer',
             'as_of_year' => 'required|integer',
-            'covered_month_from' => 'required|integer|min:1|max:12',
-            'covered_month_to' => 'nullable|integer|after:covered_month_from|max:12|gte:covered_month_from',
         ];
     }
 }
