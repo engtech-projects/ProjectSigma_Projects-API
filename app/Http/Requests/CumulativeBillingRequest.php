@@ -24,7 +24,7 @@ class CumulativeBillingRequest extends FormRequest
         return [
             'selected_year' => 'required|integer',
             'as_of_month' => 'required|integer',
-            'as_of_year' => 'required|integer',
+            'as_of_year' => 'required|integer|after_or_equal:selected_year',
         ];
     }
 }

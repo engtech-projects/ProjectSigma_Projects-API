@@ -28,7 +28,7 @@ class ProjectsBillingController extends Controller
         );
         return TotalBilledBalanceToBeBilledResource::collection($result['projects'])
             ->additional([
-                'message' => 'Billing summary retrieved successfully',
+                'message' => 'Billing summary loaded successfully',
                 'status' => 'success',
                 'original_contract_amount_grand_total' => $result['original_contract_amount_grand_total'],
             ]);
@@ -43,7 +43,7 @@ class ProjectsBillingController extends Controller
         );
         return CumulativeBillingResource::collection($result['grouped_projects'])
             ->additional([
-                'message' => 'Cumulative billing retrieved successfully',
+                'message' => 'Cumulative billing loaded successfully',
                 'status'  => 'success',
             ]);
     }
@@ -56,7 +56,7 @@ class ProjectsBillingController extends Controller
         );
         return CurrentMonthBillingResource::collection($result['projects'])->additional([
             'status' => 'success',
-            'message' => 'Current month billing retrieved successfully',
+            'message' => 'Current month billing loaded successfully',
             'gross_total' => $result['gross_total'],
         ]);
     }
