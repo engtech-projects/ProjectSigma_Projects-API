@@ -271,6 +271,14 @@ class BoqItem extends Model
         $percent = ($unitCostPerItem / $this->unit_price) * 100;
         return number_format($percent, 2) . '%';
     }
+    public function getSavingsQuantityAttribute()
+    {
+        return $this->draft_quantity - $this->quantity;
+    }
+    public function getSavingsAmountAttribute()
+    {
+        return $this->draft_amount - $this->amount;
+    }
     // Start date from the latest schedule
     public function getStartDateAttribute()
     {
