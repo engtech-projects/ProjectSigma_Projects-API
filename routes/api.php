@@ -170,6 +170,7 @@ Route::middleware('auth:api')->group(function () {
         Route::patch('{project}/checklist/update', [ProjectController::class, 'updateProjectChecklist']);
         // ───── Projects Billing ────
         Route::get('total-billed-and-balance-to-be-billed', [ProjectsBillingController::class, 'getTotalBilledAndBalanceToBeBilled']);
+        Route::get('cumulative-billing', [ProjectsBillingController::class, 'getCumulativeBilling']);
         Route::get('current-month-billing', [ProjectsBillingController::class, 'getCurrentMonthBilling']);
     });
     // ────── Attachments ──────
