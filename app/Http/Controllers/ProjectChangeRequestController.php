@@ -25,8 +25,8 @@ class ProjectChangeRequestController extends Controller
     {
         $project = Project::with('phases.tasks.resources')->findOrFail($request->project_id);
         $projectService = new ProjectService($project);
-        $unlinkedMaterials = $projectService->checkIfHasUnlinkedMaterials();
-        if ($unlinkedMaterials->isNotEmpty()) {
+        $unlinkedMaterials = $projectService->hasUnlinkedMaterials();
+        if ($unlinkedMaterials) {
             return response()->json([
                 'success' => false,
                 'message' => 'Some material resources are not yet connected to IMS.',

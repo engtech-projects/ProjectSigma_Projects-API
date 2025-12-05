@@ -37,6 +37,7 @@ use App\Http\Controllers\TaskScheduleWeeklyController;
 use App\Http\Controllers\VoidApproval;
 use App\Http\Resources\User\UserCollection;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\ProjectsBillingController;
 use App\Models\Uom;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
@@ -52,6 +53,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
 Route::middleware('auth:api')->group(function () {
     // SYNCHRONIZATION ROUTES
     Route::prefix('setup')->group(function () {
@@ -106,10 +108,10 @@ Route::middleware('auth:api')->group(function () {
         Route::prefix('live')->group(function () {
             Route::get('/', [ProjectController::class, 'getLiveProjects']);
             Route::get('{project}/details', [ProjectController::class, 'getProjectDetails']);
-            // ───── Direct Cost - Tss Cashflows ─────
-            Route::resource('{project}/cashflows', CashflowController::class);
-            Route::post('{project}/cashflows/{cashflow}/restore', [CashflowController::class, 'restore']);
-            Route::get('{project}/tasks-schedules/cashflows', [CashflowController::class, 'getTasksSchedulesCashflows']);
+            // ───── Direct Cost - Tss Cash-flows ─────
+            Route::resource('{project}/cash-flows', CashflowController::class);
+            Route::post('{project}/cash-flows/{cashflow}/restore', [CashflowController::class, 'restore']);
+            Route::get('{project}/tasks-schedules/cash-flows', [CashflowController::class, 'getTasksSchedulesCashflows']);
             // ───── Generate Summary Of Estimate Direct Cost ─────
             Route::get('{project}/direct-cost/summary', [ProjectController::class, 'generateSummaryOfDirectEstimate']);
             // ───── Generate Summary Of Estimate Net Income ─────
@@ -137,6 +139,7 @@ Route::middleware('auth:api')->group(function () {
         Route::patch('{project}/status', [ProjectStatusController::class, 'updateStatus']);
         Route::patch('{project}/update-stage', [ProjectController::class, 'updateStage']);
         Route::post('{project}/archive', [ProjectStatusController::class, 'archive']);
+        Route::get('archive-list', [ProjectStatusController::class, 'archiveList']);
         Route::post('{project}/complete', [ProjectStatusController::class, 'complete']);
         Route::post('replicate', [ProjectController::class, 'replicate']);
         Route::get('calendar/projects-names', [CalendarController::class, 'getProjectsNamesForCalendar']);
@@ -165,6 +168,9 @@ Route::middleware('auth:api')->group(function () {
         // ───── Project Checklist ────
         Route::get('{project}/checklist', [ProjectController::class, 'getProjectChecklist']);
         Route::patch('{project}/checklist/update', [ProjectController::class, 'updateProjectChecklist']);
+        // ───── Projects Billing ────
+        Route::get('total-billed-and-balance-to-be-billed', [ProjectsBillingController::class, 'getTotalBilledAndBalanceToBeBilled']);
+        Route::get('current-month-billing', [ProjectsBillingController::class, 'getCurrentMonthBilling']);
     });
     // ────── Attachments ──────
     Route::prefix('attachments')->group(function () {

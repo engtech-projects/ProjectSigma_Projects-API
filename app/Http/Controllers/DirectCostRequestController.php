@@ -30,6 +30,7 @@ class DirectCostRequestController extends Controller
     {
         $data = ProjectChangeRequest::directCostApproval()
             ->with('project')
+            ->whereNotApproved()
             ->latest('created_at')
             ->paginate(config('services.pagination.limit'));
         return ProjectChangeRequestListingResource::collection($data)

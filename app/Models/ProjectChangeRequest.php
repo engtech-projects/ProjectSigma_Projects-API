@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ApprovalStatus;
 use App\Enums\ChangeRequestType;
 use App\Enums\TssStatus;
 use App\Traits\HasApproval;
@@ -36,6 +37,10 @@ class ProjectChangeRequest extends Model
         return $query->whereHas('project', function ($q) {
             $q->where('tss_status', TssStatus::ONGOING->value);
         });
+    }
+    public function scopeWhereNotApproved($query)
+    {
+        return $query->whereNotIn('status', [ApprovalStatus::APPROVED->value]);
     }
     public function scopeDirectCostApproval($query)
     {
