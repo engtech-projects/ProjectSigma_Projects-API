@@ -21,4 +21,17 @@ class ProjectsBillingService
             'original_contract_amount_grand_total' => $originalContractTotalAmount,
         ];
     }
+    public function getCurrentMonthBilling($month, $year)
+    {
+        $projects = Project::select('id', 'code', 'name', 'location', 'amount', 'ntp_date')
+            ->whereMonth('ntp_date', $month)
+            ->whereYear('ntp_date', $year)
+            ->orderBy('ntp_date', 'asc')
+            ->get();
+        $gross_total = $projects->sum('amount');
+        return [
+            'projects' => $projects,
+            'gross_total' => $gross_total,
+        ];
+    }
 }
