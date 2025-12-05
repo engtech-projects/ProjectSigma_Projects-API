@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CumulativeBillingRequest;
-use App\Http\Requests\TotalBilledAndBalanceToBeBilledRequest;
 use App\Http\Resources\CumulativeBillingResource;
+use App\Http\Requests\CurrentMonthBillingRequest;
+use App\Http\Requests\TotalBilledAndBalanceToBeBilledRequest;
+use App\Http\Resources\CurrentMonthBillingResource;
 use App\Http\Resources\TotalBilledBalanceToBeBilledResource;
 use App\Services\ProjectsBillingService;
 
@@ -44,5 +46,18 @@ class ProjectsBillingController extends Controller
                 'message' => 'Cumulative billing retrieved successfully',
                 'status'  => 'success',
             ]);
+    }
+    public function getCurrentMonthBilling(CurrentMonthBillingRequest $request)
+    {
+        $validated = $request->validated();
+        $result = $this->billingService->getCurrentMonthBilling(
+            $validated['selected_month'],
+            $validated['selected_year']
+        );
+        return CurrentMonthBillingResource::collection($result['projects'])->additional([
+            'status' => 'success',
+            'message' => 'Current month billing retrieved successfully',
+            'gross_total' => $result['gross_total'],
+        ]);
     }
 }
