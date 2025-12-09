@@ -61,4 +61,17 @@ class ProjectsBillingService
             'gross_total' => $gross_total,
         ];
     }
+    public function getProjectedProgressBilling($month, $year)
+    {
+        $projects = Project::select('id', 'code', 'name', 'location', 'amount', 'ntp_date')
+            ->whereMonth('ntp_date', $month)
+            ->whereYear('ntp_date', $year)
+            ->orderBy('ntp_date', 'asc')
+            ->get();
+        $net_total = $projects->sum('amount');
+        return [
+            'projects' => $projects,
+            'net_total' => $net_total,
+        ];
+    }
 }
