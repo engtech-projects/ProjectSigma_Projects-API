@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CumulativeBillingRequest extends FormRequest
+class ProjectedProgressBillingRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,8 @@ class CumulativeBillingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'selected_year' => 'required|integer',
-            'as_of_month' => 'required|integer',
-            'as_of_year' => 'required|integer|after_or_equal:selected_year',
+            'selected_month' => 'required|string|',
+            'selected_year' => 'required|integer|between:2000,2099',
         ];
     }
 }

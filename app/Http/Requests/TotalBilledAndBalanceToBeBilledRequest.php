@@ -23,8 +23,9 @@ class TotalBilledAndBalanceToBeBilledRequest extends FormRequest
     {
         return [
             'year' => 'required|integer|min:2000|max:' . date('Y'),
-            'as_of_month' => 'required|integer|min:1|max:12|between:1,12',
-            'as_of_year' => 'required|integer|min:2000|max:' . date('Y'),
+            'as_of_month' => 'required|integer|min:1',
+            'as_of_day' => 'required|integer|min:1',
+            'as_of_year' => 'required|integer|after_or_equal:year|min:2000|max:' . date('Y'),
         ];
     }
 }
