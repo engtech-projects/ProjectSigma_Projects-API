@@ -37,6 +37,7 @@ use App\Http\Controllers\TaskScheduleWeeklyController;
 use App\Http\Controllers\VoidApproval;
 use App\Http\Resources\User\UserCollection;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\ProjectsBillingController;
 use App\Models\Uom;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
@@ -113,6 +114,8 @@ Route::middleware('auth:api')->group(function () {
             Route::get('{project}/tasks-schedules/cash-flows', [CashflowController::class, 'getTasksSchedulesCashflows']);
             // ───── Generate Summary Of Estimate Direct Cost ─────
             Route::get('{project}/direct-cost/summary', [ProjectController::class, 'generateSummaryOfDirectEstimate']);
+            // ───── Generate Summary Of Estimate Net Income ─────
+            Route::get('{project}/net-income/summary', [ProjectController::class, 'generateSummaryOfNetIncome']);
             // ───── Change Requests ─────
             Route::resource('change-requests', ProjectChangeRequestController::class);
             // ───── allRequest, myRequest, myApprovals, ApprovedRequests ─────
@@ -165,6 +168,11 @@ Route::middleware('auth:api')->group(function () {
         // ───── Project Checklist ────
         Route::get('{project}/checklist', [ProjectController::class, 'getProjectChecklist']);
         Route::patch('{project}/checklist/update', [ProjectController::class, 'updateProjectChecklist']);
+        // ───── Projects Billing ────
+        Route::get('total-billed-and-balance-to-be-billed', [ProjectsBillingController::class, 'getTotalBilledAndBalanceToBeBilled']);
+        Route::get('cumulative-billing', [ProjectsBillingController::class, 'getCumulativeBilling']);
+        Route::get('current-month-billing', [ProjectsBillingController::class, 'getCurrentMonthBilling']);
+        Route::get('projected-progress-billing', [ProjectsBillingController::class, 'getProjectedProgressBilling']);
     });
     // ────── Attachments ──────
     Route::prefix('attachments')->group(function () {
