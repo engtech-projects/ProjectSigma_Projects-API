@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CumulativeBillingRequest;
 use App\Http\Resources\CumulativeBillingResource;
 use App\Http\Requests\CurrentMonthBillingRequest;
+use App\Http\Requests\FinalBillingProjectionRequest;
 use App\Http\Requests\ProjectedProgressBillingRequest;
 use App\Http\Requests\TotalBilledAndBalanceToBeBilledRequest;
 use App\Http\Resources\CurrentMonthBillingResource;
+use App\Http\Resources\FinalBillingProjectionResource;
 use App\Http\Resources\TotalBilledBalanceToBeBilledResource;
 use App\Services\ProjectsBillingService;
 use App\Http\Resources\ProjectedProgressBillingResource;
@@ -73,6 +75,20 @@ class ProjectsBillingController extends Controller
             'status' => 'success',
             'message' => 'Projected progress billing loaded successfully',
             'net_total' => $result['net_total'],
+        ]);
+    }
+    public function getFinalBillingProjection(FinalBillingProjectionRequest $request)
+    {
+        $validated = $request->validated();
+        $result = $this->billingService->getFinalBillingProjection(
+            $validated['selected_month'],
+            $validated['selected_year']
+        );
+        return FinalBillingProjectionResource::collection($result['projects'])
+        ->additional([
+            'status' => 'success',
+            'message' => 'Final billing projection loaded successfully',
+            'overall_total' => $result['overall_total'],
         ]);
     }
 }
