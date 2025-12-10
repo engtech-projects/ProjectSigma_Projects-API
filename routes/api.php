@@ -173,6 +173,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('cumulative-billing', [ProjectsBillingController::class, 'getCumulativeBilling']);
         Route::get('current-month-billing', [ProjectsBillingController::class, 'getCurrentMonthBilling']);
         Route::get('projected-progress-billing', [ProjectsBillingController::class, 'getProjectedProgressBilling']);
+        Route::get('final-billing-projection', [ProjectsBillingController::class, 'getFinalBillingProjection']);
     });
     // ────── Attachments ──────
     Route::prefix('attachments')->group(function () {

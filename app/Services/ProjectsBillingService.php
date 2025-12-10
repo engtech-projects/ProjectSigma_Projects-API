@@ -74,4 +74,35 @@ class ProjectsBillingService
             'net_total' => $net_total,
         ];
     }
+    public function getFinalBillingProjection($month, $year)
+    {
+        $startDate = Carbon::create($year, 1, 1)->startOfDay();
+        $endDate   = Carbon::create($year, $month, 1)->endOfMonth()->endOfDay();
+        $projects = Project::select('id', 'code', 'name', 'location', 'amount', 'ntp_date')
+            ->whereBetween('ntp_date', [$startDate, $endDate])
+            ->orderBy('ntp_date', 'asc')
+            ->get();
+        $grouped = $projects->groupBy(function ($proj) {
+            return Carbon::parse($proj->ntp_date)->format('Y-m');
+        });
+        $groupedProjects = [];
+        $monthly_net_gt = 0;
+        foreach ($grouped as $ym => $items) {
+            $net_evenpar = null;
+            $monthly_net_gt += $net_evenpar;
+            $groupedProjects[] = [
+                'id' => null,
+                'code' => null,
+                'name' => null,
+                'net_evenpar' => null,
+                'monthly_net_gt' => $monthly_net_gt,
+                'year_month' => $ym,
+                'projects' => $items,
+            ];
+        }
+        return [
+            'projects' => $groupedProjects,
+            'overall_total' => $monthly_net_gt,
+        ];
+    }
 }
