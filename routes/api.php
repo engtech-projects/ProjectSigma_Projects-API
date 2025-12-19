@@ -169,11 +169,15 @@ Route::middleware('auth:api')->group(function () {
         Route::get('{project}/checklist', [ProjectController::class, 'getProjectChecklist']);
         Route::patch('{project}/checklist/update', [ProjectController::class, 'updateProjectChecklist']);
         // ───── Projects Billing ────
-        Route::get('total-billed-and-balance-to-be-billed', [ProjectsBillingController::class, 'getTotalBilledAndBalanceToBeBilled']);
-        Route::get('cumulative-billing', [ProjectsBillingController::class, 'getCumulativeBilling']);
-        Route::get('current-month-billing', [ProjectsBillingController::class, 'getCurrentMonthBilling']);
-        Route::get('projected-progress-billing', [ProjectsBillingController::class, 'getProjectedProgressBilling']);
-        Route::get('final-billing-projection', [ProjectsBillingController::class, 'getFinalBillingProjection']);
+        Route::prefix('billing')->group(function () {
+            Route::get('total-billed-and-balance-to-be-billed', [ProjectsBillingController::class, 'getTotalBilledAndBalanceToBeBilled']);
+            Route::get('cumulative', [ProjectsBillingController::class, 'getCumulativeBilling']);
+            Route::get('current-month', [ProjectsBillingController::class, 'getCurrentMonthBilling']);
+            Route::get('projected-progress', [ProjectsBillingController::class, 'getProjectedProgressBilling']);
+            Route::get('final-projection', [ProjectsBillingController::class, 'getFinalBillingProjection']);
+            Route::get('receivables', [ProjectsBillingController::class, 'getReceivableBillings']);
+            Route::get('expenses-vs-budget', [ProjectsBillingController::class, 'getExpensesVsBudget']);
+        });
     });
     // ────── Attachments ──────
     Route::prefix('attachments')->group(function () {
