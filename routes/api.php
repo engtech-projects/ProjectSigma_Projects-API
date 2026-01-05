@@ -176,6 +176,7 @@ Route::middleware('auth:api')->group(function () {
             Route::get('projected-progress', [ProjectsBillingController::class, 'getProjectedProgressBilling']);
             Route::get('final-projection', [ProjectsBillingController::class, 'getFinalBillingProjection']);
             Route::get('receivables', [ProjectsBillingController::class, 'getReceivableBillings']);
+            Route::get('expenses-vs-budget', [ProjectsBillingController::class, 'getExpensesVsBudget']);
         });
     });
     // ────── Attachments ──────

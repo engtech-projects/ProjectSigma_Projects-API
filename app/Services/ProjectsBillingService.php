@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Project;
 use Carbon\Carbon;
+use App\Models\Budget;
+use App\Models\Expenses;
 
 class ProjectsBillingService
 {
@@ -103,6 +105,21 @@ class ProjectsBillingService
         return [
             'projects' => $groupedProjects,
             'overall_total' => $monthly_net_gt,
+        ];
+    }
+    public function getExpensesVsBudget($month, $year)
+    {
+        $startDate = Carbon::create($year, $month, 1)->startOfDay();
+        $endDate   = Carbon::create($year, $month, 1)->endOfMonth()->endOfDay();
+        $budget = Budget::select('id', 'account', 'amount', 'date')
+            ->whereBetween('date', [$startDate, $endDate])
+            ->get();
+        $expenses = Expenses::select('id', 'account', 'amount', 'date')
+            ->whereBetween('date', [$startDate, $endDate])
+            ->get();
+        return [
+            'budget' => $budget,
+            'expenses' => $expenses
         ];
     }
 }

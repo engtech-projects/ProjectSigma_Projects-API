@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CumulativeBillingRequest;
 use App\Http\Resources\CumulativeBillingResource;
 use App\Http\Requests\CurrentMonthBillingRequest;
+use App\Http\Requests\ExpensesVsBudgetRequest;
 use App\Http\Requests\FinalBillingProjectionRequest;
 use App\Http\Requests\ProjectedProgressBillingRequest;
 use App\Http\Requests\TotalBilledAndBalanceToBeBilledRequest;
@@ -15,6 +16,7 @@ use App\Services\ProjectsBillingService;
 use App\Http\Resources\ProjectedProgressBillingResource;
 use App\Http\Resources\ReceivableBillingsResource;
 use App\Models\Project;
+use App\Http\Resources\ExpensesVsBudgetResource;
 
 class ProjectsBillingController extends Controller
 {
@@ -105,5 +107,18 @@ class ProjectsBillingController extends Controller
             'gross_gt' => $gross_gt,
             'net_gt' => $net_gt,
         ]);
+    }
+    public function getExpensesVsBudget(ExpensesVsBudgetRequest $request)
+    {
+        $validated = $request->validated();
+        $result = $this->billingService->getExpensesVsBudget(
+            $validated['selected_month'],
+            $validated['selected_year']
+        );
+        return ExpensesVsBudgetResource::collection($result['budget'], $result['expenses'])
+            ->additional([
+                'status' => 'success',
+                'message' => 'Expenses vs budget loaded successfully',
+            ]);
     }
 }
