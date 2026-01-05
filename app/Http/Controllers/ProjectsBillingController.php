@@ -13,6 +13,8 @@ use App\Http\Resources\FinalBillingProjectionResource;
 use App\Http\Resources\TotalBilledBalanceToBeBilledResource;
 use App\Services\ProjectsBillingService;
 use App\Http\Resources\ProjectedProgressBillingResource;
+use App\Http\Resources\ReceivableBillingsResource;
+use App\Models\Project;
 
 class ProjectsBillingController extends Controller
 {
@@ -85,10 +87,23 @@ class ProjectsBillingController extends Controller
             $validated['selected_year']
         );
         return FinalBillingProjectionResource::collection($result['projects'])
-        ->additional([
+            ->additional([
+                'status' => 'success',
+                'message' => 'Final billing projection loaded successfully',
+                'overall_total' => $result['overall_total'],
+            ]);
+    }
+    public function getReceivableBillings()
+    {
+        $result = Project::select('id', 'code', 'name', 'location', 'amount', 'ntp_date')
+            ->get();
+        $gross_gt = $result->sum('amount');
+        $net_gt = $gross_gt * 0.95; // sample only
+        return ReceivableBillingsResource::collection($result)->additional([
             'status' => 'success',
-            'message' => 'Final billing projection loaded successfully',
-            'overall_total' => $result['overall_total'],
+            'message' => 'Receivable billings loaded successfully',
+            'gross_gt' => $gross_gt,
+            'net_gt' => $net_gt,
         ]);
     }
 }
