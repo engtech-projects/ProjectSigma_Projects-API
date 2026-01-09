@@ -159,6 +159,8 @@ Route::middleware('auth:api')->group(function () {
         // ───── Project Activities ────
         Route::get('{project}/activities', [ActivityController::class, 'projectActivities']);
         Route::post('{project}/activities', [ActivityController::class, 'createProjectActivity']);
+        Route::get('{project}/activity-equipments', [ActivityController::class, 'getProjectActivityEquipments']);
+        Route::get('{project}/activity-manpower', [ActivityController::class, 'getProjectActivityManpower']);
         // ───── Project Task Schedules ────
         Route::get('{project}/task-schedules', [TaskScheduleController::class, 'getAllTaskScheduleByProject']);
         Route::resource('task-schedules', TaskScheduleController::class)->names('api.task-schedules');
