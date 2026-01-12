@@ -130,6 +130,18 @@ class Project extends Model
             });
         })->unique('description')->values();
     }
+    public function equipmentRentals()
+    {
+        return $this->resources()->filter(function ($resource) {
+            return trim(strtolower($resource->resource_type->value)) === 'equipment_rental';
+        })->values();
+    }
+    public function manpower()
+    {
+        return $this->resources()->filter(function ($resource) {
+            return trim(strtolower($resource->resource_type->value)) === 'labor_expense';
+        })->values();
+    }
     public function taskSchedules()
     {
         return TaskSchedule::whereIn(

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProjectActivityRequest;
+use App\Http\Resources\ProjectActivityEquipmentsResource;
+use App\Http\Resources\ProjectActivityManpowerResource;
 use App\Http\Resources\ProjectActivityResource;
 use App\Models\Activity;
 use App\Models\Project;
@@ -63,5 +65,23 @@ class ActivityController extends Controller
             'success' => true,
             'message' => 'Activity restored successfully',
         ], 200);
+    }
+    public function getProjectActivityEquipments(Project $project)
+    {
+        $equipment = $project->equipmentRentals();
+        return ProjectActivityEquipmentsResource::collection($equipment)
+            ->additional([
+                'success' => true,
+                'message' => 'Equipment retrieved successfully',
+            ]);
+    }
+    public function getProjectActivityManpower(Project $project)
+    {
+        $manpower = $project->manpower();
+        return ProjectActivityManpowerResource::collection($manpower)
+            ->additional([
+                'success' => true,
+                'message' => 'Manpower retrieved successfully',
+            ]);
     }
 }

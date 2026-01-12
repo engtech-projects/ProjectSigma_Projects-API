@@ -5,12 +5,18 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CumulativeBillingRequest;
 use App\Http\Resources\CumulativeBillingResource;
 use App\Http\Requests\CurrentMonthBillingRequest;
+use App\Http\Requests\ExpensesVsBudgetRequest;
+use App\Http\Requests\FinalBillingProjectionRequest;
 use App\Http\Requests\ProjectedProgressBillingRequest;
 use App\Http\Requests\TotalBilledAndBalanceToBeBilledRequest;
 use App\Http\Resources\CurrentMonthBillingResource;
+use App\Http\Resources\FinalBillingProjectionResource;
 use App\Http\Resources\TotalBilledBalanceToBeBilledResource;
 use App\Services\ProjectsBillingService;
 use App\Http\Resources\ProjectedProgressBillingResource;
+use App\Http\Resources\ReceivableBillingsResource;
+use App\Models\Project;
+use App\Http\Resources\ExpensesVsBudgetResource;
 
 class ProjectsBillingController extends Controller
 {
@@ -74,5 +80,45 @@ class ProjectsBillingController extends Controller
             'message' => 'Projected progress billing loaded successfully',
             'net_total' => $result['net_total'],
         ]);
+    }
+    public function getFinalBillingProjection(FinalBillingProjectionRequest $request)
+    {
+        $validated = $request->validated();
+        $result = $this->billingService->getFinalBillingProjection(
+            $validated['selected_month'],
+            $validated['selected_year']
+        );
+        return FinalBillingProjectionResource::collection($result['projects'])
+            ->additional([
+                'status' => 'success',
+                'message' => 'Final billing projection loaded successfully',
+                'overall_total' => $result['overall_total'],
+            ]);
+    }
+    public function getReceivableBillings()
+    {
+        $result = Project::select('id', 'code', 'name', 'location', 'amount', 'ntp_date')
+            ->get();
+        $gross_gt = $result->sum('amount');
+        $net_gt = $gross_gt * 0.95; // sample only
+        return ReceivableBillingsResource::collection($result)->additional([
+            'status' => 'success',
+            'message' => 'Receivable billings loaded successfully',
+            'gross_gt' => $gross_gt,
+            'net_gt' => $net_gt,
+        ]);
+    }
+    public function getExpensesVsBudget(ExpensesVsBudgetRequest $request)
+    {
+        $validated = $request->validated();
+        $result = $this->billingService->getExpensesVsBudget(
+            $validated['selected_month'],
+            $validated['selected_year']
+        );
+        return ExpensesVsBudgetResource::collection($result['budget'], $result['expenses'])
+            ->additional([
+                'status' => 'success',
+                'message' => 'Expenses vs budget loaded successfully',
+            ]);
     }
 }
