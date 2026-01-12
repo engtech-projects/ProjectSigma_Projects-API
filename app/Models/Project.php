@@ -1,0 +1,496 @@
+<?php
+
+namespace App\Models;
+
+use App\Enums\MarketingStage;
+use App\Enums\ProjectStatus;
+use App\Enums\RequestStatuses;
+use App\Enums\TssStage;
+use App\Traits\Filterable;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
+use App\Traits\ModelHelpers;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+
+class Project extends Model
+{
+    use Filterable;
+    use HasFactory;
+    use LogsActivity;
+    use SoftDeletes;
+    use ModelHelpers;
+    protected $table = 'projects';
+    // Define which attributes should be logged
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll() // List of attributes to log
+            ->setDescriptionForEvent(fn (string $eventName) => "Project has been {$eventName}");
+    }
+    protected $fillable = [
+        'parent_project_id',
+        'contract_id',
+        'code',
+        'name',
+        'location',
+        'nature_of_work',
+        'amount',
+        'contract_date',
+        'duration',
+        'noa_date',
+        'ntp_date',
+        'license',
+        'marketing_stage',
+        'tss_stage',
+        'tss_status',
+        'status',
+        'is_original',
+        'version',
+        'project_identifier',
+        'implementing_office',
+        'current_revision_id',
+        'position',
+        'designator',
+        'abc',
+        'bid_date',
+        'document_number',
+        'created_by',
+        'cash_flow',
+        'project_checklist',
+    ];
+    protected $casts = [
+        'cash_flow' => 'array',
+        'contract_date' => 'datetime:Y-m-d',
+        'noa_date' => 'datetime:Y-m-d',
+        'ntp_date' => 'datetime:Y-m-d',
+        'bid_date' => 'datetime:Y-m-d',
+        'amount' => 'decimal:2',
+        'abc' => 'decimal:2',
+        'marketing_stage' => MarketingStage::class,
+        'tss_stage' => TssStage::class,
+        'project_checklist' => 'array',
+    ];
+    protected $appends = [
+        'summary_of_rates',
+        'summary_of_bid',
+        'created_at_formatted',
+        'updated_at_formatted',
+    ];
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = (string) Str::uuid();
+            }
+        });
+    }
+    // Update the project status
+    public function updateStatus(ProjectStatus $status): void
+    {
+        $this->update(['status' => $status]);
+    }
+    // Archive the project
+    public function archive(): void
+    {
+        $this->updateStatus(ProjectStatus::COMPLETED);
+    }
+    public function complete(): void
+    {
+        $this->updateStatus(ProjectStatus::COMPLETED);
+    }
+    public function phases(): HasMany
+    {
+        return $this->hasMany(BoqPart::class, 'project_id', 'id');
+    }
+    public function tasks(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            BoqItem::class,
+            BoqPart::class,
+            'project_id',
+            'phase_id',
+            'id',
+            'id'
+        );
+    }
+    public function resources()
+    {
+        return $this->phases->flatMap(function ($phase) {
+            return $phase->tasks->flatMap(function ($task) {
+                return $task->resources;
+            });
+        })->unique('description')->values();
+    }
+    public function equipmentRentals()
+    {
+        return $this->resources()->filter(function ($resource) {
+            return trim(strtolower($resource->resource_type->value)) === 'equipment_rental';
+        })->values();
+    }
+    public function manpower()
+    {
+        return $this->resources()->filter(function ($resource) {
+            return trim(strtolower($resource->resource_type->value)) === 'labor_expense';
+        })->values();
+    }
+    public function taskSchedules()
+    {
+        return TaskSchedule::whereIn(
+            'item_id',
+            BoqItem::whereIn(
+                'phase_id',
+                $this->phases()->pluck('id')
+            )->pluck('id')
+        );
+    }
+    public function boms()
+    {
+        return $this->hasMany(Bom::class, 'project_id', 'id');
+    }
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(Attachment::class, 'project_id', 'id');
+    }
+    public function team(): HasMany
+    {
+        return $this->hasMany(ProjectAssignment::class);
+    }
+    public function revisions(): HasMany
+    {
+        return $this->hasMany(Revision::class, 'project_id', 'id');
+    }
+    public function projectDesignation(): HasMany
+    {
+        return $this->hasMany(ProjectDesignation::class);
+    }
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Project::class, 'parent_project_id');
+    }
+    public function activity(): HasMany
+    {
+        return $this->hasMany(Activity::class);
+    }
+    public function cashflows(): HasMany
+    {
+        return $this->hasMany(Cashflow::class);
+    }
+    public function isOriginal(): bool
+    {
+        return $this->is_original == true;
+    }
+    public function isPending(): bool
+    {
+        return $this->status == ProjectStatus::PENDING->value;
+    }
+    // PROJECT SCOPES
+    /**
+     * Scope a query to only include original/proposal project.
+     */
+    public function scopeOriginal(Builder $query)
+    {
+        return $query->where(['is_original' => true]);
+    }
+    /**
+     * Scope a query to only include internal/revised projects
+     */
+    public function scopeRevised(Builder $query)
+    {
+        return $query->where(['is_original' => false]);
+    }
+    /**
+     * Scope a query to only include ongoing projects
+     */
+    public function scopeOngoing(Builder $query)
+    {
+        return $query->where(['status' => ProjectStatus::ONGOING]);
+    }
+    /**
+     * Scope a query to only include ongoing projects
+     */
+    public function scopePending(Builder $query)
+    {
+        return $query->where(['status' => ProjectStatus::PENDING]);
+    }
+    /**
+     * Scope a query to only include ongoing projects
+     */
+    public function scopeSort(Builder $query, $val = 'desc')
+    {
+        if ($val == 'desc') {
+            return $query->latest();
+        }
+        return $query->oldest();
+    }
+    /**
+     * Scope a query to only include ongoing projects
+     */
+    public function scopeSearch(Builder $query, $keyword)
+    {
+        return $query->where(function ($query) use ($keyword) {
+            $query->where('code', 'LIKE', '%' . $keyword . '%')
+                ->orWhere('name', 'LIKE', '%' . $keyword . '%');
+        });
+    }
+    public function scopeFetchProjectsNames($query)
+    {
+        return $query->select('id', 'name');
+    }
+    public function scopeFilterByStage($query, ?string $stage)
+    {
+        return $query->when($stage, function ($q) use ($stage) {
+            if ($stage === 'on-hold') {
+                $q->where('status', 'on-hold');
+            } else {
+                $q->where(function ($query) use ($stage) {
+                    $query->where('marketing_stage', $stage)
+                        ->orWhere('tss_stage', $stage);
+                });
+            }
+        });
+    }
+    /**
+     * Scope a query to only include archived projects.
+     */
+    public function scopeArchived(Builder $query)
+    {
+        return $query->onlyTrashed();
+    }
+    public function scopeAwarded($query)
+    {
+        return $query->where('status', '!=', ProjectStatus::PENDING);
+    }
+    public function scopeWithTssStage($query, $status)
+    {
+        return $query->where('tss_stage', $status);
+    }
+    public function scopeProjectKey($query, $key)
+    {
+        return $query->where(function ($q) use ($key) {
+            $q->where('name', 'like', "%{$key}%")
+                ->orWhere('code', 'like', "%{$key}%");
+        });
+    }
+    public function scopeLatestFirst($query)
+    {
+        return $query->orderBy('updated_at', 'desc');
+    }
+    public function scopeFilterByTimelineClassification($query, $timelineClassification)
+    {
+        return $query->when($timelineClassification, function ($q) use ($timelineClassification) {
+            $q->whereHas('phases.tasks.schedules', function ($q) use ($timelineClassification) {
+                $q->where('timeline_classification', $timelineClassification);
+            });
+        });
+    }
+    public function scopeFilterByTitle($query, $title)
+    {
+        return $query->when($title, function ($q) use ($title) {
+            $q->where('name', 'like', "%{$title}%");
+        });
+    }
+    public function scopeFilterByItemId($query, $itemId)
+    {
+        return $query->when($itemId, function ($q) use ($itemId) {
+            $q->whereHas('phases.tasks.schedules', function ($q) use ($itemId) {
+                $q->where('item_id', $itemId);
+            });
+        });
+    }
+    public function scopeFilterByStatus($query, $status)
+    {
+        return $query->when($status, function ($q) use ($status) {
+            $q->whereHas('phases.tasks.schedules', function ($q) use ($status) {
+                $q->where('status', $status);
+            });
+        });
+    }
+    public function scopeFilterByDate($query, $dateFrom, $dateTo)
+    {
+        return $query->when($dateFrom && $dateTo, function ($q) use ($dateFrom, $dateTo) {
+            $q->whereHas('phases.tasks.schedules', function ($subQuery) use ($dateFrom, $dateTo) {
+                $subQuery->whereBetween('start_date', [$dateFrom, $dateTo])
+                    ->orWhereBetween('end_date', [$dateFrom, $dateTo]);
+            });
+        });
+    }
+    public function scopeSortByField($query, $sortBy, $order)
+    {
+        return $query->orderBy($sortBy ?? 'updated_at', $order ?? 'desc');
+    }
+    public function getFormattedTotalCostAttribute()
+    {
+        return number_format($this->total_task_amount, 2);
+    }
+    public function getSummaryOfBidAttribute()
+    {
+        $summaryOfBid = [];
+        if (! $this->phases) {
+            return $summaryOfBid;
+        }
+        foreach ($this->phases as $phase) {
+            $summaryOfBid[] = [
+                'part_no' => $phase->name,
+                'description' => $phase->description,
+                'total_amount' => $phase->tasks ? $phase->tasks->sum('amount') : 0,
+            ];
+        }
+        return $summaryOfBid;
+    }
+    public function completeRequestStatus()
+    {
+        // Handle marketing stage flow
+        if ($this->tss_stage === TssStage::PENDING->value) {
+            switch ($this->marketing_stage) {
+                case MarketingStage::DRAFT->value:
+                    $this->marketing_stage = MarketingStage::PROPOSAL->value;
+                    break;
+                case MarketingStage::PROPOSAL->value:
+                    $this->marketing_stage = MarketingStage::BIDDING->value;
+                    break;
+                case MarketingStage::BIDDING->value:
+                    $this->marketing_stage = MarketingStage::AWARDED->value;
+                    // Transition TSS to awarded when marketing is done
+                    $this->tss_stage = TssStage::DUPA_PREPARATION->value;
+                    $this->status = ProjectStatus::ONGOING->value;
+                    break;
+            }
+        } else {
+            // Handle TSS flow
+            switch ($this->tss_stage) {
+                case TssStage::DUPA_PREPARATION->value:
+                    $this->tss_stage = TssStage::DUPA_TIMELINE->value;
+                    break;
+                case TssStage::DUPA_TIMELINE->value:
+                    $this->tss_stage = TssStage::LIVE->value;
+                    break;
+                case TssStage::LIVE->value:
+                    $this->tss_stage = TssStage::COMPLETED->value;
+                    $this->status = ProjectStatus::COMPLETED->value;
+                    break;
+            }
+        }
+        // Set request status and persist
+        $this->request_status = RequestStatuses::APPROVED->value;
+        $this->save();
+        $this->refresh();
+    }
+    public function denyRequestStatus()
+    {
+        // Only allow marketing to backtrack if still pending in TSS
+        if ($this->tss_stage === TssStage::PENDING->value) {
+            switch ($this->marketing_stage) {
+                case MarketingStage::BIDDING->value:
+                    $this->marketing_stage = MarketingStage::PROPOSAL->value;
+                    break;
+                case MarketingStage::PROPOSAL->value:
+                    $this->marketing_stage = MarketingStage::DRAFT->value;
+                    break;
+            }
+        }
+        $this->request_status = RequestStatuses::DENIED->value;
+        $this->save();
+        $this->refresh();
+    }
+    public function getTotalTaskAmountAttribute()
+    {
+        $allTasks = $this->relationLoaded('phases')
+            ? $this->phases->flatMap(fn ($phase) => $phase->tasks)
+            : $this->phases()->with('tasks')->get()->flatMap(fn ($phase) => $phase->tasks);
+        // Sum the 'amount' of all tasks as float
+        return $allTasks->sum(fn ($task) => (float) $task->amount);
+    }
+    public function getTotalDraftTaskAmountAttribute()
+    {
+        $allTasks = $this->relationLoaded('phases')
+            ? $this->phases->flatMap(fn ($phase) => $phase->tasks)
+            : $this->phases()->with('tasks')->get()->flatMap(fn ($phase) => $phase->tasks);
+        // Sum the 'amount' of all tasks as float
+        return $allTasks->sum(fn ($task) => (float) $task->draft_amount);
+    }
+    public function getSummaryOfRatesAttribute()
+    {
+        $summary_of_rates = [];
+        if (!$this->phases) {
+            return $summary_of_rates;
+        }
+        foreach ($this->phases as $phase) {
+            if (! $phase->tasks) {
+                continue;
+            }
+            foreach ($phase->tasks as $task) {
+                if (!$task->resources) {
+                    continue;
+                }
+                foreach ($task->resources as $value) {
+                    if ($value->quantity <= 0 || ! $value->unit) {
+                        continue;
+                    }
+                    $resourceName = isset($value->resource_type) ? (string) $value->resource_type->value : '';
+                    $key = (string) $value->description;
+                    if (isset($summary_of_rates[$resourceName][$key])) {
+                        $summary_of_rates[$resourceName][$key]['ids'][] = $value->id;
+                    } else {
+                        $summary_of_rates[$resourceName][$key] = [
+                            'description' => $value->description,
+                            'unit_cost' => $value->unit_cost,
+                            'unit' => $value->unit,
+                            'resource_name' => $resourceName ? $resourceName : '',
+                            'unit_cost_with_unit' => $value->unit_cost . ' / ' . $value->unit,
+                            'total_cost' => $value->total_cost,
+                            'ids' => [$value->id],
+                        ];
+                    }
+                }
+            }
+        }
+        return $summary_of_rates;
+    }
+    public function getCreatedAtFormattedAttribute()
+    {
+        return Carbon::parse($this->created_at)->format('F j, Y h:i A');
+    }
+    public function getUpdatedAtFormattedAttribute()
+    {
+        return Carbon::parse($this->updated_at)->format('F j, Y h:i A');
+    }
+    public function getStartDateAttribute()
+    {
+        if (!$this->ntp_date) {
+            return null;
+        }
+        return Carbon::parse($this->ntp_date)->toDateString();
+    }
+    public function getEndDateAttribute()
+    {
+        $startDate = Carbon::parse($this->ntp_date);
+        if (!$this->duration) {
+            return $startDate->toDateString();
+        }
+        preg_match('/(\d+)\s*(C.D.|CD|MD|YR)?/i', $this->duration, $matches);
+        $value = (int)($matches[1] ?? 0);
+        $unit = strtoupper($matches[2] ?? 'CD');
+        return match ($unit) {
+            'C.D.' => $startDate->copy()->addDays($value)->toDateString(),
+            'CD' => $startDate->copy()->addDays($value)->toDateString(),
+            'MD' => $startDate->copy()->addMonths($value)->toDateString(),
+            'YR' => $startDate->copy()->addYears($value)->toDateString(),
+            default => $startDate->copy()->addDays($value)->toDateString(),
+        };
+    }
+    public function directCostApprovalRequest()
+    {
+        return $this->hasOne(ProjectChangeRequest::class)
+            ->where('request_type', 'directcost_approval_request')
+            ->latest(); // ensures the latest one if many exist
+    }
+}
