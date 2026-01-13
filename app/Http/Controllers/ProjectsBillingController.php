@@ -1,0 +1,124 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\CumulativeBillingRequest;
+use App\Http\Resources\CumulativeBillingResource;
+use App\Http\Requests\CurrentMonthBillingRequest;
+use App\Http\Requests\ExpensesVsBudgetRequest;
+use App\Http\Requests\FinalBillingProjectionRequest;
+use App\Http\Requests\ProjectedProgressBillingRequest;
+use App\Http\Requests\TotalBilledAndBalanceToBeBilledRequest;
+use App\Http\Resources\CurrentMonthBillingResource;
+use App\Http\Resources\FinalBillingProjectionResource;
+use App\Http\Resources\TotalBilledBalanceToBeBilledResource;
+use App\Services\ProjectsBillingService;
+use App\Http\Resources\ProjectedProgressBillingResource;
+use App\Http\Resources\ReceivableBillingsResource;
+use App\Models\Project;
+use App\Http\Resources\ExpensesVsBudgetResource;
+
+class ProjectsBillingController extends Controller
+{
+    protected ProjectsBillingService $billingService;
+
+    public function __construct(ProjectsBillingService $billingService)
+    {
+        $this->billingService = $billingService;
+    }
+    public function getTotalBilledAndBalanceToBeBilled(TotalBilledAndBalanceToBeBilledRequest $request)
+    {
+        $validated = $request->validated();
+        $result = $this->billingService->getTotalBilledAndBalanceToBeBilled(
+            $validated['year'],
+            $validated['as_of_month'],
+            $validated['as_of_year']
+        );
+        return TotalBilledBalanceToBeBilledResource::collection($result['projects'])
+            ->additional([
+                'message' => 'Billing summary loaded successfully',
+                'status' => 'success',
+                'original_contract_amount_grand_total' => $result['original_contract_amount_grand_total'],
+            ]);
+    }
+    public function getCumulativeBilling(CumulativeBillingRequest $request)
+    {
+        $validated = $request->validated();
+        $result = $this->billingService->getCumulativeBilling(
+            $validated['selected_year'],
+            $validated['as_of_month'],
+            $validated['as_of_year']
+        );
+        return CumulativeBillingResource::collection($result['grouped_projects'])
+            ->additional([
+                'message' => 'Cumulative billing loaded successfully',
+                'status'  => 'success',
+            ]);
+    }
+    public function getCurrentMonthBilling(CurrentMonthBillingRequest $request)
+    {
+        $validated = $request->validated();
+        $result = $this->billingService->getCurrentMonthBilling(
+            $validated['selected_month'],
+            $validated['selected_year']
+        );
+        return CurrentMonthBillingResource::collection($result['projects'])->additional([
+            'status' => 'success',
+            'message' => 'Current month billing loaded successfully',
+            'gross_total' => $result['gross_total'],
+        ]);
+    }
+    public function getProjectedProgressBilling(ProjectedProgressBillingRequest $request)
+    {
+        $validated = $request->validated();
+        $result = $this->billingService->getProjectedProgressBilling(
+            $validated['selected_month'],
+            $validated['selected_year']
+        );
+        return ProjectedProgressBillingResource::collection($result['projects'])->additional([
+            'status' => 'success',
+            'message' => 'Projected progress billing loaded successfully',
+            'net_total' => $result['net_total'],
+        ]);
+    }
+    public function getFinalBillingProjection(FinalBillingProjectionRequest $request)
+    {
+        $validated = $request->validated();
+        $result = $this->billingService->getFinalBillingProjection(
+            $validated['selected_month'],
+            $validated['selected_year']
+        );
+        return FinalBillingProjectionResource::collection($result['projects'])
+            ->additional([
+                'status' => 'success',
+                'message' => 'Final billing projection loaded successfully',
+                'overall_total' => $result['overall_total'],
+            ]);
+    }
+    public function getReceivableBillings()
+    {
+        $result = Project::select('id', 'code', 'name', 'location', 'amount', 'ntp_date')
+            ->get();
+        $gross_gt = $result->sum('amount');
+        $net_gt = $gross_gt * 0.95; // sample only
+        return ReceivableBillingsResource::collection($result)->additional([
+            'status' => 'success',
+            'message' => 'Receivable billings loaded successfully',
+            'gross_gt' => $gross_gt,
+            'net_gt' => $net_gt,
+        ]);
+    }
+    public function getExpensesVsBudget(ExpensesVsBudgetRequest $request)
+    {
+        $validated = $request->validated();
+        $result = $this->billingService->getExpensesVsBudget(
+            $validated['selected_month'],
+            $validated['selected_year']
+        );
+        return ExpensesVsBudgetResource::collection($result['budget'], $result['expenses'])
+            ->additional([
+                'status' => 'success',
+                'message' => 'Expenses vs budget loaded successfully',
+            ]);
+    }
+}
