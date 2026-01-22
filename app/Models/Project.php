@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Models;
-
 use App\Enums\MarketingStage;
 use App\Enums\ProjectStatus;
 use App\Enums\RequestStatuses;
@@ -19,7 +17,6 @@ use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use App\Traits\ModelHelpers;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-
 class Project extends Model
 {
     use Filterable;
@@ -65,6 +62,9 @@ class Project extends Model
         'created_by',
         'cash_flow',
         'project_checklist',
+        'directcost_status',
+        'bom_status',
+        'schedule_status',
     ];
     protected $casts = [
         'cash_flow' => 'array',

@@ -1,7 +1,6 @@
 <?php
-
 namespace App\Http\Controllers;
-
+use App\Enums\RequestStatus;
 use App\Enums\TssStatus;
 use App\Http\Requests\StoreProjectChangeRequest;
 use App\Http\Requests\UpdateProjectChangeRequest;
@@ -9,7 +8,6 @@ use App\Http\Resources\ProjectChangeRequestResource;
 use App\Models\Project;
 use App\Models\ProjectChangeRequest;
 use App\Services\ProjectService;
-
 class ProjectChangeRequestController extends Controller
 {
     public function index()
@@ -36,6 +34,75 @@ class ProjectChangeRequestController extends Controller
         $validated = $request->validated();
         $validated['created_by'] = auth()->id();
         $project->tss_status = TssStatus::ONGOING->value;
+        $project->save();
+        $changeRequest = ProjectChangeRequest::create($validated);
+        return response()->json([
+            'success' => true,
+            'message' => 'Project change request created successfully',
+            'data' => new ProjectChangeRequestResource($changeRequest),
+        ], 201);
+    }
+    public function directCostApprovalRequest(StoreProjectChangeRequest $request)
+    {
+        $project = Project::with('phases.tasks.resources')->findOrFail($request->project_id);
+        $projectService = new ProjectService($project);
+        $unlinkedMaterials = $projectService->hasUnlinkedMaterials();
+        if ($unlinkedMaterials) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Some material resources are not yet connected to IMS.',
+                'unlinked_materials' => $unlinkedMaterials,
+            ], 422);
+        }
+        $validated = $request->validated();
+        $validated['created_by'] = auth()->id();
+        $project->directcost_status = RequestStatus::ONGOING->value;
+        $project->save();
+        $changeRequest = ProjectChangeRequest::create($validated);
+        return response()->json([
+            'success' => true,
+            'message' => 'Project change request created successfully',
+            'data' => new ProjectChangeRequestResource($changeRequest),
+        ], 201);
+    }
+    public function bomApprovalRequest(StoreProjectChangeRequest $request)
+    {
+        $project = Project::with('phases.tasks.resources')->findOrFail($request->project_id);
+        $projectService = new ProjectService($project);
+        $unlinkedMaterials = $projectService->hasUnlinkedMaterials();
+        if ($unlinkedMaterials) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Some material resources are not yet connected to IMS.',
+                'unlinked_materials' => $unlinkedMaterials,
+            ], 422);
+        }
+        $validated = $request->validated();
+        $validated['created_by'] = auth()->id();
+        $project->bom_status = RequestStatus::ONGOING->value;
+        $project->save();
+        $changeRequest = ProjectChangeRequest::create($validated);
+        return response()->json([
+            'success' => true,
+            'message' => 'Project change request created successfully',
+            'data' => new ProjectChangeRequestResource($changeRequest),
+        ], 201);
+    }
+    public function scheduleApprovalRequest(StoreProjectChangeRequest $request)
+    {
+        $project = Project::with('phases.tasks.resources')->findOrFail($request->project_id);
+        $projectService = new ProjectService($project);
+        $unlinkedMaterials = $projectService->hasUnlinkedMaterials();
+        if ($unlinkedMaterials) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Some material resources are not yet connected to IMS.',
+                'unlinked_materials' => $unlinkedMaterials,
+            ], 422);
+        }
+        $validated = $request->validated();
+        $validated['created_by'] = auth()->id();
+        $project->schedule_status = RequestStatus::ONGOING->value;
         $project->save();
         $changeRequest = ProjectChangeRequest::create($validated);
         return response()->json([

@@ -1,5 +1,4 @@
 <?php
-
 use App\Enums\ProjectStage;
 use App\Enums\ProjectStatus;
 use App\Http\Controllers\Actions\Approvals\ApproveApproval;
@@ -42,7 +41,6 @@ use App\Models\Uom;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -53,7 +51,6 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
 Route::middleware('auth:api')->group(function () {
     // SYNCHRONIZATION ROUTES
     Route::prefix('setup')->group(function () {
@@ -117,9 +114,28 @@ Route::middleware('auth:api')->group(function () {
             // ───── Generate Summary Of Estimate Net Income ─────
             Route::get('{project}/net-income/summary', [ProjectController::class, 'generateSummaryOfNetIncome']);
             // ───── Change Requests ─────
-            Route::resource('change-requests', ProjectChangeRequestController::class);
+            Route::prefix('change-requests')->group(function () {
+                Route::post('direct-cost-approval-request', [ProjectChangeRequestController::class, 'directCostApprovalRequest']);
+                Route::post('bom-approval-request', [ProjectChangeRequestController::class, 'bomApprovalRequest']);
+                Route::post('schedule-approval-request', [ProjectChangeRequestController::class, 'scheduleApprovalRequest']);
+            });
             // ───── allRequest, myRequest, myApprovals, ApprovedRequests ─────
+            Route::get('awarded-projects', [ProjectController::class, 'getAwardedProjects']);
             Route::prefix('direct-cost-requests')->group(function () {
+                Route::get('/', [DirectCostRequestController::class, 'index']);
+                Route::get('all-requests', [DirectCostRequestController::class, 'allRequests']);
+                Route::get('my-requests', [DirectCostRequestController::class, 'myRequests']);
+                Route::get('my-approvals', [DirectCostRequestController::class, 'myApprovals']);
+                Route::get('approved', [DirectCostRequestController::class, 'approved']);
+            });
+            Route::prefix('bom-requests')->group(function () {
+                Route::get('/', [DirectCostRequestController::class, 'index']);
+                Route::get('all-requests', [DirectCostRequestController::class, 'allRequests']);
+                Route::get('my-requests', [DirectCostRequestController::class, 'myRequests']);
+                Route::get('my-approvals', [DirectCostRequestController::class, 'myApprovals']);
+                Route::get('approved', [DirectCostRequestController::class, 'approved']);
+            });
+            Route::prefix('schedule-requests')->group(function () {
                 Route::get('/', [DirectCostRequestController::class, 'index']);
                 Route::get('all-requests', [DirectCostRequestController::class, 'allRequests']);
                 Route::get('my-requests', [DirectCostRequestController::class, 'myRequests']);
@@ -179,6 +195,12 @@ Route::middleware('auth:api')->group(function () {
             Route::get('final-projection', [ProjectsBillingController::class, 'getFinalBillingProjection']);
             Route::get('receivables', [ProjectsBillingController::class, 'getReceivableBillings']);
             Route::get('expenses-vs-budget', [ProjectsBillingController::class, 'getExpensesVsBudget']);
+        });
+        // ───── Projects Reports ────
+        Route::prefix('reports')->group(function () {
+            Route::get('project-update-report', [ProjectsBillingController::class, 'getTotalBilledAndBalanceToBeBilled']);
+            Route::get('stewa', [ProjectsBillingController::class, 'getCumulativeBilling']);
+            Route::get('accomplishment', [ProjectsBillingController::class, 'getCurrentMonthBilling']);
         });
     });
     // ────── Attachments ──────

@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers\Api\V1\Project;
-
 use App\Enums\ProjectStage;
 use App\Enums\TssStatus;
 use App\Http\Controllers\Controller;
@@ -26,7 +24,6 @@ use App\Models\Project;
 use App\Services\ProjectService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\ValidationException;
-
 // use Illuminate\Support\Facades\Gate;
 class ProjectController extends Controller
 {
@@ -54,13 +51,27 @@ class ProjectController extends Controller
                 'message' => 'Successfully fetched.',
             ]);
     }
+    public function getAwardedProjects(FilterProjectRequest $request)
+    {
+        $validated = $request->validated();
+        $projectKey = $validated['project_key'] ?? null;
+        $status = ProjectStage::AWARDED->value;
+        $data = Project::when($status, fn ($query) => $query->filterByStage($status))
+            ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
+            ->latestFirst()
+            ->paginate(config('services.pagination.limit'));
+        return ProjectListingResource::collection($data)
+            ->additional([
+                'success' => true,
+                'message' => 'Successfully fetched.',
+            ]);
+    }
     public function getOwnedProjects(FilterProjectRequest $request)
     {
         $validated = $request->validated();
         $projectKey = $validated['project_key'] ?? null;
         $status = $validated['stage_status'] ?? null;
-        $data = Project::with('revisions')
-            ->when($status, fn ($query) => $query->filterByStage($status))
+        $data = Project::when($status, fn ($query) => $query->filterByStage($status))
             ->when($projectKey, fn ($query) => $query->projectKey($projectKey))
             ->latestFirst()
             ->createdByAuth()

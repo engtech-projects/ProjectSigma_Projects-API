@@ -7,12 +7,13 @@ use App\Http\Resources\Project\ProjectChangeRequestListingResource;
 use App\Http\Resources\Project\ProjectLiveListingResource;
 use App\Models\Project;
 use App\Models\ProjectChangeRequest;
-class DirectCostRequestController extends Controller
+use Symfony\Component\HttpFoundation\Request;
+class BillOfMaterialsController extends Controller
 {
     public function index()
     {
         $data = Project::where('status', ProjectStatus::ONGOING->value)
-            ->where('directcost_status', RequestStatus::PENDING->value)
+            ->where('bom_status', RequestStatus::PENDING->value)
             ->latest('created_at')
             ->paginate(config('services.pagination.limit'));
         return ProjectLiveListingResource::collection($data)

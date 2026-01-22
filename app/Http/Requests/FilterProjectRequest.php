@@ -1,12 +1,9 @@
 <?php
-
 namespace App\Http\Requests;
-
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Enums\ProjectStage;
 use App\Enums\TssStage;
-
 class FilterProjectRequest extends FormRequest
 {
     /**
